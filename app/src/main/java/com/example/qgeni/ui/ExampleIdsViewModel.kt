@@ -1,0 +1,64 @@
+package com.example.qgeni.ui
+
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.qgeni.api.ids.IdsAPI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class ExampleIdsViewModel : ViewModel() {
+    private var _uiState = MutableStateFlow(ExampleIdsUiState())
+
+    val uiState = _uiState.asStateFlow()
+
+    fun updateHost(host: String) {
+        _uiState.update {
+            it.copy(host = host)
+        }
+    }
+
+    fun updatePort(port: String) {
+        _uiState.update {
+            it.copy(port = port)
+        }
+    }
+
+    fun updateImageUri(imageUri: Uri) {
+        _uiState.update {
+            it.copy(imageUri = imageUri)
+        }
+    }
+
+    fun describeImage(context: Context) {
+        val uri = _uiState.value.imageUri
+        if (uri == Uri.EMPTY) {
+            return
+        }
+
+        val stream = context.contentResolver.openInputStream(uri)
+        val image = BitmapFactory.decodeStream(stream)
+        viewModelScope.launch(Dispatchers.IO) {
+            IdsAPI.setHostPort(_uiState.value.host, _uiState.value.port.toInt())
+            val response = IdsAPI.describe(image)
+            _uiState.update {
+                it.copy(serverResponse = response ?: "Something went wrong! Please check Logcat!")
+            }
+            Log.e("RESPONSE FROM SERVER", response ?: "")
+        }
+    }
+
+}
+
+data class ExampleIdsUiState(
+    val host : String = IdsAPI.DEFAULT_HOST,
+    val port : String = IdsAPI.DEFAULT_PORT.toString(),
+    val serverResponse: String = "Choose Image and Press \"Describe\"!",
+    val imageUri : Uri = Uri.EMPTY
+)
