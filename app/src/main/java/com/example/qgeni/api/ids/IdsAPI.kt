@@ -12,7 +12,7 @@ import java.nio.ByteOrder
 
 
 object IdsAPI : IIdsApi {
-    const val DEFAULT_HOST = "192.168.1.173"
+    const val DEFAULT_HOST = "10.10.106.117"
     const val DEFAULT_PORT = 20000
     private const val LOG_TAG = "SOCKET CONNECTION"
 
@@ -33,14 +33,9 @@ object IdsAPI : IIdsApi {
 
             Log.d(LOG_TAG, "Sent ${imageByteArray.size} bytes data")
 
+            val inputStream = socket.getInputStream()
+            val response = inputStream.bufferedReader().readLine()
 
-            var inputStream = socket.getInputStream()
-            var response = inputStream.bufferedReader().readLine()
-            while (response == null) {
-                Log.d(LOG_TAG, "Receiving data")
-                inputStream = socket.getInputStream()
-                response = inputStream.bufferedReader().readLine()
-            }
             socket.close()
             return response
 
