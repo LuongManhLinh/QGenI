@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,6 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,10 +57,9 @@ fun ExampleIdsUI(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(4.dp).padding(top = 40.dp)
+        modifier = Modifier.fillMaxSize().padding(4.dp).padding(top = 12.dp)
     ) {
         Row(
-            modifier = Modifier.padding(bottom = 10.dp)
         ) {
             Column(
                 modifier = Modifier.weight(2f)
@@ -66,7 +70,6 @@ fun ExampleIdsUI(
                     onValueChange = { viewModel.updateHost(it) }
                 )
             }
-            Spacer(Modifier.padding(horizontal = 4.dp))
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -93,13 +96,9 @@ fun ExampleIdsUI(
             error = painterResource(R.drawable.ic_launcher_background),
             modifier = Modifier
                 .widthIn(min = 300.dp)
-                .heightIn(max = 500.dp, min = 200.dp),
+                .heightIn(max = 400.dp, min = 200.dp),
             contentScale = ContentScale.Crop
         )
-
-
-
-
 
         Button(
             onClick = {
@@ -110,19 +109,44 @@ fun ExampleIdsUI(
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().height(200.dp),
+            modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = Color.Cyan
             )
         ) {
-            Text(
-                text = uiState.serverResponse,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(8.dp)
-            )
+            LazyColumn {
+                item {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("Local Server: ")
+                            }
+                            append(uiState.serverResponse)
+                        },
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+                item {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("Gemini: ")
+                            }
+                            append(uiState.geminiResponse)
+                        },
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+            }
+
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 
-object IdsAPI : IIdsApi {
+object IdsHostAPI : IIdsAPI {
     const val DEFAULT_HOST = "10.10.106.117"
     const val DEFAULT_PORT = 20000
     private const val LOG_TAG = "SOCKET CONNECTION"
@@ -20,7 +20,7 @@ object IdsAPI : IIdsApi {
     private var port = DEFAULT_PORT
 
 
-    override fun describe(image: Bitmap): String? {
+    override suspend fun describe(image: Bitmap): String? {
         try {
             val socket = Socket(host, port)
             val outputStream = DataOutputStream(socket.getOutputStream())

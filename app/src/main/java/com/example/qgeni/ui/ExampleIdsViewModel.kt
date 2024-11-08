@@ -6,7 +6,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.qgeni.api.ids.IdsAPI
+import com.example.qgeni.api.ids.IdsGeminiAPI
+import com.example.qgeni.api.ids.IdsHostAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,21 +45,37 @@ class ExampleIdsViewModel : ViewModel() {
 
         val stream = context.contentResolver.openInputStream(uri)
         val image = BitmapFactory.decodeStream(stream)
-        viewModelScope.launch(Dispatchers.IO) {
-            IdsAPI.setHostPort(_uiState.value.host, _uiState.value.port.toInt())
-            val response = IdsAPI.describe(image)
+
+        viewModelScope.launch {
+            val geminiResponse = IdsGeminiAPI.describe(image)
             _uiState.update {
-                it.copy(serverResponse = response ?: "Something went wrong! Please check Logcat!")
+                it.copy(
+                    geminiResponse = geminiResponse ?: "Something went wrong with Gemini!"
+                )
             }
-            Log.e("RESPONSE FROM SERVER", response ?: "")
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            IdsHostAPI.setHostPort(_uiState.value.host, _uiState.value.port.toInt())
+            val localResponse = IdsHostAPI.describe(image)
+
+
+            _uiState.update {
+                it.copy(
+                    serverResponse = localResponse ?: "Something went wrong! Please check Logcat!",
+                )
+            }
+        }
+
+
     }
 
 }
 
 data class ExampleIdsUiState(
-    val host : String = IdsAPI.DEFAULT_HOST,
-    val port : String = IdsAPI.DEFAULT_PORT.toString(),
-    val serverResponse: String = "Choose Image and Press \"Describe\"!",
+    val host : String = IdsHostAPI.DEFAULT_HOST,
+    val port : String = IdsHostAPI.DEFAULT_PORT.toString(),
+    val serverResponse: String = "Local server is ready!",
+    val geminiResponse: String = "Gemini is ready!",
     val imageUri : Uri = Uri.EMPTY
 )
