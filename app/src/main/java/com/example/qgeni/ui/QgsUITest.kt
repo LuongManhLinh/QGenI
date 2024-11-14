@@ -1,5 +1,6 @@
 package com.example.qgeni.ui
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,33 +19,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun Home(qgsViewModel: QgsViewModel) {
-    InputParagraph(
-        onParagraphSend = {qgsViewModel.sendParagraph(it)}, qgsViewModel
-    )
-
+fun Home() {
+    InputParagraph()
 }
 
 @Composable
-fun InputParagraph(onParagraphSend: (String) -> Unit, qgsViewModel: QgsViewModel) {
-    var message by remember { mutableStateOf("") }
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(start = 8.dp, top = 24.dp, end = 8.dp, bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+fun InputParagraph(qgsViewModel: QgsViewModel = viewModel()) {
+    val uiState by qgsViewModel.uiState.collectAsState()
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 8.dp, top = 24.dp, end = 8.dp, bottom = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         item {
             OutlinedTextField(
-                value = message,
+                value = uiState.paragraph,
                 onValueChange = {
-                    message = it
+                    qgsViewModel.updateParagraph(it)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
         }
         item {
             Button(onClick = {
-                onParagraphSend(message)
-//                message = ""
+                qgsViewModel.fetchQuestions(uiState.paragraph)
             }) {
                 Text(
                     text = "Enter"
@@ -51,10 +55,14 @@ fun InputParagraph(onParagraphSend: (String) -> Unit, qgsViewModel: QgsViewModel
             }
         }
         item {
-            Text(
-                qgsViewModel.responseText.value,
-                Modifier.border(2.dp, Color.Yellow).padding(4.dp)
-            )
+            uiState.listQuestion.forEach { question ->
+                Text(
+                    text = question.statement
+                )
+
+                Log.i("Display", question.statement)
+            }
         }
+//        Log.i("DisplayText", uiState.listQuestion[0].statement)
     }
 }

@@ -1,5 +1,5 @@
 package com.example.qgeni.api.qgs
 
 interface IQgsAPI {
-    suspend fun generate(paragraph: String) : List<QgsForm>
+    suspend fun questionSet(paragraph: String) : List<QgsForm>
 }
