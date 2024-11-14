@@ -9,7 +9,7 @@ object IdsGeminiAPI : IIdsAPI {
     private const val PROMPT = "Describe the given picture with IELTS vocabulary within 30 words"
     private const val LOG_TAG = "GEMINI API"
     private var modelName = "gemini-1.5-flash"
-    private var apiKey = "AIzaSyDFFKBL6voUpM7FQOprnOqTFReG0Kcdfcs"
+    private var apiKey = "AIzaSyB4pLbUwPN1DuEQdmaziZ4SzKcUgb11nkg"
 
     private val model = GenerativeModel(
         modelName = modelName,

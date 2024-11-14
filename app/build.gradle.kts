@@ -63,6 +63,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation(libs.androidx.foundation.layout.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -72,5 +73,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+//    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
 }
