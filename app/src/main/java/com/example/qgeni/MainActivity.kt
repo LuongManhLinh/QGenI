@@ -17,8 +17,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QGenITheme {
-//                ExampleIdsUI()
-                InputParagraph()
+                ExampleIdsUI()
+//                InputParagraph()
             }
         }
     }

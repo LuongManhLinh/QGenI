@@ -54,6 +54,11 @@ class ExampleIdsViewModel : ViewModel() {
         val stream = context.contentResolver.openInputStream(uri)
         val image = BitmapFactory.decodeStream(stream)
 
+        IdsAPI.setHostPort(
+            _uiState.value.host,
+            uiState.value.port.toInt()
+        )
+
         viewModelScope.launch(Dispatchers.IO) {
             val response = IdsAPI.getSimilarImage(image, _uiState.value.numDesiredImage.toInt())
             _uiState.update {

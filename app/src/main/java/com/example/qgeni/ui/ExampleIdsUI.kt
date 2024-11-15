@@ -110,7 +110,7 @@ fun ExampleIdsUI(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(bottom = 100.dp),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.FillWidth
                 )
             }
 
@@ -125,8 +125,9 @@ fun ExampleIdsUI(
                         .padding(
                             start = 4.dp,
                             end = 4.dp,
-                            bottom = 12.dp
-                        )
+                            bottom = 36.dp
+                        ),
+                    contentScale = ContentScale.FillWidth
                 )
             }
         }
