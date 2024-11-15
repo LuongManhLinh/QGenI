@@ -2,6 +2,6 @@ package com.example.qgeni.api.ids
 
 import android.graphics.Bitmap
 
-interface IIdsAPI {
+interface IDescribeOnlyAPI {
     suspend fun describe(image: Bitmap) : String?
 }

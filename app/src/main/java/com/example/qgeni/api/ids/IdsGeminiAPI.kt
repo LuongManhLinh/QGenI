@@ -5,7 +5,7 @@ import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 
-object IdsGeminiAPI : IIdsAPI {
+object IdsGeminiAPI : IDescribeOnlyAPI {
     private const val PROMPT = "Describe the given picture with IELTS vocabulary within 30 words"
     private const val LOG_TAG = "GEMINI API"
     private var modelName = "gemini-1.5-flash"

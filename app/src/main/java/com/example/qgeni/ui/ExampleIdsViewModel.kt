@@ -1,13 +1,12 @@
 package com.example.qgeni.ui
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.qgeni.api.ids.IdsGeminiAPI
-import com.example.qgeni.api.ids.IdsHostAPI
+import com.example.qgeni.api.ids.IdsAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,11 +32,20 @@ class ExampleIdsViewModel : ViewModel() {
 
     fun updateImageUri(imageUri: Uri) {
         _uiState.update {
-            it.copy(imageUri = imageUri)
+            it.copy(
+                imageUri = imageUri,
+                responseImages = emptyList()
+            )
         }
     }
 
-    fun describeImage(context: Context) {
+    fun updateNumDesiredImage(numDesiredImage: String) {
+        _uiState.update {
+            it.copy(numDesiredImage = numDesiredImage)
+        }
+    }
+
+    fun getSimilarImage(context: Context) {
         val uri = _uiState.value.imageUri
         if (uri == Uri.EMPTY) {
             return
@@ -46,36 +54,21 @@ class ExampleIdsViewModel : ViewModel() {
         val stream = context.contentResolver.openInputStream(uri)
         val image = BitmapFactory.decodeStream(stream)
 
-        viewModelScope.launch {
-            val geminiResponse = IdsGeminiAPI.describe(image)
-            _uiState.update {
-                it.copy(
-                    geminiResponse = geminiResponse ?: "Something went wrong with Gemini!"
-                )
-            }
-        }
-
         viewModelScope.launch(Dispatchers.IO) {
-            IdsHostAPI.setHostPort(_uiState.value.host, _uiState.value.port.toInt())
-            val localResponse = IdsHostAPI.describe(image)
-
-
+            val response = IdsAPI.getSimilarImage(image, _uiState.value.numDesiredImage.toInt())
             _uiState.update {
-                it.copy(
-                    serverResponse = localResponse ?: "Something went wrong! Please check Logcat!",
-                )
+                it.copy(responseImages = response)
             }
         }
-
 
     }
 
 }
 
 data class ExampleIdsUiState(
-    val host : String = IdsHostAPI.DEFAULT_HOST,
-    val port : String = IdsHostAPI.DEFAULT_PORT.toString(),
-    val serverResponse: String = "Local server is ready!",
-    val geminiResponse: String = "Gemini is ready!",
-    val imageUri : Uri = Uri.EMPTY
+    val host : String = IdsAPI.DEFAULT_HOST,
+    val port : String = IdsAPI.DEFAULT_PORT.toString(),
+    val numDesiredImage: String = "10",
+    val imageUri : Uri = Uri.EMPTY,
+    val responseImages: List<Bitmap> = emptyList()
 )
