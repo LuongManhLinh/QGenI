@@ -1,22 +1,18 @@
 package com.example.qgeni.ui
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -53,8 +48,7 @@ fun ExampleIdsUI(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().padding(4.dp).padding(top = 12.dp)
     ) {
-        Row(
-        ) {
+        Row {
             Column(
                 modifier = Modifier.weight(2f)
             ) {
@@ -85,18 +79,18 @@ fun ExampleIdsUI(
             Button(onClick = {
                 viewModel.getSimilarImage(context)
             }) {
-                Text("Get similar")
+                Text("Get questions")
             }
 
             OutlinedTextField(
-                value = uiState.numDesiredImage,
+                value = uiState.numQuestion,
                 onValueChange = viewModel::updateNumDesiredImage,
                 modifier = Modifier.width(64.dp)
             )
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().background(Color.Gray),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -109,31 +103,51 @@ fun ExampleIdsUI(
                     error = painterResource(R.drawable.ic_launcher_background),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 100.dp),
+                        .padding(bottom = 36.dp),
                     contentScale = ContentScale.FillWidth
                 )
             }
 
-            items(uiState.responseImages.size) {
-                val bitmap = uiState.responseImages[it]
-                Text((it + 1).toString())
-                Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            bottom = 36.dp
-                        ),
-                    contentScale = ContentScale.FillWidth
+            item {
+                Text(
+                    text = "Response time: ${uiState.responseTime} ms",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(4.dp)
                 )
+            }
+
+            items(uiState.responseImgAndDesc.size) {
+                val imgAndDesc = uiState.responseImgAndDesc[it]
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        (it + 1).toString(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    Text(
+                        text = imgAndDesc.second,
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    Image(
+                        bitmap = imgAndDesc.first.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                start = 4.dp,
+                                end = 4.dp,
+                                bottom = 48.dp
+                            ),
+                        contentScale = ContentScale.FillWidth
+                    )
+
+                }
+
             }
         }
-
-
-
     }
 }
 

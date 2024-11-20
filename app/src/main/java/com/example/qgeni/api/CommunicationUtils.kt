@@ -37,5 +37,9 @@ object CommunicationUtils {
         return buffer
     }
 
+    fun encodeText(text: String): ByteArray {
+        return text.toByteArray()
+    }
+
 
 }

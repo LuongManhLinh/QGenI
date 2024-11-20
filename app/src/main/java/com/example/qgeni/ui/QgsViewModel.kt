@@ -25,7 +25,7 @@ class QgsViewModel : ViewModel() {
     fun fetchQuestions(paragraph: String) {
         viewModelScope.launch {
             try {
-                val result = QgsGeminiAPI.questionSet(paragraph)
+                val result = QgsGeminiAPI.generateQuestions(paragraph)
                 _uiState.update {
                     it.copy(
                         listQuestion = result

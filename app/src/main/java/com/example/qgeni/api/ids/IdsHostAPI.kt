@@ -9,50 +9,85 @@ import com.example.qgeni.api.ResponseType
 import java.io.DataOutputStream
 import java.net.Socket
 
-object IdsAPI : IFullIdsAPI {
+object IdsHostAPI : IFullIdsAPI {
     const val DEFAULT_HOST = "192.168.1.173"
     const val DEFAULT_PORT = 20000
     private const val LOG_TAG = "IgsHostAPI"
+
+    private const val IMG_PER_QUESTION = 4
 
     private var host = DEFAULT_HOST
     private var port = DEFAULT_PORT
 
     override suspend fun getSimilarImage(image: Bitmap, numDesiredImage: Int): List<Bitmap> {
+        return performSocketOperation(
+            requestType = RequestType.IMG_FIND_SIMILAR_ONLY,
+            image = image,
+            numItems = numDesiredImage
+        ) { socket, numItems ->
+            getResponseForFindSimilarOnly(socket, numItems)
+        } ?: emptyList()
+    }
+
+    override suspend fun createQuestion(
+        image: Bitmap,
+        numQuestion: Int
+    ): Pair<List<Bitmap>, List<String>> {
+        return performSocketOperation(
+            requestType = RequestType.IMG_FIND_AND_DESC,
+            image = image,
+            numItems = numQuestion
+        ) { socket, numItems ->
+            getResponseForFindAndDesc(socket, numItems)
+        } ?: Pair(emptyList(), emptyList())
+    }
+
+    private fun <T> performSocketOperation(
+        requestType: Int,
+        image: Bitmap,
+        numItems: Int,
+        responseHandler: (Socket, Int) -> T
+    ): T? {
         try {
             val socket = Socket(host, port)
 
-            sendRequest(socket, image, numDesiredImage)
+            sendRequest(requestType, socket, image, numItems)
 
-            val response = getResponse(socket, numDesiredImage)
+            val response = responseHandler(socket, numItems)
 
             socket.close()
 
             return response
-
         } catch (e: Exception) {
             Log.e(LOG_TAG, Log.getStackTraceString(e))
         }
 
-        return emptyList()
+        return null
     }
 
-    private fun sendRequest(socket: Socket, image: Bitmap, numDesiredImage: Int) {
+
+    private fun sendRequest(
+        requestType: Int,
+        socket: Socket,
+        image: Bitmap,
+        numImgOrQuestion: Int
+    ) {
         val outputStream = DataOutputStream(socket.getOutputStream())
 
-        val requestTypeByteArray = CommunicationUtils.intToBigEndianBytes(RequestType.IMG_FIND_SIMILAR_ONLY)
-        val numDesiredImageByteArray = CommunicationUtils.intToBigEndianBytes(numDesiredImage)
+        val requestTypeByteArray = CommunicationUtils.intToBigEndianBytes(requestType)
+        val numImgOrQuestionArray = CommunicationUtils.intToBigEndianBytes(numImgOrQuestion)
         val imageByteArray = CommunicationUtils.encodeImage(image)
         val imageSizeByteArray = CommunicationUtils.intToBigEndianBytes(imageByteArray.size)
 
         outputStream.write(requestTypeByteArray)
-        outputStream.write(numDesiredImageByteArray)
+        outputStream.write(numImgOrQuestionArray)
         outputStream.write(imageSizeByteArray)
         outputStream.write(imageByteArray)
 
         Log.d(
             LOG_TAG,
             "Sent ${requestTypeByteArray.size} +" +
-                    " ${numDesiredImageByteArray.size} +" +
+                    " ${numImgOrQuestionArray.size} +" +
                     " ${imageSizeByteArray.size} +" +
                     " ${imageByteArray.size}" +
                     " bytes data"
@@ -60,7 +95,7 @@ object IdsAPI : IFullIdsAPI {
     }
 
 
-    private fun getResponse(socket: Socket, numDesiredImage: Int) : List<Bitmap> {
+    private fun getResponseForFindSimilarOnly(socket: Socket, numDesiredImage: Int) : List<Bitmap> {
         val inputStream = socket.getInputStream()
         val outputStream = socket.getOutputStream()
 
@@ -97,6 +132,21 @@ object IdsAPI : IFullIdsAPI {
 
         return imgList
     }
+
+
+    private fun getResponseForFindAndDesc(
+        socket: Socket,
+        numQuestion: Int)
+    : Pair<List<Bitmap>, List<String>> {
+        val inputStream = socket.getInputStream()
+        val imgList = getResponseForFindSimilarOnly(socket, numQuestion * IMG_PER_QUESTION)
+
+        val desc = inputStream.bufferedReader().readText()
+        val descList = desc.split("\n")
+
+        return Pair(imgList, descList)
+    }
+
 
     fun setHostPort(host: String, port: Int) {
         this.host = host

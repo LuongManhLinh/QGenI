@@ -6,7 +6,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.qgeni.api.ids.IdsAPI
+import com.example.qgeni.api.ids.IdsHostAPI
+import com.example.qgeni.application.IdsApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,14 +35,14 @@ class ExampleIdsViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 imageUri = imageUri,
-                responseImages = emptyList()
+                responseImgAndDesc = emptyList()
             )
         }
     }
 
     fun updateNumDesiredImage(numDesiredImage: String) {
         _uiState.update {
-            it.copy(numDesiredImage = numDesiredImage)
+            it.copy(numQuestion = numDesiredImage)
         }
     }
 
@@ -54,15 +55,20 @@ class ExampleIdsViewModel : ViewModel() {
         val stream = context.contentResolver.openInputStream(uri)
         val image = BitmapFactory.decodeStream(stream)
 
-        IdsAPI.setHostPort(
+        IdsHostAPI.setHostPort(
             _uiState.value.host,
             uiState.value.port.toInt()
         )
 
         viewModelScope.launch(Dispatchers.IO) {
-            val response = IdsAPI.getSimilarImage(image, _uiState.value.numDesiredImage.toInt())
+            val startTime = System.currentTimeMillis()
+            val response = IdsApplication.getQuestions(image, _uiState.value.numQuestion.toInt())
+            val endTime = System.currentTimeMillis()
             _uiState.update {
-                it.copy(responseImages = response)
+                it.copy(
+                    responseImgAndDesc = response,
+                    responseTime = endTime - startTime
+                )
             }
         }
 
@@ -71,9 +77,10 @@ class ExampleIdsViewModel : ViewModel() {
 }
 
 data class ExampleIdsUiState(
-    val host : String = IdsAPI.DEFAULT_HOST,
-    val port : String = IdsAPI.DEFAULT_PORT.toString(),
-    val numDesiredImage: String = "10",
+    val host : String = IdsHostAPI.DEFAULT_HOST,
+    val port : String = IdsHostAPI.DEFAULT_PORT.toString(),
+    val numQuestion: String = "4",
     val imageUri : Uri = Uri.EMPTY,
-    val responseImages: List<Bitmap> = emptyList()
+    val responseImgAndDesc: List<Pair<Bitmap, String>> = emptyList(),
+    val responseTime: Long = 0
 )

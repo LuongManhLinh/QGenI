@@ -13,7 +13,8 @@ object QgsGeminiAPI : IQgsAPI {
         modelName = modelName,
         apiKey = key
     )
-    override suspend fun questionSet(paragraph: String): List<QgsForm> {
+
+    override suspend fun generateQuestions(paragraph: String, numQuestions: Int): List<QgsForm> {
         var output = mutableListOf<QgsForm>()
         val input = paragraph + REQUEST
         Log.i("INPUT", input)
