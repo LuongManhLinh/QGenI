@@ -1,0 +1,183 @@
+package com.example.qgeni.ui.screens.login
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.qgeni.ui.screens.components.NextButton
+import com.example.qgeni.ui.theme.QGenITheme
+
+@Composable
+fun ForgotPasswordScreen(
+    onBackClick: () -> Unit,
+    onNextButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var email by remember { mutableStateOf("") }
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.onPrimary)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
+                .fillMaxWidth()
+                .background(Color.Transparent),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "BackIcon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.7f))
+            Text(
+                text = "",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
+        ForgotPasswordPage(
+            email = email,
+            onEmailChange = { email = it },
+            modifier = Modifier.weight(1f)
+        )
+        Row {
+            Spacer(modifier = Modifier.weight(2f))
+            NextButton(
+                onPrimary = false,
+                onClick = onNextButtonClick
+            )
+            Spacer(modifier = Modifier.weight(0.25f))
+        }
+        Spacer(modifier = Modifier.height(56.dp))
+    }
+}
+
+
+
+@Composable
+fun ForgotPasswordPage(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                top = 16.dp,
+                bottom = 16.dp,
+                start = 32.dp,
+                end = 32.dp
+            )
+    ) {
+        Text(
+            text = "Quên mật khẩu",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = "Nhập email của bạn",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.tertiary
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        OutlinedTextField(
+            value = email,
+            onValueChange = onEmailChange,
+            label = {
+                Text(
+                    text = "Địa chỉ email"
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    Icons.Outlined.Email,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            shape = RoundedCornerShape(size = 10.dp),
+            colors = OutlinedTextFieldDefaults
+                .colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                    focusedTextColor = MaterialTheme.colorScheme.tertiary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
+                ),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun ForgotPasswordLightScreenPreview() {
+    QGenITheme(dynamicColor = false) {
+        ForgotPasswordScreen(
+            onBackClick = {},
+            onNextButtonClick = {}
+        )
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun ForgotPasswordDarkScreenPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        ForgotPasswordScreen(
+            onBackClick = {},
+            onNextButtonClick = {}
+        )
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun ForgotPasswordPagePreview() {
+    QGenITheme(dynamicColor = false) {
+        ForgotPasswordPage(
+            email = "",
+            onEmailChange = {}
+        )
+    }
+}

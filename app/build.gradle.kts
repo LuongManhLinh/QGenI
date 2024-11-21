@@ -50,6 +50,19 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+
+    implementation("androidx.navigation:navigation-compose:2.7.4")
+
+    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation ("androidx.compose.material3:material3-window-size-class:1.2.0")
+
+    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+
+
+    // Icons (Extended)
+    implementation ("androidx.compose.material:material-icons-extended:1.5.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
