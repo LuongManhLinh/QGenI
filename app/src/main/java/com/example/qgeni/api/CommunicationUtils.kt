@@ -7,6 +7,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 object CommunicationUtils {
+    const val DEFAULT_HOST = "192.168.1.173"
+    const val DEFAULT_PORT = 20000
+
     fun encodeImage(image: Bitmap): ByteArray {
         val outputStream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)

@@ -3,6 +3,7 @@ package com.example.qgeni.ui.screens.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,11 +48,16 @@ sealed class Screen(val route: String) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun QGNavHost(
+    modifier: Modifier = Modifier,
     navController: NavHostController,
     currentTheme: ThemeMode,
     onThemeChange: (ThemeMode) -> Unit,
 ) {
-    NavHost(navController = navController, startDestination = Screen.Welcome.route) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Welcome.route,
+        modifier = modifier
+    ) {
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClick = { navController.navigateUp() },

@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.qgeni.api.CommunicationUtils.DEFAULT_HOST
+import com.example.qgeni.api.CommunicationUtils.DEFAULT_PORT
 import com.example.qgeni.api.ids.IdsHostAPI
 import com.example.qgeni.application.IdsApplication
 import kotlinx.coroutines.Dispatchers
@@ -77,8 +79,8 @@ class ExampleIdsViewModel : ViewModel() {
 }
 
 data class ExampleIdsUiState(
-    val host : String = IdsHostAPI.DEFAULT_HOST,
-    val port : String = IdsHostAPI.DEFAULT_PORT.toString(),
+    val host : String = DEFAULT_HOST,
+    val port : String = DEFAULT_PORT.toString(),
     val numQuestion: String = "4",
     val imageUri : Uri = Uri.EMPTY,
     val responseImgAndDesc: List<Pair<Bitmap, String>> = emptyList(),

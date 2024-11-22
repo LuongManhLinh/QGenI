@@ -4,14 +4,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.example.qgeni.api.CommunicationUtils
+import com.example.qgeni.api.CommunicationUtils.DEFAULT_HOST
+import com.example.qgeni.api.CommunicationUtils.DEFAULT_PORT
 import com.example.qgeni.api.RequestType
 import com.example.qgeni.api.ResponseType
 import java.io.DataOutputStream
 import java.net.Socket
 
 object IdsHostAPI : IFullIdsAPI {
-    const val DEFAULT_HOST = "192.168.1.173"
-    const val DEFAULT_PORT = 20000
     private const val LOG_TAG = "IgsHostAPI"
 
     private const val IMG_PER_QUESTION = 4
@@ -83,15 +83,6 @@ object IdsHostAPI : IFullIdsAPI {
         outputStream.write(numImgOrQuestionArray)
         outputStream.write(imageSizeByteArray)
         outputStream.write(imageByteArray)
-
-        Log.d(
-            LOG_TAG,
-            "Sent ${requestTypeByteArray.size} +" +
-                    " ${numImgOrQuestionArray.size} +" +
-                    " ${imageSizeByteArray.size} +" +
-                    " ${imageByteArray.size}" +
-                    " bytes data"
-        )
     }
 
 
@@ -99,6 +90,7 @@ object IdsHostAPI : IFullIdsAPI {
         val inputStream = socket.getInputStream()
         val outputStream = socket.getOutputStream()
 
+        // Read the response type
         var bArr4b = CommunicationUtils.readNBytes(inputStream, 4)
 
         val responseType = CommunicationUtils.bigEndianBytesToInt(bArr4b)
