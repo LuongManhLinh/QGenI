@@ -34,6 +34,7 @@ import com.example.qgeni.R
 
 @Composable
 fun ExampleIdsUI(
+    modifier: Modifier = Modifier,
     viewModel: ExampleIdsViewModel = viewModel()
 ) {
     val context = LocalContext.current
