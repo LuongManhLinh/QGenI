@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.qgeni.data.preferences.ThemeMode
+import com.example.qgeni.ui.ExampleIdsUI
 import com.example.qgeni.ui.InputParagraph
 import com.example.qgeni.ui.screens.navigation.QGNavHost
 import com.example.qgeni.ui.theme.QGenITheme
@@ -32,7 +33,8 @@ class MainActivity : ComponentActivity() {
 //                        onThemeChange = {
 //                        }
 //                    )
-                    InputParagraph(Modifier.padding(innerPadding))
+                    ExampleIdsUI(Modifier.padding(innerPadding))
+//                    InputParagraph(Modifier.padding(innerPadding))
                 }
             }
         }
