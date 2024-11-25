@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
@@ -25,10 +26,12 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun ReadingPracticeScreen(
     readingPracticeItem: ReadingPracticeItem,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    readingPracticeViewModel: ReadingPracticeViewModel = viewModel()
 ) {
     val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
 
+    val readingPracticeUIState by readingPracticeViewModel.readingPracticeUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,17 +70,19 @@ fun ReadingPracticeScreen(
         }
         PassageView(
             text = readingPracticeItem.passage,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            viewModel = readingPracticeViewModel
         )
         TrueFalseQuestionView(
             questions = readingPracticeItem.questionList,
-            answeredQuestions = answeredQuestions,
+//            answeredQuestions = answeredQuestions,
             modifier = Modifier.weight(0.7f)
                 .padding(
                     start = 16.dp,
                     end = 16.dp,
                     bottom = 16.dp
-                )
+                ),
+            viewModel = readingPracticeViewModel
         )
     }
 }

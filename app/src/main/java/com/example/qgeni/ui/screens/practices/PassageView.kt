@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.ui.screens.components.CustomSolidButton
@@ -42,15 +43,18 @@ import kotlinx.coroutines.delay
 @Composable
 fun PassageView(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ReadingPracticeViewModel
 ) {
-    var isHighlightEnabled by remember { mutableStateOf(false) }
-    var isHighlightMode by remember { mutableStateOf(true) }
-    var time by remember { mutableStateOf(0L) }
+
+    val passageUIState by viewModel.readingPracticeUIState.collectAsState()
+//    var isHighlightEnabled by remember { mutableStateOf(false) }
+//    var isHighlightMode by remember { mutableStateOf(true) }
+//    var time by remember { mutableStateOf(0L) }
     val words = text.split(Regex("(?<=\\s)|(?=\\s)|(?<=\\n)|(?=\\n)|(?<=\\t)|(?=\\t)")).filter { it.isNotEmpty() }
 
-    val highlightedIndices = remember { mutableStateListOf<Int>() }
-    val textLayoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+//    val highlightedIndices = remember { mutableStateListOf<Int>() }
+//    val textLayoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
 
 
     // State để theo dõi vị trí cuộn của LazyColumn
@@ -58,7 +62,8 @@ fun PassageView(
 
     val annotatedText = buildAnnotatedString {
         words.forEachIndexed { index, word ->
-            if (highlightedIndices.contains(index) && isHighlightEnabled) {
+//            if (highlightedIndices.contains(index) && isHighlightEnabled) {
+            if(passageUIState.highlightedIndices.contains(index) && passageUIState.isHighlightEnabled) {
                 withStyle(
                     style = SpanStyle(
                         color = MaterialTheme.colorScheme.onBackground,
@@ -83,7 +88,8 @@ fun PassageView(
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000L)
-            time += 1000L
+//            time += 1000L
+            viewModel.updateTime()
         }
     }
 
@@ -110,7 +116,7 @@ fun PassageView(
                 color = MaterialTheme.colorScheme.tertiary
             )
             Text(
-                text = formatTime(time),
+                text = formatTime(passageUIState.time),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -129,13 +135,17 @@ fun PassageView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             HighlightSwitch(
-                isHighlightEnabled = isHighlightEnabled,
-                onIsHighlightChange = { isHighlightEnabled = it }
+//                isHighlightEnabled = isHighlightEnabled,
+                isHighlightEnabled = passageUIState.isHighlightEnabled,
+//                onIsHighlightChange = { isHighlightEnabled = it }
+                onIsHighlightChange = {viewModel.toggleHighlightEnabled()}
             )
             Spacer(modifier = Modifier.width(16.dp))
             ModeSelectionSwitch(
-                isHighlightMode = isHighlightMode,
-                onIsHighlightModeChange = { isHighlightMode = it},
+//                isHighlightMode = isHighlightMode,
+                isHighlightMode = passageUIState.isHighlightMode,
+//                onIsHighlightModeChange = { isHighlightMode = it},
+                onIsHighlightModeChange = {viewModel.toggleHighlightMode()},
                 enabledIconResId = R.drawable.highlighter,
                 enabledText = "Highlighter",
                 disabledText = "Eraser",
@@ -181,7 +191,8 @@ fun PassageView(
                     detectDragGestures { change, _ ->
                         val touchPosition = change.position
 
-                        textLayoutResult.value?.let { layoutResult ->
+//                        textLayoutResult.value?.let { layoutResult ->
+                        passageUIState.textLayoutResult?.let { layoutResult->
                             // Lấy offset từ vị trí vuốt và vị trí cuộn
                             val clickedOffset = layoutResult.getOffsetForPosition(
                                 Offset(
@@ -193,15 +204,17 @@ fun PassageView(
                             annotatedText.getStringAnnotations("WORD", clickedOffset, clickedOffset)
                                 .firstOrNull()?.let { annotation ->
                                     val index = annotation.item.toInt()
-                                    if (isHighlightEnabled) {
+//                                    if (isHighlightEnabled) {
+                                    if(passageUIState.isHighlightEnabled) {
                                         // Highlight hoặc clean từ dựa trên toolState
-                                        if (isHighlightMode) {
-                                            if (!highlightedIndices.contains(index)) {
-                                                highlightedIndices.add(index)
-                                            }
-                                        } else {
-                                            highlightedIndices.remove(index)
-                                        }
+//                                        if (isHighlightMode) {
+//                                            if (!highlightedIndices.contains(index)) {
+//                                                highlightedIndices.add(index)
+//                                            }
+//                                        } else {
+//                                            highlightedIndices.remove(index)
+//                                        }
+                                        viewModel.updateHighlightedIndices(index, passageUIState.isHighlightMode)
                                     }
                                 }
                         }
@@ -215,19 +228,22 @@ fun PassageView(
                     onClick = { offset ->
                         annotatedText.getStringAnnotations("WORD", offset, offset).firstOrNull()?.let { annotation ->
                             val index = annotation.item.toInt()
-                            if (isHighlightEnabled) {
-                                if (isHighlightMode) {
-                                    if (!highlightedIndices.contains(index)) {
-                                        highlightedIndices.add(index)
-                                    }
-                                } else {
-                                    highlightedIndices.remove(index)
-                                }
+//                            if (isHighlightEnabled) {
+                            if(passageUIState.isHighlightEnabled) {
+//                                if (isHighlightMode) {
+//                                    if (!highlightedIndices.contains(index)) {
+//                                        highlightedIndices.add(index)
+//                                    }
+//                                } else {
+//                                    highlightedIndices.remove(index)
+//                                }
+                                viewModel.updateHighlightedIndices(index, passageUIState.isHighlightMode)
                             }
                         }
                     },
                     onTextLayout = { result ->
-                        textLayoutResult.value = result
+//                        textLayoutResult.value = result
+                        viewModel.updateTextLayoutResult(result)
                     },
                     style = TextStyle(
                         fontFamily = Nunito,
@@ -457,7 +473,7 @@ fun CustomSwitchOnPreview() {
 @Composable
 fun PassageLightViewPreview() {
     QGenITheme(dynamicColor = false) {
-        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage)
+        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage, viewModel = viewModel())
     }
 }
 
@@ -466,7 +482,7 @@ fun PassageLightViewPreview() {
 @Composable
 fun PassageDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage)
+        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage, viewModel = viewModel())
     }
 }
 

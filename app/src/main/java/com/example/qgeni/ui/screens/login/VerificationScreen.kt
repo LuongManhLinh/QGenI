@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -46,13 +48,12 @@ fun VerificationScreen(
     //otp chuẩn
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    verificationViewModel: VerificationViewModel = viewModel()
 ) {
-    var otp by remember {
-        mutableStateOf("")
-    }
     // so sánh với otpValue
 
+    val verificationUIState by verificationViewModel.verificationUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,10 +91,11 @@ fun VerificationScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         VerificationPage(
-            otp = otp,
+            otp = verificationUIState.otp,
             onOtpTextChange = {
                     value, otpInputFilled ->
-                    otp = value
+//                    otp = value
+                verificationViewModel.updateOtp(value)
             },
             modifier = Modifier.weight(1f)
         )

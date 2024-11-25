@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.components.NextButton
@@ -51,13 +53,16 @@ fun ReadingPracticeGeneratorScreen(
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
     onLeaveButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    basePracticeGeneratorViewModel: BasePracticeGeneratorViewModel = viewModel()
 ) {
-    var showUploadFileDialog by remember { mutableStateOf(false) }
+
+    val rpgUIState by basePracticeGeneratorViewModel.readingUIState.collectAsState()
+//    var showUploadFileDialog by remember { mutableStateOf(false) }
     val options = listOf("Model A", "Model B", "Model C")
-    var selectedOption by remember { mutableStateOf("Chọn model") }
-    var isUploadMode by remember { mutableStateOf(true) }
-    var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Idle) }
+//    var selectedOption by remember { mutableStateOf("Chọn model") }
+//    var isUploadMode by remember { mutableStateOf(true) }
+//    var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Idle) }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -141,8 +146,10 @@ fun ReadingPracticeGeneratorScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     ModeSelectionSwitch(
-                        isHighlightMode = isUploadMode,
-                        onIsHighlightModeChange = {isUploadMode = it},
+                        isHighlightMode = rpgUIState.isUploadMode,
+                        onIsHighlightModeChange =
+//                        {isUploadMode = it},
+                        {basePracticeGeneratorViewModel.updateReadingUploadMode()},
                         enabledText = "Upload",
                         enabledIconResId = R.drawable.file_text,
                         disabledText = "Text",
@@ -153,23 +160,27 @@ fun ReadingPracticeGeneratorScreen(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (isUploadMode) {
+                    if (rpgUIState.isUploadMode) {
                         CustomOutlinedButton(
-                            onClick = { showUploadFileDialog = true },
+//                            onClick = { showUploadFileDialog = true },
+                            onClick = {basePracticeGeneratorViewModel.updateReadingUploadFileDialog(true)},
                             text = "TẢI TỆP",
                             color = MaterialTheme.colorScheme.primary
                         )
                     } else {
                         PasteTextField(
+                            inputParagraph = rpgUIState.inputParagraph,
+                            onTextChanged = {basePracticeGeneratorViewModel.updateReadingInputParagraph(it)}
                         )
                     }
                 }
 
                 SelectModelScreen(
                     options = options,
-                    selectedOption = selectedOption,
+                    selectedOption = rpgUIState.selectedOption,
                     onSelectedItemChange = { option ->
-                        selectedOption = option
+//                        selectedOption = option
+                        basePracticeGeneratorViewModel.selectReadingOption(option)
                     },
                 )
             }
@@ -179,8 +190,9 @@ fun ReadingPracticeGeneratorScreen(
                 NextButton(
                     onPrimary = false,
                     onClick = {
-                        currentState = GeneratorState.Loading
-                        onNextButtonClick
+//                        currentState = GeneratorState.Loading
+                        basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Loading)
+                        onNextButtonClick()
                     }
                 )
                 Spacer(modifier = Modifier.weight(0.25f))
@@ -189,8 +201,8 @@ fun ReadingPracticeGeneratorScreen(
         }
 
     }
-    if (showUploadFileDialog) {
-        Dialog(onDismissRequest = { showUploadFileDialog = false }) {
+    if (rpgUIState.showUploadFileDialog) {
+        Dialog(onDismissRequest = { basePracticeGeneratorViewModel.updateReadingUploadFileDialog(false)}) {
             UploadFileScreen(
                 iconId = R.drawable.file_text,
                 description = "TXT, up to 50MB",
@@ -199,11 +211,12 @@ fun ReadingPracticeGeneratorScreen(
         }
     }
 
-    when (currentState) {
+    when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
-            LaunchedEffect(currentState) {
+            LaunchedEffect(rpgUIState.currentState) {
                 delay(5000) // 3 giây
-                currentState = GeneratorState.Error
+//                currentState = GeneratorState.Error
+                basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Error)
             }
             LoadingScreen(
                 lottieResourceId = R.raw.fairy,
@@ -213,11 +226,14 @@ fun ReadingPracticeGeneratorScreen(
 
         is GeneratorState.Success -> {
             SuccessScreen(
-                currentState = currentState,
-                onDismissRequest = { currentState = GeneratorState.Idle },
-                onStayButtonClick = { currentState = GeneratorState.Idle },
+                currentState = rpgUIState.currentState,
+//                onDismissRequest = { currentState = GeneratorState.Idle },
+                onDismissRequest = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
+//                onStayButtonClick = { currentState = GeneratorState.Idle },
+                onStayButtonClick = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
                 onLeaveButtonClick = {
-                    currentState = GeneratorState.Idle
+//                    currentState = GeneratorState.Idle
+                    basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)
                     onLeaveButtonClick()
                 },
                 imageResourceId = R.drawable.fairy3
@@ -226,9 +242,11 @@ fun ReadingPracticeGeneratorScreen(
 
         is GeneratorState.Error -> {
             ErrorScreen(
-                currentState = currentState,
-                onDismissRequest = { currentState = GeneratorState.Idle },
-                onLeaveButtonClick = { currentState = GeneratorState.Idle },
+                currentState = rpgUIState.currentState,
+//                onDismissRequest = { currentState = GeneratorState.Idle },
+                onDismissRequest = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
+                onLeaveButtonClick = { basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle) },
+
                 imageResourceId = R.drawable.fairy_sorry,
                 message = "Tiên nữ học việc của chúng tôi mắc lỗi nào đó, thử lại hoặc chọn tiên nữ khác"
             )
@@ -241,15 +259,15 @@ fun ReadingPracticeGeneratorScreen(
 @Composable
 fun PasteTextField(
     modifier: Modifier = Modifier,
-    onTextChanged: (String) -> Unit = {},
+    inputParagraph: String,
+    onTextChanged: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+//    var text by remember { mutableStateOf("") }
 
     OutlinedTextField(
-        value = text,
-        onValueChange = { newText ->
-            text = newText
-            onTextChanged(newText)
+        value = inputParagraph,
+        onValueChange = {
+            onTextChanged(it)
         },
         placeholder = {
             Text(
@@ -278,7 +296,10 @@ fun PasteTextField(
 @Composable
 fun PasteTextFieldPreview() {
     QGenITheme {
-        PasteTextField()
+        PasteTextField(
+            inputParagraph = "",
+            onTextChanged = {}
+        )
     }
 }
 
@@ -289,7 +310,7 @@ fun ReadingPracticeGeneratorLightScreenPreview() {
         ReadingPracticeGeneratorScreen(
             onBackClick = {},
             onNextButtonClick = {},
-            {}
+            onLeaveButtonClick = {},
         )
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -31,10 +32,12 @@ import com.example.qgeni.ui.theme.QGenITheme
 fun ForgotPasswordScreen(
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
 ) {
-    var email by remember { mutableStateOf("") }
+//    var email by remember { mutableStateOf("") }
 
+    val forgotPasswordUIState by forgotPasswordViewModel.forgotPasswordUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,8 +75,8 @@ fun ForgotPasswordScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         ForgotPasswordPage(
-            email = email,
-            onEmailChange = { email = it },
+            email = forgotPasswordUIState.email,
+            onEmailChange = { forgotPasswordViewModel.updateEmail(it)},
             modifier = Modifier.weight(1f)
         )
         Row {

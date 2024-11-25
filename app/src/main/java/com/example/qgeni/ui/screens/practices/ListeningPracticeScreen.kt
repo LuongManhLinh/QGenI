@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.MockListeningPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
@@ -24,11 +25,13 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun ListeningPracticeScreen(
     listeningPracticeItem: ListeningPracticeItem,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    listeningPracticeViewModel: ListeningPracticeViewModel = viewModel()
 ) {
-    var currentQuestionIndex by remember { mutableStateOf(0) }
-    val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
+//    var currentQuestionIndex by remember { mutableStateOf(0) }
+//    val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
 
+    val listeningUIState by listeningPracticeViewModel.listeningPracticeUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,24 +69,26 @@ fun ListeningPracticeScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         ImageQuestionView(
-            currentQuestion = currentQuestionIndex,
+            currentQuestion = listeningUIState.currentQuestionIndex,
             record = null,
-            imageList = listeningPracticeItem.imageList[currentQuestionIndex],
-            modifier = Modifier.weight(1f)
+            imageList = listeningPracticeItem.imageList[listeningUIState.currentQuestionIndex],
+            modifier = Modifier.weight(1f),
+            viewModel = listeningPracticeViewModel
         )
         McqQuestionView(
             questions = listeningPracticeItem.questionList,
-            currentQuestionIndex = currentQuestionIndex,
-            answeredQuestions = answeredQuestions,
+//            currentQuestionIndex = listeningUIState.currentQuestionIndex,
+//            answeredQuestions = listeningUIState.answeredQuestions,
             onQuestionChange = { index ->
-                currentQuestionIndex = index
+                listeningPracticeViewModel.updateCurrentQuestionIndex(index)
             },
             modifier = Modifier.weight(0.6f)
                 .padding(
                     start = 16.dp,
                     end = 16.dp,
                     bottom = 16.dp
-                )
+                ),
+            viewModel = listeningPracticeViewModel
         )
     }
 }
