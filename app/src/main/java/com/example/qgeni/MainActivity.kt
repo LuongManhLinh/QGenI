@@ -25,15 +25,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             QGenITheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    val navController = rememberNavController()
-//                    QGNavHost(
-//                        modifier = Modifier.padding(innerPadding),
-//                        navController = navController,
-//                        currentTheme = ThemeMode.DARK,
-//                        onThemeChange = {
-//                        }
-//                    )
-                    ExampleIdsUI(Modifier.padding(innerPadding))
+                    val navController = rememberNavController()
+                    QGNavHost(
+                        modifier = Modifier.padding(innerPadding),
+                        navController = navController,
+                        currentTheme = ThemeMode.DARK,
+                        onThemeChange = {
+                        }
+                    )
+//                    ExampleIdsUI(Modifier.padding(innerPadding))
 //                    InputParagraph(Modifier.padding(innerPadding))
                 }
             }

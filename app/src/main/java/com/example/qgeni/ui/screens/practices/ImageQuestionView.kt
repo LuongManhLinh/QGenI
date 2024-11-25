@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.ImageData
 import com.example.qgeni.data.model.ImageItem
 import com.example.qgeni.ui.screens.components.CustomSolidButton
@@ -48,24 +49,27 @@ fun ImageQuestionView(
     currentQuestion: Int,
     record: AudioRecord?,
     imageList: List<ImageItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ListeningPracticeViewModel
 ) {
-    var time by remember { mutableLongStateOf(0L) }
-
-    var playbackState by remember { mutableStateOf<PlaybackState>(PlaybackState.Paused) }
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+//    var time by remember { mutableLongStateOf(0L) }
+//
+//    var playbackState by remember { mutableStateOf<PlaybackState>(PlaybackState.Paused) }
+//    var sliderPosition by remember { mutableFloatStateOf(0f) }
+    val ImqUIState by viewModel.listeningPracticeUIState.collectAsState()
     val duration = 100f
 
     // Chạy bộ đếm khi trạng thái là Playing
-    LaunchedEffect(playbackState) {
-        if (playbackState is PlaybackState.Playing) {
-            while (sliderPosition < duration && playbackState is PlaybackState.Playing) {
-                sliderPosition += 1f
-                if (sliderPosition >= duration) {
-                    playbackState = PlaybackState.Finished
-                    break
-                }
+    LaunchedEffect(ImqUIState.playbackState) {
+        if (ImqUIState.playbackState is PlaybackState.Playing) {
+            while (ImqUIState.sliderPosition < duration) {
+//                sliderPosition += 1f
+                viewModel.updateSliderPosition(ImqUIState.sliderPosition + 1f)
                 delay(1000)
+            }
+            if (ImqUIState.sliderPosition >= duration) {
+//                    playbackState = PlaybackState.Finished
+                viewModel.updatePlaybackState(PlaybackState.Finished)
             }
         }
     }
@@ -73,7 +77,8 @@ fun ImageQuestionView(
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000L)
-            time += 1000L
+//            time += 1000L
+            viewModel.updateTime()
         }
     }
 
@@ -100,7 +105,7 @@ fun ImageQuestionView(
                 color = MaterialTheme.colorScheme.tertiary
             )
             Text(
-                text = formatTime(time),
+                text = formatTime(ImqUIState.time),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -136,24 +141,33 @@ fun ImageQuestionView(
         Spacer(modifier = Modifier.height(8.dp))
 
         AudioPlayer(
-            playbackState = playbackState,
-            sliderPosition = sliderPosition,
+            playbackState = ImqUIState.playbackState,
+            sliderPosition = ImqUIState.sliderPosition,
             duration = duration,
-            onSliderPositionChange = { sliderPosition = it },
+            onSliderPositionChange = { viewModel.updateSliderPosition(it) },
             onPlayClick = {
-                playbackState = when (playbackState) {
-                    is PlaybackState.Paused -> PlaybackState.Playing
-                    is PlaybackState.Playing -> PlaybackState.Paused
-                    is PlaybackState.Finished -> {
-                        sliderPosition = 0f
-                        PlaybackState.Playing
+//                playbackState = when (playbackState) {
+//                    is PlaybackState.Paused -> PlaybackState.Playing
+//                    is PlaybackState.Playing -> PlaybackState.Paused
+//                    is PlaybackState.Finished -> {
+//                        sliderPosition = 0f
+//                        PlaybackState.Playing
+//                    }
+//                }
+                when (ImqUIState.playbackState) {
+                    PlaybackState.Paused -> viewModel.updatePlaybackState(PlaybackState.Playing)
+                    PlaybackState.Playing -> viewModel.updatePlaybackState(PlaybackState.Paused)
+                    else -> {
+                        viewModel.updateSliderPosition(0f)
+                        viewModel.updatePlaybackState(PlaybackState.Playing)
                     }
                 }
             },
             onValueChangeFinished = {
-                if (sliderPosition >= duration) {
-                    playbackState =
-                        PlaybackState.Finished
+                if (ImqUIState.sliderPosition >= duration) {
+//                    playbackState =
+//                        PlaybackState.Finished
+                    viewModel.updatePlaybackState(PlaybackState.Finished)
                 }
             }
         )
@@ -303,7 +317,8 @@ fun ImageQuestionLightViewPreview() {
         ImageQuestionView(
             currentQuestion = 0,
             null,
-            imageList = ImageData.imageList
+            imageList = ImageData.imageList,
+            viewModel = viewModel()
         )
     }
 }
@@ -315,7 +330,8 @@ fun ImageQuestionDarkViewPreview() {
         ImageQuestionView(
             currentQuestion = 0,
             null,
-            imageList = ImageData.imageList
+            imageList = ImageData.imageList,
+            viewModel = viewModel()
         )
     }
 }

@@ -30,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -39,11 +41,10 @@ fun SignInScreen(
     onNextButtonClick: () -> Unit,
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    signInViewModel: SignInViewModel = viewModel()
 ) {
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val signInUIState by signInViewModel.signInUIState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -83,12 +84,14 @@ fun SignInScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         SignInPage(
-            email = email,
-            password = password,
-            onEmailChange = { email = it },
-            onPasswordChange = { password = it },
+            email = signInUIState.email,
+            password = signInUIState.password,
+            onEmailChange = { signInViewModel.updateEmail(it)},
+            onPasswordChange = { signInViewModel.updatePassword(it) },
+            passwordVisible = signInUIState.passwordVisible,
+            onPasswordVisibleClick = {signInViewModel.togglePasswordVisible()},
             onSignUpClick = onSignUpClick,
-            onForgotPassordClick = onForgotPasswordClick,
+            onForgotPasswordClick = onForgotPasswordClick,
             modifier = Modifier.weight(1f)
         )
         Row {
@@ -109,11 +112,13 @@ fun SignInPage(
     password: String,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibleClick: () -> Unit,
     onSignUpClick: () -> Unit,
-    onForgotPassordClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var passwordVisible by remember { mutableStateOf(false)}
+//    var passwordVisible by remember { mutableStateOf(false)}
 
     Column(
         modifier = modifier
@@ -184,7 +189,7 @@ fun SignInPage(
                 val icon =
                     if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff
                 IconButton(
-                    onClick = { passwordVisible = !passwordVisible }
+                    onClick = onPasswordVisibleClick
                 ) {
                     Icon(
                         imageVector = icon,
@@ -221,7 +226,7 @@ fun SignInPage(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable(
-                    onClick = onForgotPassordClick
+                    onClick = onForgotPasswordClick
                 )
             )
         }
@@ -285,6 +290,8 @@ fun SignInPagePreview() {
             password = password,
             onEmailChange = {},
             onPasswordChange = {},
+            passwordVisible = false,
+            {},
             {},
             {},
         )

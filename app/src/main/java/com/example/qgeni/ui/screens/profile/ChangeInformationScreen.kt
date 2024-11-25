@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
@@ -100,13 +102,15 @@ fun ChangeInformationScreen(
 
 @Composable
 fun ChangeInformationPage(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    changeInfoViewModel: ChangeInfoViewModel = viewModel()
 ) {
-    var username by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("") }
+//    var username by remember { mutableStateOf("") }
+//    var phoneNumber by remember { mutableStateOf("") }
+//    var email by remember { mutableStateOf("") }
+//    var gender by remember { mutableStateOf("") }
 
+    val infoUIState by changeInfoViewModel.changeInfoUIState.collectAsState()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -118,8 +122,8 @@ fun ChangeInformationPage(
             )
     ) {
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
+            value = infoUIState.username,
+            onValueChange = {changeInfoViewModel.updateUsername(it)},
             label = {
                 Text(
                     text = "Tên tài khoản",
@@ -146,8 +150,8 @@ fun ChangeInformationPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = phoneNumber,
-            onValueChange = { phoneNumber = it },
+            value = infoUIState.phoneNumber,
+            onValueChange = { changeInfoViewModel.updatePhoneNumber(it) },
             label = {
                 Text(
                     text = "Số điện thoại",
@@ -174,8 +178,8 @@ fun ChangeInformationPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = infoUIState.email,
+            onValueChange = { changeInfoViewModel.updateEmail(it) },
             label = {
                 Text(
                     text = "Địa chỉ email",
@@ -202,8 +206,8 @@ fun ChangeInformationPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = gender,
-            onValueChange = { gender = it },
+            value = infoUIState.gender,
+            onValueChange = {changeInfoViewModel.updateGender(it)},
             label = {
                 Text(
                     text = "Giới tính",

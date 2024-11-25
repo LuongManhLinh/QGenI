@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -41,14 +42,16 @@ fun SignUpScreen(
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
     onSignInClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    signUpViewModel: SignUpViewModel = viewModel()
 ) {
-    var username by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var termsAccepted by remember { mutableStateOf(false) }
+//    var username by remember { mutableStateOf("") }
+//    var phoneNumber by remember { mutableStateOf("") }
+//    var email by remember { mutableStateOf("") }
+//    var password by remember { mutableStateOf("") }
+//    var termsAccepted by remember { mutableStateOf(false) }
 
+    val signUpUIState by signUpViewModel.signUpUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,16 +90,18 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         SignUpPage(
-            username = username,
-            phoneNumber = phoneNumber,
-            email = email,
-            password = password,
-            termsAccepted = termsAccepted,
-            onUsernameChange = { username = it },
-            onPhoneNumberChange = { phoneNumber = it },
-            onEmailChange = { email = it },
-            onPasswordChange = { password = it },
-            onTermsAcceptedChange = { termsAccepted = it },
+            username = signUpUIState.username,
+            phoneNumber = signUpUIState.phoneNumber,
+            email = signUpUIState.email,
+            password = signUpUIState.password,
+            passwordVisible = signUpUIState.passwordVisible,
+            termsAccepted = signUpUIState.termsAccepted,
+            onUsernameChange = { signUpViewModel.updateUsername(it) },
+            onPhoneNumberChange = { signUpViewModel.updatePhoneNumber(it) },
+            onEmailChange = { signUpViewModel.updateEmail(it) },
+            onPasswordChange = { signUpViewModel.updatePassword(it) },
+            onPasswordVisibleClick = {signUpViewModel.togglePasswordVisible()},
+            onTermsAcceptedChange = { signUpViewModel.toggleTermsAccepted() },
             onSignInClick = onSignInClick,
             modifier = Modifier.weight(1f)
         )
@@ -119,16 +124,18 @@ fun SignUpPage(
     phoneNumber: String,
     email: String,
     password: String,
+    passwordVisible: Boolean,
     termsAccepted: Boolean,
     onUsernameChange: (String) -> Unit,
     onPhoneNumberChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onPasswordVisibleClick: () -> Unit,
     onTermsAcceptedChange: (Boolean) -> Unit,
     onSignInClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var passwordVisible by remember { mutableStateOf(false)}
+//    var passwordVisible by remember { mutableStateOf(false)}
 
     Column(
         modifier = modifier
@@ -256,7 +263,7 @@ fun SignUpPage(
                 val icon =
                     if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff
                 IconButton(
-                    onClick = { passwordVisible = !passwordVisible }
+                    onClick = onPasswordVisibleClick
                 ) {
                     Icon(
                         imageVector = icon,
@@ -374,11 +381,13 @@ fun SignUpPagePreview() {
             phoneNumber = phoneNumber,
             email = email,
             password = password,
+            passwordVisible = false,
             termsAccepted = termsAccepted,
             onUsernameChange = { username = it },
             onPhoneNumberChange = { phoneNumber = it },
             onEmailChange = { email = it },
             onPasswordChange = { password = it },
+            onPasswordVisibleClick = {},
             onTermsAcceptedChange = { termsAccepted = it },
             onSignInClick = { },
         )

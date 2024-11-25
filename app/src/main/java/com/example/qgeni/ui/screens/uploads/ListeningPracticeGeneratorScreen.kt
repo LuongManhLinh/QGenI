@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.components.NextButton
@@ -45,13 +47,15 @@ fun ListeningPracticeGeneratorScreen(
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
     onLeaveButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    basePracticeGeneratorViewModel: BasePracticeGeneratorViewModel = viewModel()
 ) {
-    var showUploadFileDialog by remember { mutableStateOf(false) }
+//    var showUploadFileDialog by remember { mutableStateOf(false) }
     val options = listOf("Model A", "Model B", "Model C")
-    var selectedOption by remember { mutableStateOf("Chọn model") }
-    var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Idle) }
+//    var selectedOption by remember { mutableStateOf("Chọn model") }
+//    var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Idle) }
 
+    val lpgUIState by basePracticeGeneratorViewModel.listeningUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -131,7 +135,8 @@ fun ListeningPracticeGeneratorScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CustomOutlinedButton(
-                        onClick = { showUploadFileDialog = true },
+//                        onClick = { showUploadFileDialog = true },
+                        onClick = {basePracticeGeneratorViewModel.updateListeningUploadFileDialog(true)},
                         text = "TẢI TỆP",
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -139,9 +144,11 @@ fun ListeningPracticeGeneratorScreen(
 
                 SelectModelScreen(
                     options = options,
-                    selectedOption = selectedOption,
+//                    selectedOption = selectedOption,
+                    selectedOption = lpgUIState.selectedOption,
                     onSelectedItemChange = { option ->
-                        selectedOption = option
+//                        selectedOption = option
+                        basePracticeGeneratorViewModel.selectListeningOption(option)
                     },
                 )
             }
@@ -150,8 +157,9 @@ fun ListeningPracticeGeneratorScreen(
                 NextButton(
                     onPrimary = false,
                     onClick = {
-                        currentState = GeneratorState.Loading
-                        onNextButtonClick
+//                        currentState = GeneratorState.Loading
+                        basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Loading)
+                        onNextButtonClick()
                     }
                 )
                 Spacer(modifier = Modifier.weight(0.25f))
@@ -160,8 +168,8 @@ fun ListeningPracticeGeneratorScreen(
         }
 
     }
-    if (showUploadFileDialog) {
-        Dialog(onDismissRequest = { showUploadFileDialog = false }) {
+    if (lpgUIState.showUploadFileDialog) {
+        Dialog(onDismissRequest = { basePracticeGeneratorViewModel.updateListeningUploadFileDialog(false) }) {
             UploadFileScreen(
                 iconId = R.drawable.file_text,
                 description = "JPEG, PNG, PDG, up to 50MB",
@@ -170,11 +178,12 @@ fun ListeningPracticeGeneratorScreen(
         }
     }
 
-    when (currentState) {
+    when (lpgUIState.currentState) {
         is GeneratorState.Loading -> {
-            LaunchedEffect(currentState) {
+            LaunchedEffect(lpgUIState.currentState) {
                 delay(5000)
-                currentState = GeneratorState.Error
+//                currentState = GeneratorState.Error
+                basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Error)
             }
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
@@ -184,11 +193,15 @@ fun ListeningPracticeGeneratorScreen(
 
         is GeneratorState.Success -> {
             SuccessScreen(
-                currentState = currentState,
-                onDismissRequest = { currentState = GeneratorState.Idle },
-                onStayButtonClick = { currentState = GeneratorState.Idle },
+//                currentState = currentState,
+                currentState = lpgUIState.currentState,
+//                onDismissRequest = { currentState = GeneratorState.Idle },
+                onDismissRequest = {basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Idle)},
+//                onStayButtonClick = { currentState = GeneratorState.Idle },
+                onStayButtonClick = {basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Idle)},
                 onLeaveButtonClick = {
-                    currentState = GeneratorState.Idle
+//                    currentState = GeneratorState.Idle
+                    basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Idle)
                     onLeaveButtonClick()
                 },
                 imageResourceId = R.drawable.oldman_and_girl
@@ -197,9 +210,11 @@ fun ListeningPracticeGeneratorScreen(
 
         is GeneratorState.Error -> {
             ErrorScreen(
-                currentState = currentState,
-                onDismissRequest = { currentState = GeneratorState.Idle },
-                onLeaveButtonClick = { currentState = GeneratorState.Idle },
+                currentState = lpgUIState.currentState,
+//                onDismissRequest = { currentState = GeneratorState.Idle },
+                onDismissRequest = {basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Idle)},
+//                onLeaveButtonClick = { currentState = GeneratorState.Idle },
+                onLeaveButtonClick = {basePracticeGeneratorViewModel.updateListeningGeneratorState(GeneratorState.Idle)},
                 imageResourceId = R.drawable.genie_sorry,
                 message = "Thần đèn học việc của chúng tôi mắc lỗi nào đó, thử lại hoặc chọn thần đèn khác"
             )

@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
@@ -29,12 +30,14 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun TrueFalseQuestionView(
     questions: List<McqQuestion>,
-    answeredQuestions: MutableMap<Int, String>,
-    modifier: Modifier = Modifier
+//    answeredQuestions: MutableMap<Int, String>,
+    modifier: Modifier = Modifier,
+    viewModel: ReadingPracticeViewModel
 ) {
-    var selectedAnswer by remember { mutableStateOf<String?>(null) }
-    var currentQuestionIndex by remember { mutableIntStateOf(0) }
+//    var selectedAnswer by remember { mutableStateOf<String?>(null) }
+//    var currentQuestionIndex by remember { mutableIntStateOf(0) }
 
+    val tfqUIState by viewModel.readingPracticeUIState.collectAsState()
     Column(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.onPrimary)
@@ -53,7 +56,8 @@ fun TrueFalseQuestionView(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Question ${currentQuestionIndex + 1}",
+//                text = "Question ${currentQuestionIndex + 1}",
+                text = "Question ${tfqUIState.currentQuestionIndex + 1}",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -76,7 +80,8 @@ fun TrueFalseQuestionView(
         ) {
             item {
                 Text(
-                    text = questions[currentQuestionIndex].question,
+//                    text = questions[currentQuestionIndex].question,
+                    text = questions[tfqUIState.currentQuestionIndex].question,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -84,26 +89,32 @@ fun TrueFalseQuestionView(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Hiển thị các lựa chọn True/False/Not Given
-                questions[currentQuestionIndex].answerList.forEach { option ->
+//                questions[currentQuestionIndex].answerList.forEach { option ->
+                questions[tfqUIState.currentQuestionIndex].answerList.forEach { option ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                selectedAnswer = option
-                                answeredQuestions[currentQuestionIndex] = option
+//                                selectedAnswer = option
+//                                answeredQuestions[currentQuestionIndex] = option
+                                viewModel.updateSelectAnswer(option)
+                                viewModel.updateAnsweredQuestions(tfqUIState.currentQuestionIndex, option)
                             }
                             .height(30.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = selectedAnswer == option,
+//                            selected = selectedAnswer == option,
+                            selected = tfqUIState.selectAnswer == option,
                             onClick = {
-                                selectedAnswer = if (selectedAnswer == option) null else option
-                                if (selectedAnswer != null) {
-                                    answeredQuestions[currentQuestionIndex] = selectedAnswer!!
-                                } else {
-                                    answeredQuestions.remove(currentQuestionIndex)
-                                }
+                                val newSelected = if (tfqUIState.selectAnswer == option) null else option
+                                viewModel.updateSelectAnswer(newSelected)
+                                viewModel.updateAnsweredQuestions(tfqUIState.currentQuestionIndex, newSelected)
+//                                if (selectedAnswer != null) {
+//                                    answeredQuestions[currentQuestionIndex] = selectedAnswer!!
+//                                } else {
+//                                    answeredQuestions.remove(currentQuestionIndex)
+//                                }
                             },
                             colors = RadioButtonDefaults.colors(
                                 unselectedColor = MaterialTheme.colorScheme.tertiary,
@@ -149,22 +160,25 @@ fun TrueFalseQuestionView(
                         .clip(RoundedCornerShape(10.dp))
                         .background(
                             when {
-                                currentQuestionIndex == index -> MaterialTheme.colorScheme.surfaceContainerHigh // Style cho câu hỏi đang chọn
-                                answeredQuestions.containsKey(index) -> MaterialTheme.colorScheme.primary
+                                tfqUIState.currentQuestionIndex == index -> MaterialTheme.colorScheme.surfaceContainerHigh // Style cho câu hỏi đang chọn
+                                tfqUIState.answeredQuestions.containsKey(index) -> MaterialTheme.colorScheme.primary
                                 else -> Color.Transparent
                             }
                         )
                         .clickable {
-                            currentQuestionIndex = index
-                            selectedAnswer = answeredQuestions[index]
+//                            currentQuestionIndex = index
+//                            selectedAnswer = answeredQuestions[index]
+                            viewModel.updateCurrentQuestionIndex(index)
+                            viewModel.updateSelectAnswer(tfqUIState.answeredQuestions[index])
+
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "${index + 1}",
                         color = when {
-                            currentQuestionIndex == index -> MaterialTheme.colorScheme.onBackground // Style cho câu hỏi đang chọn
-                            answeredQuestions.containsKey(index) -> MaterialTheme.colorScheme.onPrimary
+                            tfqUIState.currentQuestionIndex == index -> MaterialTheme.colorScheme.onBackground // Style cho câu hỏi đang chọn
+                            tfqUIState.answeredQuestions.containsKey(index) -> MaterialTheme.colorScheme.onPrimary
                             else -> MaterialTheme.colorScheme.tertiary
                         }
                     )
@@ -185,7 +199,8 @@ fun TrueFalseQuestionLightViewPreview() {
         val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
         TrueFalseQuestionView(
             questions = MockReadingPracticeItem.readingPracticeItem.questionList,
-            answeredQuestions = answeredQuestions
+//            answeredQuestions = answeredQuestions,
+            viewModel = viewModel()
         )
     }
 }
@@ -198,7 +213,8 @@ fun TrueFalseQuestionDarkViewPreview() {
         val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
         TrueFalseQuestionView(
             questions = MockReadingPracticeItem.readingPracticeItem.questionList,
-            answeredQuestions = answeredQuestions
+//            answeredQuestions = answeredQuestions,
+            viewModel = viewModel()
         )
     }
 }

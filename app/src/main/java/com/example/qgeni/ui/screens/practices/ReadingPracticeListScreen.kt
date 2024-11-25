@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.data.model.ReadingPracticeItem
@@ -49,11 +51,14 @@ fun ReadingPracticeListScreen(
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onItemClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    readingPracticeListViewModel: ReadingPracticeListViewModel = viewModel()
 ) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var showOpenDialog by remember { mutableStateOf(false) }
-    var selectedItemId by remember { mutableIntStateOf(-1) }
+//    var showDeleteDialog by remember { mutableStateOf(false) }
+//    var showOpenDialog by remember { mutableStateOf(false) }
+//    var selectedItemId by remember { mutableIntStateOf(-1) }
+
+    val rplUIState by readingPracticeListViewModel.practiceListUIState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -127,14 +132,18 @@ fun ReadingPracticeListScreen(
                     PracticeItemCard(
                         practiceItem = item,
                         onDeleteClick = {
-                            selectedItemId = item.id
-                            showDeleteDialog = true
+//                            selectedItemId = item.id
+//                            showDeleteDialog = true
+                            readingPracticeListViewModel.selectItem(item.id)
+                            readingPracticeListViewModel.toggleDeleteDialog(true)
                         },
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-                                    selectedItemId = item.id
-                                    showOpenDialog = true
+//                                    selectedItemId = item.id
+//                                    showOpenDialog = true
+                                    readingPracticeListViewModel.selectItem(item.id)
+                                    readingPracticeListViewModel.toggleOpenDialog(true)
                                 }
                             )
                     )
@@ -142,16 +151,22 @@ fun ReadingPracticeListScreen(
             }
         }
     }
-    if (showDeleteDialog) {
+    if (rplUIState.showDeleteDialog) {
         DeleteConfirmDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            onDeleteClick = { showDeleteDialog = false }
+//            onDismissRequest = { showDeleteDialog = false },
+//            onDeleteClick = { showDeleteDialog = false }
+            onDismissRequest = {readingPracticeListViewModel.toggleDeleteDialog(false)},
+            onDeleteClick = {readingPracticeListViewModel.toggleDeleteDialog(false)}
         )
     }
-    if (showOpenDialog) {
+    if (rplUIState.showOpenDialog) {
         OpenConfirmDialog(
-            onDismissRequest = { showOpenDialog = false },
-            onOpenClick = onItemClick
+//            onDismissRequest = { showOpenDialog = false },
+            onDismissRequest = {readingPracticeListViewModel.toggleOpenDialog(false)},
+            onOpenClick = {
+                readingPracticeListViewModel.toggleOpenDialog(false)
+                onItemClick()
+            }
         )
     }
 }
