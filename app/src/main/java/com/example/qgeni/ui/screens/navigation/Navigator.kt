@@ -1,12 +1,15 @@
 package com.example.qgeni.ui.screens.navigation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.qgeni.data.model.MockListeningPracticeItem
 import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.data.preferences.ThemeMode
@@ -18,6 +21,7 @@ import com.example.qgeni.ui.screens.login.VerificationScreen
 import com.example.qgeni.ui.screens.practices.ListeningPracticeListScreen
 import com.example.qgeni.ui.screens.practices.ListeningPracticeScreen
 import com.example.qgeni.ui.screens.practices.ReadingPracticeListScreen
+import com.example.qgeni.ui.screens.practices.ReadingPracticeListViewModel
 import com.example.qgeni.ui.screens.practices.ReadingPracticeScreen
 import com.example.qgeni.ui.screens.practices.SelectionScreen
 import com.example.qgeni.ui.screens.profile.ChangeInformationScreen
@@ -34,7 +38,7 @@ sealed class Screen(val route: String) {
     data object ListeningPractice : Screen("listening_practice")
     data object ListeningPracticeList: Screen("listening_practice_list")
     data object ListeningPracticeGenerator : Screen("listening_practice_generator")
-    data object ReadingPractice : Screen("reading_practice")
+    data object ReadingPractice : Screen("reading_practice/{itemId}")
     data object ReadingPracticeList: Screen("reading_practice_list")
     data object ReadingPracticeGenerator : Screen("reading_practice_generator")
     data object Selection : Screen("selection")
@@ -104,11 +108,19 @@ fun QGNavHost(
             )
         }
 
-        composable(Screen.ReadingPractice.route) {
-            ReadingPracticeScreen(
-                readingPracticeItem = MockReadingPracticeItem.readingPracticeItem,
-                onBackClick = { navController.navigateUp() },
-            )
+        composable(
+            Screen.ReadingPractice.route,
+            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
+            ) {backStackEntry ->
+            Log.i("this is detail qs", 123.toString())
+            val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
+//            val readingPracticeItem = MockListeningPracticeItem.listeningPracticeItemList.find { it.id == itemId }
+            MockReadingPracticeItem.readingPracticeItemList.find { it.id == itemId }?.let {
+                ReadingPracticeScreen(
+                    readingPracticeItem = it,
+                    onBackClick = { navController.navigateUp() },
+                )
+            }
         }
         composable(Screen.Selection.route) {
             SelectionScreen(
@@ -171,7 +183,10 @@ fun QGNavHost(
                 MockReadingPracticeItem.readingPracticeItemList,
                 onBackClick = { navController.navigateUp() },
                 onDeleteClick = {},
-                onItemClick = { navController.navigate(Screen.ReadingPractice.route) }
+                onItemClick = {
+                    Log.i("idlist", it.toString())
+                    navController.navigate(Screen.ReadingPractice.route.replace("{itemId}", "$it"))
+                }
             )
         }
         composable(Screen.ReadingPracticeGenerator.route) {

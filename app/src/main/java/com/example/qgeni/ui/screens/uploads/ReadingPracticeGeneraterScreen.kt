@@ -1,5 +1,8 @@
 package com.example.qgeni.ui.screens.uploads
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,16 +41,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
+import com.example.qgeni.data.model.MockReadingPracticeItem
+import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.screens.practices.ModeSelectionSwitch
 import com.example.qgeni.ui.theme.QGenITheme
 import kotlinx.coroutines.delay
+import java.time.LocalDate
 
 /*
     Màn hình tạo đề đọc
  */
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ReadingPracticeGeneratorScreen(
     onBackClick: () -> Unit,
@@ -170,7 +177,9 @@ fun ReadingPracticeGeneratorScreen(
                     } else {
                         PasteTextField(
                             inputParagraph = rpgUIState.inputParagraph,
-                            onTextChanged = {basePracticeGeneratorViewModel.updateReadingInputParagraph(it)}
+                            inputNumStatement = rpgUIState.inputNumStatement,
+                            onTextChanged = {basePracticeGeneratorViewModel.updateReadingInputParagraph(it)},
+                            onNumStatementChanged = {basePracticeGeneratorViewModel.updateReadingInputNumStatement(it)}
                         )
                     }
                 }
@@ -214,10 +223,27 @@ fun ReadingPracticeGeneratorScreen(
     when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
             LaunchedEffect(rpgUIState.currentState) {
-                delay(5000) // 3 giây
-//                currentState = GeneratorState.Error
-                basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Error)
-            }
+                    Log.i("amount", 11.toString())
+                    val readingQuestions = basePracticeGeneratorViewModel.fetchReadingQuestions(rpgUIState.inputParagraph)
+                    if (readingQuestions.isNotEmpty()) {
+                        Log.i("ReadingQuestion", readingQuestions.size.toString())
+                        val id = MockReadingPracticeItem.readingPracticeItemList.size
+                        MockReadingPracticeItem.readingPracticeItemList.add(
+                            ReadingPracticeItem(
+                                id = id,
+                                title = "Bài đọc ${id + 1}",
+                                passage = rpgUIState.inputParagraph,
+                                numStatement = rpgUIState.inputNumStatement,
+                                creationDate = LocalDate.now(),
+                                isNew = id < 3,
+                                questionList = readingQuestions
+                            )
+                        )
+                        basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Success)
+                    }
+                    else
+                        basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Error)
+                }
             LoadingScreen(
                 lottieResourceId = R.raw.fairy,
                 message = "Tiên nữ đang đi tìm nguyên liệu"
@@ -227,12 +253,9 @@ fun ReadingPracticeGeneratorScreen(
         is GeneratorState.Success -> {
             SuccessScreen(
                 currentState = rpgUIState.currentState,
-//                onDismissRequest = { currentState = GeneratorState.Idle },
                 onDismissRequest = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
-//                onStayButtonClick = { currentState = GeneratorState.Idle },
                 onStayButtonClick = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
                 onLeaveButtonClick = {
-//                    currentState = GeneratorState.Idle
                     basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)
                     onLeaveButtonClick()
                 },
@@ -260,36 +283,66 @@ fun ReadingPracticeGeneratorScreen(
 fun PasteTextField(
     modifier: Modifier = Modifier,
     inputParagraph: String,
-    onTextChanged: (String) -> Unit
+    inputNumStatement: String,
+    onTextChanged: (String) -> Unit,
+    onNumStatementChanged: (String) -> Unit
 ) {
 //    var text by remember { mutableStateOf("") }
 
-    OutlinedTextField(
-        value = inputParagraph,
-        onValueChange = {
-            onTextChanged(it)
-        },
-        placeholder = {
-            Text(
-                text = "Dán đoạn văn của bạn vào đây",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-        },
-        modifier = modifier
-            .fillMaxWidth(),
-        singleLine = false,
-        shape = RoundedCornerShape(size = 10.dp),
-        maxLines = Int.MAX_VALUE,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Default
-        ),
-        colors = OutlinedTextFieldDefaults
-            .colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.primary
+    Column {
+        OutlinedTextField(
+            value = inputParagraph,
+            onValueChange = {
+                onTextChanged(it)
+            },
+            placeholder = {
+                Text(
+                    text = "Dán đoạn văn của bạn vào đây",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            },
+            modifier = modifier
+                .fillMaxWidth(),
+            singleLine = false,
+            shape = RoundedCornerShape(size = 10.dp),
+            maxLines = Int.MAX_VALUE,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Default
             ),
-    )
+            colors = OutlinedTextFieldDefaults
+                .colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                ),
+        )
+        OutlinedTextField(
+            value = inputNumStatement,
+            onValueChange = {
+                onNumStatementChanged(it)
+            },
+            placeholder = {
+                Text(
+                    text = "Điền số lượng câu hỏi",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            },
+            modifier = modifier
+                .fillMaxWidth(),
+            singleLine = false,
+            shape = RoundedCornerShape(size = 10.dp),
+            maxLines = Int.MAX_VALUE,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Default
+            ),
+            colors = OutlinedTextFieldDefaults
+                .colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                ),
+        )
+    }
 }
 
 @Preview
@@ -298,11 +351,14 @@ fun PasteTextFieldPreview() {
     QGenITheme {
         PasteTextField(
             inputParagraph = "",
-            onTextChanged = {}
+            inputNumStatement = "",
+            onTextChanged = {},
+            onNumStatementChanged = {}
         )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showSystemUi = true)
 @Composable
 fun ReadingPracticeGeneratorLightScreenPreview() {
@@ -315,6 +371,7 @@ fun ReadingPracticeGeneratorLightScreenPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showSystemUi = true)
 @Composable
 fun ReadingPracticeGeneratorDarkScreenPreview() {
