@@ -29,7 +29,7 @@ fun ReadingPracticeScreen(
     onBackClick: () -> Unit,
     readingPracticeViewModel: ReadingPracticeViewModel = viewModel()
 ) {
-    val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
+//    val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
 
     val readingPracticeUIState by readingPracticeViewModel.readingPracticeUIState.collectAsState()
     Column(
@@ -87,26 +87,26 @@ fun ReadingPracticeScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ReadingPracticeLightScreenPreview() {
-    QGenITheme(dynamicColor = false) {
-        ReadingPracticeScreen(
-            MockReadingPracticeItem.readingPracticeItem,
-            {}
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ReadingPracticeDarkScreenPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        ReadingPracticeScreen(
-            MockReadingPracticeItem.readingPracticeItem,
-            {}
-        )
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun ReadingPracticeLightScreenPreview() {
+//    QGenITheme(dynamicColor = false) {
+//        ReadingPracticeScreen(
+//            MockReadingPracticeItem.readingPracticeItem,
+//            {}
+//        )
+//    }
+//}
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun ReadingPracticeDarkScreenPreview() {
+//    QGenITheme(dynamicColor = false, darkTheme = true) {
+//        ReadingPracticeScreen(
+//            MockReadingPracticeItem.readingPracticeItem,
+//            {}
+//        )
+//    }
+//}

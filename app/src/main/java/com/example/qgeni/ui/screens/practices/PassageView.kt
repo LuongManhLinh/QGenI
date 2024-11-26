@@ -228,21 +228,12 @@ fun PassageView(
                     onClick = { offset ->
                         annotatedText.getStringAnnotations("WORD", offset, offset).firstOrNull()?.let { annotation ->
                             val index = annotation.item.toInt()
-//                            if (isHighlightEnabled) {
                             if(passageUIState.isHighlightEnabled) {
-//                                if (isHighlightMode) {
-//                                    if (!highlightedIndices.contains(index)) {
-//                                        highlightedIndices.add(index)
-//                                    }
-//                                } else {
-//                                    highlightedIndices.remove(index)
-//                                }
                                 viewModel.updateHighlightedIndices(index, passageUIState.isHighlightMode)
                             }
                         }
                     },
                     onTextLayout = { result ->
-//                        textLayoutResult.value = result
                         viewModel.updateTextLayoutResult(result)
                     },
                     style = TextStyle(
@@ -468,22 +459,22 @@ fun CustomSwitchOnPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PassageLightViewPreview() {
-    QGenITheme(dynamicColor = false) {
-        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage, viewModel = viewModel())
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PassageDarkViewPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage, viewModel = viewModel())
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun PassageLightViewPreview() {
+//    QGenITheme(dynamicColor = false) {
+//        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage, viewModel = viewModel())
+//    }
+//}
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun PassageDarkViewPreview() {
+//    QGenITheme(dynamicColor = false, darkTheme = true) {
+//        PassageView(text = MockReadingPracticeItem.readingPracticeItem.passage, viewModel = viewModel())
+//    }
+//}
 
 

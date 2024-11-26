@@ -50,13 +50,10 @@ fun ReadingPracticeListScreen(
     readingPracticeItemList: List<ReadingPracticeItem>,
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onItemClick: () -> Unit,
+    onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     readingPracticeListViewModel: ReadingPracticeListViewModel = viewModel()
 ) {
-//    var showDeleteDialog by remember { mutableStateOf(false) }
-//    var showOpenDialog by remember { mutableStateOf(false) }
-//    var selectedItemId by remember { mutableIntStateOf(-1) }
 
     val rplUIState by readingPracticeListViewModel.practiceListUIState.collectAsState()
 
@@ -132,16 +129,12 @@ fun ReadingPracticeListScreen(
                     PracticeItemCard(
                         practiceItem = item,
                         onDeleteClick = {
-//                            selectedItemId = item.id
-//                            showDeleteDialog = true
                             readingPracticeListViewModel.selectItem(item.id)
                             readingPracticeListViewModel.toggleDeleteDialog(true)
                         },
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-//                                    selectedItemId = item.id
-//                                    showOpenDialog = true
                                     readingPracticeListViewModel.selectItem(item.id)
                                     readingPracticeListViewModel.toggleOpenDialog(true)
                                 }
@@ -153,19 +146,16 @@ fun ReadingPracticeListScreen(
     }
     if (rplUIState.showDeleteDialog) {
         DeleteConfirmDialog(
-//            onDismissRequest = { showDeleteDialog = false },
-//            onDeleteClick = { showDeleteDialog = false }
             onDismissRequest = {readingPracticeListViewModel.toggleDeleteDialog(false)},
             onDeleteClick = {readingPracticeListViewModel.toggleDeleteDialog(false)}
         )
     }
     if (rplUIState.showOpenDialog) {
         OpenConfirmDialog(
-//            onDismissRequest = { showOpenDialog = false },
             onDismissRequest = {readingPracticeListViewModel.toggleOpenDialog(false)},
             onOpenClick = {
                 readingPracticeListViewModel.toggleOpenDialog(false)
-                onItemClick()
+                onItemClick(rplUIState.selectedItemId)
             }
         )
     }

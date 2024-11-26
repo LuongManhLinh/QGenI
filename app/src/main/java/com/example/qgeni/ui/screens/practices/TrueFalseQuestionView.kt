@@ -191,30 +191,30 @@ fun TrueFalseQuestionView(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun TrueFalseQuestionLightViewPreview() {
-    QGenITheme(dynamicColor = false) {
-        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
-        TrueFalseQuestionView(
-            questions = MockReadingPracticeItem.readingPracticeItem.questionList,
-//            answeredQuestions = answeredQuestions,
-            viewModel = viewModel()
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun TrueFalseQuestionDarkViewPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
-        TrueFalseQuestionView(
-            questions = MockReadingPracticeItem.readingPracticeItem.questionList,
-//            answeredQuestions = answeredQuestions,
-            viewModel = viewModel()
-        )
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//fun TrueFalseQuestionLightViewPreview() {
+//    QGenITheme(dynamicColor = false) {
+//        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
+//        TrueFalseQuestionView(
+//            questions = MockReadingPracticeItem.readingPracticeItem.questionList,
+////            answeredQuestions = answeredQuestions,
+//            viewModel = viewModel()
+//        )
+//    }
+//}
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//fun TrueFalseQuestionDarkViewPreview() {
+//    QGenITheme(dynamicColor = false, darkTheme = true) {
+//        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
+//        TrueFalseQuestionView(
+//            questions = MockReadingPracticeItem.readingPracticeItem.questionList,
+////            answeredQuestions = answeredQuestions,
+//            viewModel = viewModel()
+//        )
+//    }
+//}
