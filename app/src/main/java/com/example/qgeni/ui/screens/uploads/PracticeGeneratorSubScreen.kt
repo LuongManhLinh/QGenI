@@ -199,7 +199,6 @@ fun SuccessScreen(
 @Composable
 fun SaveScreen(
     currentState: GeneratorState,
-    onDismissRequest: () -> Unit,
     onNextButtonClick: () -> Unit,
     @DrawableRes
     imageResourceId: Int = R.drawable.fairy3,
@@ -207,7 +206,7 @@ fun SaveScreen(
 
     var text by remember { mutableStateOf("") }
 
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(onDismissRequest = {}) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -381,7 +380,6 @@ fun SaveScreenLightPreview() {
         SaveScreen(
             currentState = currentState,
             {},
-            {},
             imageResourceId = R.drawable.avatar_3,
         )
     }
@@ -395,8 +393,7 @@ fun SaveScreenDarkPreview() {
         SaveScreen(
             currentState = currentState,
             {},
-            {},
-            imageResourceId = R.drawable.avatar_3,
+            imageResourceId = R.drawable.savescreengenie,
         )
     }
 }
