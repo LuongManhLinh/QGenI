@@ -127,7 +127,7 @@ fun HeaderSection() {
                     .padding(4.dp)
             ) {
                 Image(
-                    painter = painterResource(R.drawable.avatar),
+                    painter = painterResource(R.drawable.avatar_2),
                     contentDescription = "Avatar",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -135,6 +135,11 @@ fun HeaderSection() {
                         .clip(CircleShape)
                         .clickable(
                             onClick = { /* Change Image */ }
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            shape = CircleShape
                         )
                 )
                 IconButton(

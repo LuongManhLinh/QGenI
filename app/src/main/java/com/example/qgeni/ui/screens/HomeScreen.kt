@@ -80,7 +80,7 @@ fun HomeScreen(
                     )
             ) {
                 Image(
-                    painter = painterResource(R.drawable.avatar),
+                    painter = painterResource(R.drawable.avatar_2),
                     contentDescription = "avatar"
                 )
             }

@@ -86,4 +86,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 //    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+    implementation(kotlin("script-runtime"))
 }
