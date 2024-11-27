@@ -56,6 +56,13 @@ open class BasePracticeGeneratorViewModel : ViewModel() {
         }
     }
 
+    fun updateTitle(title: String){
+        _readingUIState.update {
+            it.copy(
+                title = title
+            )
+        }
+    }
     fun updateReadingInputParagraph(text: String) {
         _readingUIState.update {
             it.copy(
@@ -72,50 +79,7 @@ open class BasePracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    //    fun fetchReadingQuestions(paragraph: String) {
-//        viewModelScope.launch {
-//
-//            _readingUIState.update {
-//                it.copy(isFetching = true)
-//            }
-//            try {
-//                val result = QgsGeminiAPI.generateQuestions(
-//                    paragraph,
-//                    _readingUIState.value.inputNumStatement.toInt()
-//                )
-//                val resultMcqQuestion: List<McqQuestion> = result.map { qgsForm ->
-//                    McqQuestion(
-//                        question = qgsForm.statement,
-//                        answerList = listOf("True", "False", "Not given"),
-//                        correctAnswer = qgsForm.answer
-//                    )
-//                }
-//                resultMcqQuestion.forEach { mcqQuestion ->
-//                    Log.i("readingQuestion", mcqQuestion.question)
-//                    Log.i("answerList", mcqQuestion.answerList.joinToString { ", " })
-//                    Log.i("answer", mcqQuestion.correctAnswer)
-//                }
-//                _readingUIState.update {
-//                    it.copy(
-//                        listReadingQuestion = resultMcqQuestion,
-//                        isFetching = false
-//                    )
-//                }
-//                Log.d("Fetch success", result.toString())
-//            } catch (e: Exception) {
-//                // Handle exceptions and errors
-//                e.printStackTrace()
-//                _readingUIState.update {
-//                    it.copy(isFetching = false)
-//                }
-//                Log.e("Fetch error", e.toString())
-//            }
-//        }
-//    }
     suspend fun fetchReadingQuestions(paragraph: String): List<McqQuestion> {
-        _readingUIState.update {
-            it.copy(isFetching = true)
-        }
         return try {
             val result = QgsGeminiAPI.generateQuestions(
                 paragraph,
@@ -147,6 +111,13 @@ open class BasePracticeGeneratorViewModel : ViewModel() {
         }
     }
 
+    fun updateGenerateSuccess(isSuccess: Boolean) {
+        _readingUIState.update {
+            it.copy(
+                isGenerateSuccess = isSuccess
+            )
+        }
+    }
 }
 
 
@@ -161,8 +132,9 @@ data class ReadingPracticeGeneratorUIState(
     val selectedOption: String = "Chọn model",
     val currentState: GeneratorState = GeneratorState.Idle,
     val isUploadMode: Boolean = false,
+    val title: String = "",
     val inputParagraph: String = "",
     val inputNumStatement: String = "",
     val listReadingQuestion: List<McqQuestion> = emptyList(),
-    val isFetching: Boolean = false,
+    val isGenerateSuccess: Boolean = false
 )
