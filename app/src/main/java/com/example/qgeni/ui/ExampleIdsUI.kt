@@ -127,13 +127,8 @@ fun ExampleIdsUI(
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(4.dp)
                     )
-                    Text(
-                        text = imgAndDesc.second,
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(4.dp)
-                    )
                     Image(
-                        bitmap = imgAndDesc.first.asImageBitmap(),
+                        bitmap = imgAndDesc.asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()

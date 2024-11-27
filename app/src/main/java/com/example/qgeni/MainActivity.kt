@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
 
             QGenITheme(dynamicColor = false, darkTheme = isDarkTheme) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    DemoImages(modifier = Modifier.padding(innerPadding))
-//                    ExampleIdsUI(Modifier.padding(innerPadding))
+//                    DemoImages(modifier = Modifier.padding(innerPadding))
+                    ExampleIdsUI(Modifier.padding(innerPadding))
 //                    val navController = rememberNavController()
 //                    QGNavHost(
 //                        modifier = Modifier.padding(innerPadding),
