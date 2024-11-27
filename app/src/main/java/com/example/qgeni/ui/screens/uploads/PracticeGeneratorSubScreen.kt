@@ -198,13 +198,15 @@ fun SuccessScreen(
 
 @Composable
 fun SaveScreen(
+    title: String,
+    onTitleChange: (String) -> Unit,
     currentState: GeneratorState,
     onNextButtonClick: () -> Unit,
     @DrawableRes
     imageResourceId: Int = R.drawable.fairy3,
 ) {
 
-    var text by remember { mutableStateOf("") }
+//    var text by remember { mutableStateOf("") }
 
     Dialog(onDismissRequest = {}) {
         Box(
@@ -239,10 +241,8 @@ fun SaveScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     OutlinedTextField(
-                        value = text,
-                        onValueChange = {
-                            text = it
-                        },
+                        value = title,
+                        onValueChange = {onTitleChange(it)},
                         placeholder = {
                             Text(
                                 text = "Nhập tên đề",
@@ -378,6 +378,8 @@ fun SaveScreenLightPreview() {
     QGenITheme(dynamicColor = false) {
         val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         SaveScreen(
+            title = "",
+            {},
             currentState = currentState,
             {},
             imageResourceId = R.drawable.avatar_3,
@@ -391,6 +393,8 @@ fun SaveScreenDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         SaveScreen(
+            "",
+            {},
             currentState = currentState,
             {},
             imageResourceId = R.drawable.savescreengenie,

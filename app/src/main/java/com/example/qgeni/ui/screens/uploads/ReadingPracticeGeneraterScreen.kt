@@ -244,16 +244,45 @@ fun ReadingPracticeGeneratorScreen(
         }
 
         is GeneratorState.Success -> {
-            SuccessScreen(
-                currentState = rpgUIState.currentState,
-                onDismissRequest = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
-                onStayButtonClick = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
-                onLeaveButtonClick = {
-                    basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)
-                    onLeaveButtonClick()
-                },
-                imageResourceId = R.drawable.fairy3
-            )
+            if(!rpgUIState.isGenerateSuccess) {
+                Log.i("Title", rpgUIState.title)
+                SaveScreen(
+                    title = rpgUIState.title,
+                    onTitleChange = { basePracticeGeneratorViewModel.updateTitle(it) },
+                    currentState = rpgUIState.currentState,
+                    onNextButtonClick = {
+                        basePracticeGeneratorViewModel.updateGenerateSuccess(true)
+                        val id = MockReadingPracticeItem.readingPracticeItemList.size - 1
+                        if(id >= 0){
+                            MockReadingPracticeItem.readingPracticeItemList[id] =
+                                MockReadingPracticeItem.readingPracticeItemList[id].copy(title = rpgUIState.title)
+                        }
+                    },
+                )
+            }
+            else {
+                SuccessScreen(
+                    currentState = rpgUIState.currentState,
+                    onDismissRequest = {
+                        basePracticeGeneratorViewModel.updateReadingGeneratorState(
+                            GeneratorState.Idle
+                        )
+                        basePracticeGeneratorViewModel.updateGenerateSuccess(false)
+                    },
+                    onStayButtonClick = {
+                        basePracticeGeneratorViewModel.updateReadingGeneratorState(
+                            GeneratorState.Idle
+                        )
+                        basePracticeGeneratorViewModel.updateGenerateSuccess(false)
+                    },
+                    onLeaveButtonClick = {
+                        basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)
+                        basePracticeGeneratorViewModel.updateGenerateSuccess(false)
+                        onLeaveButtonClick()
+                    },
+                    imageResourceId = R.drawable.fairy3
+                )
+            }
         }
 
         is GeneratorState.Error -> {
