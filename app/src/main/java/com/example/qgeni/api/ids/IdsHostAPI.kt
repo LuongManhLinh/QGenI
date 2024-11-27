@@ -107,7 +107,7 @@ object IdsHostAPI : IFullIdsAPI {
             while (true) {
                 val imgBLen = CommunicationUtils.bigEndianBytesToInt(bArr4b)
                 val imgBArr = CommunicationUtils.readNBytes(inputStream, imgBLen)
-                val img = BitmapFactory.decodeByteArray(imgBArr, 0, imgBLen)
+                val img = CommunicationUtils.decodeImage(imgBArr)
                 if (img == null) {
                     val rpBytes = CommunicationUtils.intToBigEndianBytes(ResponseType.CLIENT_ERROR)
                     outputStream.write(rpBytes)

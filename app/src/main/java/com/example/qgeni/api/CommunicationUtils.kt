@@ -1,6 +1,7 @@
 package com.example.qgeni.api
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
@@ -14,6 +15,10 @@ object CommunicationUtils {
         val outputStream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         return outputStream.toByteArray()
+    }
+
+    fun decodeImage(imageBytes: ByteArray): Bitmap? {
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
     fun intToBigEndianBytes(value: Int): ByteArray {

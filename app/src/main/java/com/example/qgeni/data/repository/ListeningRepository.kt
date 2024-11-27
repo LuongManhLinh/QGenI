@@ -1,48 +1,47 @@
 package com.example.qgeni.data.repository
 
-import kotlinx.coroutines.runBlocking
+import android.graphics.Bitmap
+import com.example.qgeni.api.CommunicationUtils
 import org.bson.Document
+import org.bson.types.Binary
 import org.bson.types.ObjectId
 import java.util.Date
 
-
-data class ReadingItem(
+data class ListeningItem(
     val userId: ObjectId,
     val title: String,
-    val passage: String,
     val creationDate: Date,
-    val statements: List<String>,
+    val images: List<Bitmap>,
     val answers: List<String>,
     val isNew: Boolean
 )
 
-
-interface ReadingRepository {
+interface ListeningRepository {
     suspend fun insert(
-        item: ReadingItem,
+        item: ListeningItem,
         serverAddress: Pair<String, Int>? = null
     )
+
     suspend fun getAll(
         userId: ObjectId,
         serverAddress: Pair<String, Int>? = null
-    ): List<ReadingItem>
+    ): List<ListeningItem>
+
 }
 
-
-object DefaultReadingRepository : ReadingRepository {
+object DefaultListeningRepository : ListeningRepository {
     object Names {
-        const val COLLECTION_NAME = "reading"
+        const val COLLECTION_NAME = "listening"
         const val USER_ID = "userId"
         const val TITLE = "title"
         const val CREATION_DATE = "creationDate"
-        const val PASSAGE = "passage"
-        const val STATEMENTS = "statements"
+        const val IMAGE_BYTE_ARRAYS = "imageByteArrays"
         const val ANSWERS = "answers"
         const val IS_NEW = "isNew"
     }
 
     override suspend fun insert(
-        item: ReadingItem,
+        item: ListeningItem,
         serverAddress: Pair<String, Int>?
     ) {
         val document = Document(
@@ -52,9 +51,7 @@ object DefaultReadingRepository : ReadingRepository {
         ).append(
             Names.CREATION_DATE, item.creationDate
         ).append(
-            Names.PASSAGE, item.passage
-        ).append(
-            Names.STATEMENTS, item.statements
+            Names.IMAGE_BYTE_ARRAYS, item.images.map { CommunicationUtils.encodeImage(it) }
         ).append(
             Names.ANSWERS, item.answers
         ).append(
@@ -62,29 +59,28 @@ object DefaultReadingRepository : ReadingRepository {
         )
 
         val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
-
         collection.insertOne(document)
     }
 
     override suspend fun getAll(
         userId: ObjectId,
         serverAddress: Pair<String, Int>?
-    ): List<ReadingItem> {
+    ): List<ListeningItem> {
         val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val result = collection.find(Document(Names.USER_ID, userId))
 
-        val cursor = collection.find(Document(Names.USER_ID, userId))
-
-        return cursor.toList().map { document ->
-            ReadingItem(
-                userId = document?.get(Names.USER_ID) as ObjectId,
-                title = document[Names.TITLE] as String,
-                creationDate = document[Names.CREATION_DATE] as Date,
-                passage = document[Names.PASSAGE] as String,
-                statements = document[Names.STATEMENTS] as List<String>,
-                answers = document[Names.ANSWERS] as List<String>,
-                isNew = document[Names.IS_NEW] as Boolean
+        return result.toList().map {
+            ListeningItem(
+                userId = it?.get(Names.USER_ID) as ObjectId,
+                title = it[Names.TITLE] as String,
+                creationDate = it[Names.CREATION_DATE] as Date,
+                images = (it[Names.IMAGE_BYTE_ARRAYS] as List<Binary>).map { imgBinary ->
+                    val imgByteArray = imgBinary.data
+                    CommunicationUtils.decodeImage(imgByteArray) ?: throw IllegalArgumentException("Cannot decode image")
+                },
+                answers = it[Names.ANSWERS] as List<String>,
+                isNew = it[Names.IS_NEW] as Boolean
             )
         }
     }
 }
-

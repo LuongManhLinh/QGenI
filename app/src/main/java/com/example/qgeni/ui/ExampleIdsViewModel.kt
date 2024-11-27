@@ -6,15 +6,20 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.qgeni.api.CommunicationUtils
 import com.example.qgeni.api.CommunicationUtils.DEFAULT_HOST
 import com.example.qgeni.api.CommunicationUtils.DEFAULT_PORT
 import com.example.qgeni.api.ids.IdsHostAPI
 import com.example.qgeni.application.IdsApplication
+import com.example.qgeni.data.repository.DefaultListeningRepository
+import com.example.qgeni.data.repository.ListeningItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.bson.types.ObjectId
+import java.util.Date
 
 class ExampleIdsViewModel : ViewModel() {
     private var _uiState = MutableStateFlow(ExampleIdsUiState())
@@ -64,7 +69,7 @@ class ExampleIdsViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             val startTime = System.currentTimeMillis()
-            val response = IdsApplication.getQuestions(image, _uiState.value.numQuestion.toInt())
+            val response = IdsApplication.getSimilarAndDescribe(image, _uiState.value.numQuestion.toInt())
             val endTime = System.currentTimeMillis()
             _uiState.update {
                 it.copy(
@@ -72,6 +77,21 @@ class ExampleIdsViewModel : ViewModel() {
                     responseTime = endTime - startTime
                 )
             }
+
+            val imgList = response.map { it.first }
+            val descList = response.map { it.second }
+
+
+            DefaultListeningRepository.insert(
+                ListeningItem(
+                    userId = ObjectId(),
+                    title = "IDS",
+                    images = imgList,
+                    creationDate = Date(),
+                    answers = descList,
+                    isNew = true
+                )
+            )
         }
 
     }

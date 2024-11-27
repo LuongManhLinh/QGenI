@@ -1,8 +1,5 @@
 package com.example.qgeni.data.repository
 
-import com.mongodb.client.MongoCollection
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.bson.BsonObjectId
 import org.bson.Document
 
@@ -22,9 +19,7 @@ interface AccountRepository {
 }
 
 
-class DefaultAccountRepository(
-    private val mongoDBService: MongoDBService
-) : AccountRepository {
+object DefaultAccountRepository : AccountRepository {
 
     object Names {
         const val COLLECTION_NAME = "account"
@@ -33,35 +28,13 @@ class DefaultAccountRepository(
         const val PASSWORD = "password"
     }
 
-    private suspend fun getCollection(
-        serverAddress: Pair<String, Int>?
-    ): MongoCollection<Document?> {
-
-        val db = if (serverAddress == null) {
-            mongoDBService.getDatabaseConnection(
-                DefaultConnection.HOST,
-                DefaultConnection.PORT,
-                DefaultConnection.DB_NAME
-            )
-        } else {
-            mongoDBService.getDatabaseConnection(
-                serverAddress.first,
-                serverAddress.second,
-                DefaultConnection.DB_NAME
-            )
-        }
-
-        return db.getCollection(Names.COLLECTION_NAME)
-    }
-
-
     override suspend fun checkExistence(
         username: String,
         password: String,
         serverAddress: Pair<String, Int>?
     ): BsonObjectId? {
 
-        val collection = getCollection(serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
 
         val result = collection.find(
             Document(Names.USERNAME, username).append(Names.PASSWORD, password)
@@ -77,7 +50,7 @@ class DefaultAccountRepository(
         serverAddress: Pair<String, Int>?
     ): Boolean {
 
-        val collection = getCollection(serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
 
         try {
             collection.insertOne(
@@ -89,33 +62,5 @@ class DefaultAccountRepository(
 
         return true
     }
-
-    suspend fun getAllUser(): List<String> {
-        val collection = getCollection(null)
-        val result = collection.find()
-        val list = mutableListOf<String>()
-        for (document in result) {
-            if (document != null) {
-                list.add(document.getString(Names.USERNAME))
-            }
-        }
-        return list
-    }
-
-}
-
-
-fun main() {
-    runBlocking(Dispatchers.IO) {
-        val a = DefaultAccountRepository(DefaultMongoDBService)
-
-        val b = a.checkExistence("User1", "1234")
-
-
-        print(b)
-
-
-    }
-
 
 }
