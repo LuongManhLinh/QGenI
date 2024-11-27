@@ -2,6 +2,11 @@
 agp = "8.6.0"
 coilCompose = "3.0.0"
 generativeai = "0.9.0"
+javaDriver = "4.4.3"
+javaDriverVersion = "3.12.7"
+kmongoCoroutine = "5.1.0"
+kmongodb = "4.4.3"
+kmongodbVersion = "4.3.0"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -10,12 +15,16 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.04.01"
+mongodbDriverSync = "4.4.3"
+mongodbDriverSyncVersion = "4.10.2"
+mongodbMongodbDriverSync = "4.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
+java-driver = { module = "org.mongodb:java-driver", version.ref = "javaDriver" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -29,6 +38,17 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+kmongo-coroutine = { module = "org.litote.kmongo:kmongo-coroutine", version.ref = "kmongoCoroutine" }
+kmongodb = { module = "org.kmongodb:kmongodb", version.ref = "kmongodb" }
+kmongodb-v430 = { module = "org.kmongodb:kmongodb", version.ref = "kmongodbVersion" }
+mongo-java-driver = { module = "org.mongo:java-driver", version.ref = "javaDriverVersion" }
+mongodb-driver = { module = "org.mongodb:mongodb-driver" }
+mongodb-driver-java = { module = "org.mongodb:mongodb-driver-java", version.ref = "javaDriver" }
+mongodb-driver-sync = { module = "com.mongodb:mongodb-driver-sync", version.ref = "mongodbDriverSync" }
+mongodb-driver-sync-v443 = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodbMongodbDriverSync" }
+mongodb-mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodbDriverSyncVersion" }
+org-mongo-java-driver = { module = "org.mongo:java.driver" }
+org-mongo-java-driver2 = { module = "org.mongo:java-driver" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

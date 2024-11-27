@@ -10,17 +10,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.example.qgeni.data.preferences.ThemeMode
 import com.example.qgeni.data.preferences.ThemePreferenceManager
-import com.example.qgeni.ui.ExampleIdsUI
-import com.example.qgeni.ui.InputParagraph
 import com.example.qgeni.ui.screens.navigation.QGNavHost
 import com.example.qgeni.ui.theme.QGenITheme
 import kotlinx.coroutines.CoroutineScope
@@ -61,13 +56,17 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     )
-//                    ExampleIdsUI(Modifier.padding(innerPadding))
-//                    InputParagraph(Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
+
+
+
+
+
+
 
 
 

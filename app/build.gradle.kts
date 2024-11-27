@@ -64,6 +64,8 @@ dependencies {
     // Icons (Extended)
     implementation ("androidx.compose.material:material-icons-extended:1.5.1")
 
+    implementation("org.mongodb:mongo-java-driver:3.12.7")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -77,6 +79,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
 
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -85,6 +89,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-//    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
-    implementation(kotlin("script-runtime"))
 }
