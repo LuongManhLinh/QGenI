@@ -33,9 +33,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -183,17 +186,7 @@ fun ReadingPracticeGeneratorScreen(
                         )
                     }
                 }
-
-                SelectModelScreen(
-                    options = options,
-                    selectedOption = rpgUIState.selectedOption,
-                    onSelectedItemChange = { option ->
-//                        selectedOption = option
-                        basePracticeGeneratorViewModel.selectReadingOption(option)
-                    },
-                )
             }
-
             Row {
                 Spacer(modifier = Modifier.weight(2f))
                 NextButton(
@@ -304,7 +297,7 @@ fun PasteTextField(
             },
             modifier = modifier
                 .fillMaxWidth(),
-            singleLine = false,
+            singleLine = true,
             shape = RoundedCornerShape(size = 10.dp),
             maxLines = Int.MAX_VALUE,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -316,32 +309,56 @@ fun PasteTextField(
                     unfocusedBorderColor = MaterialTheme.colorScheme.primary
                 ),
         )
-        OutlinedTextField(
-            value = inputNumStatement,
-            onValueChange = {
-                onNumStatementChanged(it)
-            },
-            placeholder = {
-                Text(
-                    text = "Điền số lượng câu hỏi",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-            },
-            modifier = modifier
-                .fillMaxWidth(),
-            singleLine = false,
-            shape = RoundedCornerShape(size = 10.dp),
-            maxLines = Int.MAX_VALUE,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Default
-            ),
-            colors = OutlinedTextFieldDefaults
-                .colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.primary
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(100.dp))
+                .background(color = MaterialTheme.colorScheme.primary)
+                .padding(
+                    top = 4.dp,
+                    bottom = 4.dp,
+                    start = 6.dp,
+                    end = 6.dp
                 ),
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Số câu hỏi",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+            OutlinedTextField(
+                value = inputNumStatement,
+                onValueChange = {
+                    onNumStatementChanged(it)
+                },
+                placeholder = {
+                    Text(
+                        text = "",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                },
+                modifier = modifier
+                    .weight(1f),
+                singleLine = false,
+                shape = RoundedCornerShape(size = 10.dp),
+                maxLines = Int.MAX_VALUE,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Default,
+                    keyboardType = KeyboardType.Number // Bàn phím số
+                ),
+                colors = OutlinedTextFieldDefaults
+                    .colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                    ),
+            )
+            Spacer(modifier = Modifier.weight(3f))
+        }
     }
 }
 

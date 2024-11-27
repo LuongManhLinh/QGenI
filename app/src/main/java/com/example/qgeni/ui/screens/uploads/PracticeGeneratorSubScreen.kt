@@ -13,9 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -192,6 +197,107 @@ fun SuccessScreen(
 
 
 @Composable
+fun SaveScreen(
+    currentState: GeneratorState,
+    onDismissRequest: () -> Unit,
+    onNextButtonClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int = R.drawable.fairy3,
+) {
+
+    var text by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismissRequest) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = {
+                            text = it
+                        },
+                        placeholder = {
+                            Text(
+                                text = "Nhập tên đề",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        singleLine = false,
+                        shape = RoundedCornerShape(size = 10.dp),
+                        maxLines = Int.MAX_VALUE,
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Default,
+                            keyboardType = KeyboardType.Number // Bàn phím số
+                        ),
+                        colors = OutlinedTextFieldDefaults
+                            .colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row {
+
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = onNextButtonClick,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "Xác nhận",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
 fun ErrorScreen(
     currentState: GeneratorState,
     onDismissRequest: () -> Unit,
@@ -267,7 +373,33 @@ fun ErrorScreen(
 }
 
 
+@Preview
+@Composable
+fun SaveScreenLightPreview() {
+    QGenITheme(dynamicColor = false) {
+        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
+        SaveScreen(
+            currentState = currentState,
+            {},
+            {},
+            imageResourceId = R.drawable.avatar_3,
+        )
+    }
+}
 
+@Preview
+@Composable
+fun SaveScreenDarkPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
+        SaveScreen(
+            currentState = currentState,
+            {},
+            {},
+            imageResourceId = R.drawable.avatar_3,
+        )
+    }
+}
 
 @Preview
 @Composable
