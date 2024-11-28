@@ -25,11 +25,11 @@ object IdsGeminiAPI : IDescribeOnlyAPI {
                 }
             )
 
-            return response.text ?: "Error"
+            return response.text?.substringAfter(":")?.trim() ?: ""
 
         } catch (e: Exception) {
-            Log.e(LOG_TAG, "Exception occur: $e")
-            return "Error"
+            Log.e(LOG_TAG, "Exception occurred: $e")
+            return ""
         }
     }
 

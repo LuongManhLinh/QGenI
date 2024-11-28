@@ -1,10 +1,25 @@
 package com.example.qgeni.ui.screens.uploads
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,9 +40,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.qgeni.ui.theme.QGenITheme
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
+import com.example.qgeni.ui.theme.QGenITheme
 
 /*
     UploadView cho Generator
@@ -35,14 +50,31 @@ import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 
 @Composable
 fun UploadFileScreen(
+    modifier: Modifier = Modifier,
     @DrawableRes
     iconId: Int,
     description: String,
     color: Color,
-    onClick: () -> Unit
+    pickImage: Boolean = true,
+    onImagePicked: (Uri) -> Unit = {},
+    onFilePicked: (Uri) -> Unit = {}
 ) {
+
+    val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            onImagePicked(uri)
+        }
+    }
+
+    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            onFilePicked(uri)
+        }
+    }
+
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
@@ -147,7 +179,21 @@ fun UploadFileScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
-                            onClick = { /* Submit action */ },
+                            onClick = {
+                                if (pickImage) {
+                                   imagePicker.launch(
+                                       PickVisualMediaRequest(
+                                             ActivityResultContracts.PickVisualMedia.ImageOnly
+                                       )
+                                   )
+                                } else {
+                                    filePicker.launch(
+                                        arrayOf(
+                                            "application/pdf", "application/msword", "text/plain"
+                                        )
+                                    )
+                                }
+                            },
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent
@@ -258,7 +304,6 @@ fun UpLoadFileLightScreenPreview() {
             iconId = R.drawable.file_text,
             description = "TXT, up to 50MB",
             color = MaterialTheme.colorScheme.onPrimary,
-            {}
         )
     }
 }
@@ -271,7 +316,6 @@ fun UpLoadFileDarkScreenPreview() {
             iconId = R.drawable.file_text,
             description = "TXT, up to 50MB",
             color = MaterialTheme.colorScheme.onPrimary,
-            {}
         )
     }
 }

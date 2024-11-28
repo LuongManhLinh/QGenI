@@ -61,10 +61,11 @@ fun SignUpScreen(
 //    var termsAccepted by remember { mutableStateOf(false) }
 
     val signUpUIState by signUpViewModel.signUpUIState.collectAsState()
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.onPrimary)
     ) {

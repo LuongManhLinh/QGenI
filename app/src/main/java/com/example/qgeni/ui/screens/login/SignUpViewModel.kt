@@ -1,9 +1,13 @@
 package com.example.qgeni.ui.screens.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.qgeni.data.repository.DefaultAccountRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SignUpViewModel : ViewModel() {
     private val _signUpUIState = MutableStateFlow(SignUpUIState())
@@ -47,12 +51,31 @@ class SignUpViewModel : ViewModel() {
             )
         }
     }
+
     fun toggleTermsAccepted() {
         _signUpUIState.update {
             it.copy(
                 termsAccepted = !it.termsAccepted
             )
         }
+    }
+
+
+    fun signUp() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            DefaultAccountRepository.createAccount(
+                username = _signUpUIState.value.username,
+                password = _signUpUIState.value.password,
+                email = _signUpUIState.value.email.trim().ifEmpty {
+                    null
+                },
+                phoneNumber = _signUpUIState.value.phoneNumber.trim().ifEmpty {
+                    null
+                }
+            )
+        }
+
     }
 }
 

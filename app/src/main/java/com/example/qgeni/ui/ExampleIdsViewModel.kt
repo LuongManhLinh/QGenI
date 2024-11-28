@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.api.CommunicationUtils
@@ -51,6 +52,13 @@ class ExampleIdsViewModel : ViewModel() {
         _uiState.update {
             it.copy(numQuestion = numDesiredImage)
         }
+    }
+
+    fun getFiles(context: Context, fileUri: Uri) {
+        val text = context.contentResolver.openInputStream(fileUri)?.bufferedReader().use {
+            it?.readText()
+        }
+        Log.d("ExampleIdsViewModel", "text: $text")
     }
 
     fun getSimilarImage(context: Context) {

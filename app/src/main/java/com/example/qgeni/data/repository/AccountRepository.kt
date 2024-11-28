@@ -1,21 +1,25 @@
 package com.example.qgeni.data.repository
 
+import kotlinx.coroutines.runBlocking
 import org.bson.BsonObjectId
 import org.bson.Document
+import org.bson.types.ObjectId
 
 
 interface AccountRepository {
     suspend fun checkExistence(
-        username: String,
+        usernameOrEmailOrPhone: String,
         password: String,
         serverAddress: Pair<String, Int>? = null
-    ): BsonObjectId?
+    ): ObjectId?
 
     suspend fun createAccount(
         username: String,
+        phoneNumber: String? = null,
+        email: String? = null,
         password: String,
         serverAddress: Pair<String, Int>? = null
-    ): Boolean
+    )
 }
 
 
@@ -25,42 +29,57 @@ object DefaultAccountRepository : AccountRepository {
         const val COLLECTION_NAME = "account"
         const val ID = "_id"
         const val USERNAME = "username"
+        const val PHONE_NUMBER = "phoneNumber"
+        const val EMAIL = "email"
         const val PASSWORD = "password"
     }
 
     override suspend fun checkExistence(
-        username: String,
+        usernameOrEmailOrPhone: String,
         password: String,
         serverAddress: Pair<String, Int>?
-    ): BsonObjectId? {
+    ): ObjectId? {
 
         val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
 
-        val result = collection.find(
-            Document(Names.USERNAME, username).append(Names.PASSWORD, password)
+        val query = Document(
+            "\$and", listOf(
+                Document(
+                    "\$or", listOf(
+                        Document(Names.USERNAME, usernameOrEmailOrPhone),
+                        Document(Names.EMAIL, usernameOrEmailOrPhone),
+                        Document(Names.PHONE_NUMBER, usernameOrEmailOrPhone)
+                    )
+                ),
+                Document(Names.PASSWORD, password)
+            )
         )
 
-        return result.first()?.get(Names.ID) as BsonObjectId?
+        val result = collection.find(
+            query
+        )
+
+        return result.first()?.get(Names.ID) as ObjectId?
     }
 
 
     override suspend fun createAccount(
         username: String,
+        phoneNumber: String?,
+        email: String?,
         password: String,
         serverAddress: Pair<String, Int>?
-    ): Boolean {
+    ) {
 
         val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
 
-        try {
-            collection.insertOne(
-                Document(Names.USERNAME, username).append(Names.PASSWORD, password)
-            )
-        } catch (e: Exception) {
-            return false
-        }
+        collection.insertOne(
+            Document(Names.USERNAME, username)
+                .append(Names.PASSWORD, password)
+                .append(Names.EMAIL, email)
+                .append(Names.PHONE_NUMBER, phoneNumber)
+        )
 
-        return true
     }
 
 }

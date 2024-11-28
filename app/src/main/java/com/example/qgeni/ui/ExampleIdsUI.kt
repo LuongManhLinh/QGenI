@@ -1,5 +1,6 @@
 package com.example.qgeni.ui
 
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,11 +40,24 @@ fun ExampleIdsUI(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             viewModel.updateImageUri(uri)
         }
     }
+    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+
+        val pickFiles = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null) {
+                viewModel.getFiles(context, uri)
+            }
+            Log.d("ExampleIdsUI", "uri: $uri")
+        }
+
+    pickFiles.launch(arrayOf("application/pdf", "application/msword", "text/plain"))
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,7 +86,8 @@ fun ExampleIdsUI(
 
         Row {
             Button(onClick = {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+//                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                pickFiles.launch(arrayOf("application/pdf", "application/msword", "text/plain"))
             }) {
                 Text("Choose image")
             }
