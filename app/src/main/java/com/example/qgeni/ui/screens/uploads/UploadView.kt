@@ -59,7 +59,7 @@ fun UploadFileScreen(
     description: String,
     color: Color,
     pickImage: Boolean = false,
-    onFilePicked: (Uri) -> Unit = {}
+    onFilePicked: (Uri) -> Unit = {},
     onImagePicked: (Bitmap) -> Unit = {},
 ) {
 
@@ -75,13 +75,13 @@ fun UploadFileScreen(
 
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
-            val text = context.contentResolver.openInputStream(uri)?.bufferedReader().use {
-                it?.readText()
-            }
-            onFilePicked(text ?: "")
+//            val text = context.contentResolver.openInputStream(uri)?.bufferedReader().use {
+//                it?.readText()
+//            }
+//            onFilePicked(text ?: "")
+            onFilePicked(uri)
         }
     }
-
 
     Box(
         modifier = modifier
