@@ -1,8 +1,12 @@
 package com.example.qgeni.ui.screens.login
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,11 +33,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.NextButton
+import com.example.qgeni.ui.screens.uploads.GeneratorState
 import com.example.qgeni.ui.theme.QGenITheme
 
 
@@ -340,6 +349,104 @@ fun SignUpPage(
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+
+@Composable
+fun SignUpSuccess(
+    onDismissRequest: () -> Unit,
+    onNextButtonClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int = R.drawable.avatar_3,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "TẠO TÀI KHOẢN THÀNH CÔNG",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = onNextButtonClick,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "XÁC NHẬN",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun SignUpSuccessLightScreenPreview() {
+    QGenITheme(dynamicColor = false) {
+        SignUpSuccess(
+            onDismissRequest = {},
+            onNextButtonClick = {},
+            imageResourceId = R.drawable.avatar_3,
+        )
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun SignUpSuccessDarkScreenPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        SignUpSuccess(
+            onDismissRequest = {},
+            onNextButtonClick = {},
+            imageResourceId = R.drawable.avatar_3,
+        )
     }
 }
 
