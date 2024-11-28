@@ -60,6 +60,8 @@ fun SignUpScreen(
 //    var password by remember { mutableStateOf("") }
 //    var termsAccepted by remember { mutableStateOf(false) }
 
+    var showSuccessDialog by remember { mutableStateOf(true) }
+
     val signUpUIState by signUpViewModel.signUpUIState.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
@@ -123,6 +125,12 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.weight(0.25f))
         }
         Spacer(modifier = Modifier.height(56.dp))
+    }
+    if (showSuccessDialog) {
+        SignUpSuccess(
+            onDismissRequest = {},
+            onNextButtonClick = {}, //chuyển về đăng nhập
+        )
     }
 }
 

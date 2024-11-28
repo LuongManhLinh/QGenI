@@ -37,7 +37,6 @@ import com.example.qgeni.ui.theme.QGenITheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.bson.types.ObjectId
 
 class MainActivity : ComponentActivity() {
 
@@ -62,68 +61,68 @@ class MainActivity : ComponentActivity() {
 
             QGenITheme(dynamicColor = false, darkTheme = isDarkTheme) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    DemoImages(modifier = Modifier.padding(innerPadding))
-                    ExampleIdsUI(Modifier.padding(innerPadding))
-//                    val navController = rememberNavController()
-//                    QGNavHost(
-//                        modifier = Modifier.padding(innerPadding),
-//                        navController = navController,
-//                        currentTheme = currentTheme,
-//                        onThemeChange = { newTheme ->
-//                            CoroutineScope(Dispatchers.IO).launch {
-//                                themePreferenceManager.saveTheme(newTheme.name)
-//                            }
-//                        }
-//                    )
+//                   DemoImages(modifier = Modifier.padding(innerPadding))
+//                    ExampleIdsUI(Modifier.padding(innerPadding))
+                    val navController = rememberNavController()
+                    QGNavHost(
+                        modifier = Modifier.padding(innerPadding),
+                        navController = navController,
+                        currentTheme = currentTheme,
+                        onThemeChange = { newTheme ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                themePreferenceManager.saveTheme(newTheme.name)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-private fun DemoImages(modifier: Modifier) {
-    var imgList by remember { mutableStateOf(emptyList<Bitmap>()) }
-
-    var descList by remember { mutableStateOf(emptyList<String>()) }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(true) {
-        coroutineScope.launch(Dispatchers.IO) {
-            val listeningItem = DefaultListeningRepository.getAll(ObjectId("67473ce7c98e8377b17630c9"))
-            imgList = listeningItem.first().images
-            descList = listeningItem.first().answers
-        }
-    }
-
-    LazyColumn(modifier = modifier) {
-        items(imgList.size) { index ->
-            val img = imgList[index]
-            val desc = descList[index]
-
-            Text(
-                text = desc,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(4.dp)
-            )
-            Image(
-                bitmap = img.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = 4.dp,
-                        end = 4.dp,
-                        bottom = 48.dp
-                    ),
-                contentScale = ContentScale.FillWidth
-            )
-        }
-    }
-
-}
-
+//@Composable
+//private fun DemoImages(modifier: Modifier) {
+//    var imgList by remember { mutableStateOf(emptyList<Bitmap>()) }
+//
+//    var descList by remember { mutableStateOf(emptyList<String>()) }
+//
+//    val coroutineScope = rememberCoroutineScope()
+//
+//    LaunchedEffect(true) {
+//        coroutineScope.launch(Dispatchers.IO) {
+//            val listeningItem = DefaultListeningRepository.getAll(ObjectId("67473ce7c98e8377b17630c9"))
+//            imgList = listeningItem.first().images
+//            descList = listeningItem.first().answers
+//        }
+//    }
+//
+//    LazyColumn(modifier = modifier) {
+//        items(imgList.size) { index ->
+//            val img = imgList[index]
+//            val desc = descList[index]
+//
+//            Text(
+//                text = desc,
+//                style = MaterialTheme.typography.headlineSmall,
+//                modifier = Modifier.padding(4.dp)
+//            )
+//            Image(
+//                bitmap = img.asImageBitmap(),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(
+//                        start = 4.dp,
+//                        end = 4.dp,
+//                        bottom = 48.dp
+//                    ),
+//                contentScale = ContentScale.FillWidth
+//            )
+//        }
+//    }
+//
+//}
+//
 
 
 
