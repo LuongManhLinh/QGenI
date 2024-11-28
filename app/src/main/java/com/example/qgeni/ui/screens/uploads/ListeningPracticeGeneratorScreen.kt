@@ -175,7 +175,7 @@ fun ListeningPracticeGeneratorScreen(
                 iconId = R.drawable.file_text,
                 description = "JPEG, PNG, PDG, up to 50MB",
                 color = MaterialTheme.colorScheme.onPrimary,
-                onImagePicked = {basePracticeGeneratorViewModel.updateImageUri(it)}
+//                onImagePicked = {basePracticeGeneratorViewModel.updateImageUri(it)}
             ) {
 
             }
