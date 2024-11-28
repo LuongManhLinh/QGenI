@@ -55,7 +55,7 @@ fun UploadFileScreen(
     iconId: Int,
     description: String,
     color: Color,
-    pickImage: Boolean = true,
+    pickImage: Boolean = false,
     onImagePicked: (Uri) -> Unit = {},
     onFilePicked: (Uri) -> Unit = {}
 ) {
@@ -189,7 +189,7 @@ fun UploadFileScreen(
                                 } else {
                                     filePicker.launch(
                                         arrayOf(
-                                            "application/pdf", "application/msword", "text/plain"
+                                            "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"
                                         )
                                     )
                                 }

@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.uploads
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -173,8 +174,12 @@ fun ListeningPracticeGeneratorScreen(
             UploadFileScreen(
                 iconId = R.drawable.file_text,
                 description = "JPEG, PNG, PDG, up to 50MB",
-                color = MaterialTheme.colorScheme.onPrimary
-            ) {}
+                color = MaterialTheme.colorScheme.onPrimary,
+                onImagePicked = {basePracticeGeneratorViewModel.updateImageUri(it)}
+            ) {
+
+            }
+            Log.i("input image uri", lpgUIState.imageUri.toString())
         }
     }
 
