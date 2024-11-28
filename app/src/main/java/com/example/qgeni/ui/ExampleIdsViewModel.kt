@@ -69,7 +69,13 @@ class ExampleIdsViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             val startTime = System.currentTimeMillis()
-            val response = IdsApplication.getSimilarAndDescribe(image, _uiState.value.numQuestion.toInt())
+            IdsHostAPI.setHostPort(
+                _uiState.value.host,
+                uiState.value.port.toInt()
+            )
+            val response = IdsHostAPI.getSimilarImage(image, _uiState.value.numQuestion.toInt())
+
+
             val endTime = System.currentTimeMillis()
             _uiState.update {
                 it.copy(
@@ -78,20 +84,6 @@ class ExampleIdsViewModel : ViewModel() {
                 )
             }
 
-            val imgList = response.map { it.first }
-            val descList = response.map { it.second }
-
-
-            DefaultListeningRepository.insert(
-                ListeningItem(
-                    userId = ObjectId(),
-                    title = "IDS",
-                    images = imgList,
-                    creationDate = Date(),
-                    answers = descList,
-                    isNew = true
-                )
-            )
         }
 
     }
@@ -103,6 +95,6 @@ data class ExampleIdsUiState(
     val port : String = DEFAULT_PORT.toString(),
     val numQuestion: String = "4",
     val imageUri : Uri = Uri.EMPTY,
-    val responseImgAndDesc: List<Pair<Bitmap, String>> = emptyList(),
+    val responseImgAndDesc: List<Bitmap> = emptyList(),
     val responseTime: Long = 0
 )
