@@ -1,5 +1,7 @@
 package com.example.qgeni.ui.screens.uploads
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -36,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,19 +59,26 @@ fun UploadFileScreen(
     description: String,
     color: Color,
     pickImage: Boolean = true,
-    onImagePicked: (Uri) -> Unit = {},
-    onFilePicked: (Uri) -> Unit = {}
+    onImagePicked: (Bitmap) -> Unit = {},
+    onFilePicked: (String) -> Unit = {}
 ) {
+
+    val context = LocalContext.current
 
     val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
-            onImagePicked(uri)
+            val stream = context.contentResolver.openInputStream(uri)
+            val image = BitmapFactory.decodeStream(stream)
+            onImagePicked(image)
         }
     }
 
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
-            onFilePicked(uri)
+            val text = context.contentResolver.openInputStream(uri)?.bufferedReader().use {
+                it?.readText()
+            }
+            onFilePicked(text ?: "")
         }
     }
 
