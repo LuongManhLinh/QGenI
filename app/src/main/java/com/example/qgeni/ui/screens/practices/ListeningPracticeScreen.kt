@@ -19,7 +19,7 @@ import com.example.qgeni.data.model.MockListeningPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
-    Màn hình thực hiện đề nghe, gồm ImageQuestionView và McqQuestionView
+    Màn hình thực hiện đề nghe, gồm ImageQuestionView và McQuestionView
  */
 
 @Composable
@@ -70,9 +70,12 @@ fun ListeningPracticeScreen(
         }
         ImageQuestionView(
             currentQuestion = listeningUIState.currentQuestionIndex,
-            record = null,
+            record = "null",
             imageList = listeningPracticeItem.imageList[listeningUIState.currentQuestionIndex],
             modifier = Modifier.weight(1f),
+            onPlayClick = {
+                //Làm gì đó
+            },
             viewModel = listeningPracticeViewModel
         )
         McqQuestionView(

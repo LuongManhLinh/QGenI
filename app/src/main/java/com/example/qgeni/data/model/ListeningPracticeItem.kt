@@ -12,7 +12,7 @@ data class ListeningPracticeItem(
     override val title: String,
     override val creationDate: LocalDate,
     override val isNew: Boolean,
-    val record: List<AudioRecord?>,
+    val record: List<String>,
     val imageList: List<List<ImageItem>>,
     val questionList: List<McqQuestion>
 ) : PracticeItem
@@ -29,7 +29,7 @@ object MockListeningPracticeItem {
         title = "Capybara",
         creationDate = LocalDate.now(),
         isNew = true,
-        record = listOf(null),
+        record = listOf("null"),
         imageList = ImageSelection.imageSelection, // Thay đổi để tương thích kiểu mới
         questionList = McqMockData.questions
     )
@@ -41,7 +41,7 @@ object MockListeningPracticeItem {
             title = "Bài nghe ${index + 1}",
             creationDate = LocalDate.now().minusDays(index.toLong()), // Ngày lùi dần
             isNew = index < 3, // Đánh dấu "NEW" cho 3 item đầu
-            record = listOf(null), // Danh sách record giả
+            record = listOf("null"), // Danh sách record giả
             imageList = ImageSelection.imageSelection, // Danh sách hình ảnh giả
             questionList = McqMockData.questions // Danh sách câu hỏi giả
         )
