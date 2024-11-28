@@ -4,6 +4,7 @@ import android.media.AudioRecord
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -47,9 +48,10 @@ sealed class PlaybackState {
 @Composable
 fun ImageQuestionView(
     currentQuestion: Int,
-    record: AudioRecord?,
+    record: String,
     imageList: List<ImageItem>,
     modifier: Modifier = Modifier,
+    onPlayClick: () -> Unit,
     viewModel: ListeningPracticeViewModel
 ) {
 //    var time by remember { mutableLongStateOf(0L) }
@@ -140,37 +142,72 @@ fun ImageQuestionView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        AudioPlayer(
-            playbackState = ImqUIState.playbackState,
-            sliderPosition = ImqUIState.sliderPosition,
-            duration = duration,
-            onSliderPositionChange = { viewModel.updateSliderPosition(it) },
-            onPlayClick = {
-//                playbackState = when (playbackState) {
-//                    is PlaybackState.Paused -> PlaybackState.Playing
-//                    is PlaybackState.Playing -> PlaybackState.Paused
-//                    is PlaybackState.Finished -> {
-//                        sliderPosition = 0f
-//                        PlaybackState.Playing
+        Row(
+            modifier = Modifier.clickable(
+                onClick = onPlayClick
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(10.dp),
+                    )
+                    .padding(
+                        end = 16.dp
+                    )
+                ,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {}) {
+                    Icon(
+                        Icons.Outlined.PlayArrow,
+                        contentDescription = "Play",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    text = "Play",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
+        }
+//        AudioPlayer(
+//            playbackState = ImqUIState.playbackState,
+//            sliderPosition = ImqUIState.sliderPosition,
+//            duration = duration,
+//            onSliderPositionChange = { viewModel.updateSliderPosition(it) },
+//            onPlayClick = {
+////                playbackState = when (playbackState) {
+////                    is PlaybackState.Paused -> PlaybackState.Playing
+////                    is PlaybackState.Playing -> PlaybackState.Paused
+////                    is PlaybackState.Finished -> {
+////                        sliderPosition = 0f
+////                        PlaybackState.Playing
+////                    }
+////                }
+//                when (ImqUIState.playbackState) {
+//                    PlaybackState.Paused -> viewModel.updatePlaybackState(PlaybackState.Playing)
+//                    PlaybackState.Playing -> viewModel.updatePlaybackState(PlaybackState.Paused)
+//                    else -> {
+//                        viewModel.updateSliderPosition(0f)
+//                        viewModel.updatePlaybackState(PlaybackState.Playing)
 //                    }
 //                }
-                when (ImqUIState.playbackState) {
-                    PlaybackState.Paused -> viewModel.updatePlaybackState(PlaybackState.Playing)
-                    PlaybackState.Playing -> viewModel.updatePlaybackState(PlaybackState.Paused)
-                    else -> {
-                        viewModel.updateSliderPosition(0f)
-                        viewModel.updatePlaybackState(PlaybackState.Playing)
-                    }
-                }
-            },
-            onValueChangeFinished = {
-                if (ImqUIState.sliderPosition >= duration) {
-//                    playbackState =
-//                        PlaybackState.Finished
-                    viewModel.updatePlaybackState(PlaybackState.Finished)
-                }
-            }
-        )
+//            },
+//            onValueChangeFinished = {
+//                if (ImqUIState.sliderPosition >= duration) {
+////                    playbackState =
+////                        PlaybackState.Finished
+//                    viewModel.updatePlaybackState(PlaybackState.Finished)
+//                }
+//            }
+//        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -316,8 +353,9 @@ fun ImageQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
         ImageQuestionView(
             currentQuestion = 0,
-            null,
+            "null",
             imageList = ImageData.imageList,
+            onPlayClick = {},
             viewModel = viewModel()
         )
     }
@@ -329,8 +367,9 @@ fun ImageQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ImageQuestionView(
             currentQuestion = 0,
-            null,
+            "null",
             imageList = ImageData.imageList,
+            onPlayClick = {},
             viewModel = viewModel()
         )
     }
