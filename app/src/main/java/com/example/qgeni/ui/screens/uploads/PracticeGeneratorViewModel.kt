@@ -1,10 +1,14 @@
 package com.example.qgeni.ui.screens.uploads
 
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.api.qgs.QgsForm
@@ -34,6 +38,14 @@ open class BasePracticeGeneratorViewModel : ViewModel() {
 
     fun updateListeningGeneratorState(state: GeneratorState) {
         _listeningUIState.update { it.copy(currentState = state) }
+    }
+
+    fun updateImageUri(uri: Uri) {
+        _listeningUIState.update {
+            it.copy(
+                imageUri = uri
+            )
+        }
     }
 
     fun updateReadingUploadFileDialog(show: Boolean) {
@@ -118,13 +130,49 @@ open class BasePracticeGeneratorViewModel : ViewModel() {
             )
         }
     }
+
+    fun updateTextUri(context: Context, uri: Uri) {
+        val fileName = getFileName(context, uri)
+        val fileContent = readFileContent(context, uri)
+        Log.i("file content", fileContent)
+        _readingUIState.update {
+            it.copy(
+                textUri = uri,
+                fileName = fileName,
+                fileContent = fileContent
+            )
+        }
+    }
 }
+
+
+private fun getFileName(context: Context, uri: Uri): String {
+    var fileName = ""
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        if (it.moveToFirst()) {
+            val columnIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (columnIndex != -1) {
+                fileName = it.getString(columnIndex)
+            }
+        }
+    }
+    return fileName
+}
+
+private fun readFileContent(context: Context, uri: Uri): String {
+    val inputStream = context.contentResolver.openInputStream(uri)
+    return inputStream?.bufferedReader().use { it?.readText() } ?: "Error"
+}
+
+
 
 
 data class ListeningPracticeGeneratorUIState(
     val showUploadFileDialog: Boolean = false,
     val selectedOption: String = "Chọn model",
     val currentState: GeneratorState = GeneratorState.Idle,
+    val imageUri: Uri = Uri.EMPTY
 )
 
 data class ReadingPracticeGeneratorUIState(
@@ -136,5 +184,8 @@ data class ReadingPracticeGeneratorUIState(
     val inputParagraph: String = "",
     val inputNumStatement: String = "",
     val listReadingQuestion: List<McqQuestion> = emptyList(),
-    val isGenerateSuccess: Boolean = false
+    val isGenerateSuccess: Boolean = false,
+    val textUri: Uri = Uri.EMPTY,
+    val fileName: String = "",
+    val fileContent: String = ""
 )

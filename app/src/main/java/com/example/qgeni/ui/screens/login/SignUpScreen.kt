@@ -52,7 +52,7 @@ fun SignUpScreen(
     onNextButtonClick: () -> Unit,
     onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
-    signUpViewModel: SignUpViewModel = viewModel()
+    signUpViewModel: SignUpViewModel = viewModel(),
 ) {
 //    var username by remember { mutableStateOf("") }
 //    var phoneNumber by remember { mutableStateOf("") }
@@ -60,7 +60,7 @@ fun SignUpScreen(
 //    var password by remember { mutableStateOf("") }
 //    var termsAccepted by remember { mutableStateOf(false) }
 
-    var showSuccessDialog by remember { mutableStateOf(true) }
+//    var showSuccessDialog by remember { mutableStateOf(true) }
 
     val signUpUIState by signUpViewModel.signUpUIState.collectAsState()
 
@@ -112,7 +112,7 @@ fun SignUpScreen(
             onPhoneNumberChange = { signUpViewModel.updatePhoneNumber(it) },
             onEmailChange = { signUpViewModel.updateEmail(it) },
             onPasswordChange = { signUpViewModel.updatePassword(it) },
-            onPasswordVisibleClick = {signUpViewModel.togglePasswordVisible()},
+            onPasswordVisibleClick = { signUpViewModel.togglePasswordVisible() },
             onTermsAcceptedChange = { signUpViewModel.toggleTermsAccepted() },
             onSignInClick = onSignInClick,
             modifier = Modifier.weight(1f)
@@ -121,16 +121,23 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.weight(2f))
             NextButton(
                 onPrimary = false,
-                onClick = onNextButtonClick
+                onClick = { signUpViewModel.showSuccessDialog(true) }
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
         Spacer(modifier = Modifier.height(56.dp))
     }
-    if (showSuccessDialog) {
+    if (signUpUIState.showSuccessDialog) {
         SignUpSuccess(
-            onDismissRequest = {},
-            onNextButtonClick = {}, //chuyển về đăng nhập
+            onDismissRequest = {
+                onNextButtonClick()
+                signUpViewModel.showSuccessDialog(false)
+            },
+            onNextButtonClick =
+            {
+                onNextButtonClick() //chuyển về đăng nhập
+                signUpViewModel.showSuccessDialog(false)
+            }
         )
     }
 }
@@ -151,7 +158,7 @@ fun SignUpPage(
     onPasswordVisibleClick: () -> Unit,
     onTermsAcceptedChange: (Boolean) -> Unit,
     onSignInClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 //    var passwordVisible by remember { mutableStateOf(false)}
 

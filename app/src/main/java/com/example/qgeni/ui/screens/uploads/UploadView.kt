@@ -58,9 +58,9 @@ fun UploadFileScreen(
     iconId: Int,
     description: String,
     color: Color,
-    pickImage: Boolean = true,
+    pickImage: Boolean = false,
+    onFilePicked: (Uri) -> Unit = {}
     onImagePicked: (Bitmap) -> Unit = {},
-    onFilePicked: (String) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -199,7 +199,7 @@ fun UploadFileScreen(
                                 } else {
                                     filePicker.launch(
                                         arrayOf(
-                                            "application/pdf", "application/msword", "text/plain"
+                                            "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"
                                         )
                                     )
                                 }

@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.uploads
 
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
+import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
@@ -64,10 +67,11 @@ fun ReadingPracticeGeneratorScreen(
     onNextButtonClick: () -> Unit,
     onLeaveButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
-    basePracticeGeneratorViewModel: BasePracticeGeneratorViewModel = viewModel()
+    basePracticeGeneratorViewModel: BasePracticeGeneratorViewModel = viewModel(),
 ) {
 
     val rpgUIState by basePracticeGeneratorViewModel.readingUIState.collectAsState()
+    val context = LocalContext.current
 //    var showUploadFileDialog by remember { mutableStateOf(false) }
     val options = listOf("Model A", "Model B", "Model C")
 //    var selectedOption by remember { mutableStateOf("Chọn model") }
@@ -77,7 +81,8 @@ fun ReadingPracticeGeneratorScreen(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(
                 MaterialTheme.colorScheme.onPrimary
             )
@@ -159,7 +164,7 @@ fun ReadingPracticeGeneratorScreen(
                         isHighlightMode = rpgUIState.isUploadMode,
                         onIsHighlightModeChange =
 //                        {isUploadMode = it},
-                        {basePracticeGeneratorViewModel.updateReadingUploadMode()},
+                        { basePracticeGeneratorViewModel.updateReadingUploadMode() },
                         enabledText = "Upload",
                         enabledIconResId = R.drawable.file_text,
                         disabledText = "Text",
@@ -171,18 +176,49 @@ fun ReadingPracticeGeneratorScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     if (rpgUIState.isUploadMode) {
-                        CustomOutlinedButton(
+                        Column {
+                            if (rpgUIState.textUri == Uri.EMPTY) {
+                                CustomOutlinedButton(
 //                            onClick = { showUploadFileDialog = true },
-                            onClick = {basePracticeGeneratorViewModel.updateReadingUploadFileDialog(true)},
-                            text = "TẢI TỆP",
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                                    onClick = {
+                                        basePracticeGeneratorViewModel.updateReadingUploadFileDialog(
+                                            true
+                                        )
+                                    },
+                                    text = "TẢI TỆP",
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            } else {
+                                Column {
+                                    CustomOutlinedButton(
+                                        onClick = {},
+                                        text = rpgUIState.fileName,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.height(75.dp))
+                            OutlinedTextField(
+                                value = rpgUIState.inputNumStatement,
+                                onValueChange = {
+                                    basePracticeGeneratorViewModel.updateReadingInputNumStatement(it)
+                                }
+                            )
+                        }
                     } else {
                         PasteTextField(
                             inputParagraph = rpgUIState.inputParagraph,
                             inputNumStatement = rpgUIState.inputNumStatement,
-                            onTextChanged = {basePracticeGeneratorViewModel.updateReadingInputParagraph(it)},
-                            onNumStatementChanged = {basePracticeGeneratorViewModel.updateReadingInputNumStatement(it)}
+                            onTextChanged = {
+                                basePracticeGeneratorViewModel.updateReadingInputParagraph(
+                                    it
+                                )
+                            },
+                            onNumStatementChanged = {
+                                basePracticeGeneratorViewModel.updateReadingInputNumStatement(
+                                    it
+                                )
+                            }
                         )
                     }
                 }
@@ -192,7 +228,6 @@ fun ReadingPracticeGeneratorScreen(
                 NextButton(
                     onPrimary = false,
                     onClick = {
-//                        currentState = GeneratorState.Loading
                         basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Loading)
                         onNextButtonClick()
                     }
@@ -204,39 +239,55 @@ fun ReadingPracticeGeneratorScreen(
 
     }
     if (rpgUIState.showUploadFileDialog) {
-        Dialog(onDismissRequest = { basePracticeGeneratorViewModel.updateReadingUploadFileDialog(false)}) {
+        Dialog(onDismissRequest = {
+            basePracticeGeneratorViewModel.updateReadingUploadFileDialog(
+                false
+            )
+        }) {
             UploadFileScreen(
                 iconId = R.drawable.file_text,
                 description = "TXT, up to 50MB",
-                color = MaterialTheme.colorScheme.onPrimary
-            ) {}
+                color = MaterialTheme.colorScheme.onPrimary,
+                onFilePicked = {
+                    basePracticeGeneratorViewModel.updateTextUri(context, it)
+                    basePracticeGeneratorViewModel.updateReadingUploadFileDialog(false)
+                }
+            )
         }
     }
-
     when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
             LaunchedEffect(rpgUIState.currentState) {
-                    Log.i("amount", 11.toString())
-                    val readingQuestions = basePracticeGeneratorViewModel.fetchReadingQuestions(rpgUIState.inputParagraph)
-                    if (readingQuestions.isNotEmpty()) {
-                        Log.i("ReadingQuestion", readingQuestions.size.toString())
-                        val id = MockReadingPracticeItem.readingPracticeItemList.size
-                        MockReadingPracticeItem.readingPracticeItemList.add(
-                            ReadingPracticeItem(
-                                id = id,
-                                title = "Bài đọc ${id + 1}",
-                                passage = rpgUIState.inputParagraph,
-                                numStatement = rpgUIState.inputNumStatement,
-                                creationDate = LocalDate.now(),
-                                isNew = id < 3,
-                                questionList = readingQuestions
-                            )
-                        )
-                        basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Success)
-                    }
-                    else
-                        basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Error)
+                Log.i("amount", 11.toString())
+                val passage: String
+                val readingQuestions: List<McqQuestion>
+                if (rpgUIState.isUploadMode) {
+                    passage = rpgUIState.fileContent
+                    readingQuestions =
+                        basePracticeGeneratorViewModel.fetchReadingQuestions(rpgUIState.fileContent)
+                } else {
+                    passage = rpgUIState.inputParagraph
+                    readingQuestions =
+                        basePracticeGeneratorViewModel.fetchReadingQuestions(rpgUIState.inputParagraph)
                 }
+                if (readingQuestions.isNotEmpty()) {
+                    Log.i("ReadingQuestion", readingQuestions.size.toString())
+                    val id = MockReadingPracticeItem.readingPracticeItemList.size
+                    MockReadingPracticeItem.readingPracticeItemList.add(
+                        ReadingPracticeItem(
+                            id = id,
+                            title = "Bài đọc ${id + 1}",
+                            passage = passage,
+                            numStatement = rpgUIState.inputNumStatement,
+                            creationDate = LocalDate.now(),
+                            isNew = id < 3,
+                            questionList = readingQuestions
+                        )
+                    )
+                    basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Success)
+                } else
+                    basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Error)
+            }
             LoadingScreen(
                 lottieResourceId = R.raw.fairy,
                 message = "Tiên nữ đang đi tìm nguyên liệu"
@@ -244,7 +295,7 @@ fun ReadingPracticeGeneratorScreen(
         }
 
         is GeneratorState.Success -> {
-            if(!rpgUIState.isGenerateSuccess) {
+            if (!rpgUIState.isGenerateSuccess) {
                 Log.i("Title", rpgUIState.title)
                 SaveScreen(
                     title = rpgUIState.title,
@@ -253,14 +304,13 @@ fun ReadingPracticeGeneratorScreen(
                     onNextButtonClick = {
                         basePracticeGeneratorViewModel.updateGenerateSuccess(true)
                         val id = MockReadingPracticeItem.readingPracticeItemList.size - 1
-                        if(id >= 0){
+                        if (id >= 0) {
                             MockReadingPracticeItem.readingPracticeItemList[id] =
                                 MockReadingPracticeItem.readingPracticeItemList[id].copy(title = rpgUIState.title)
                         }
                     },
                 )
-            }
-            else {
+            } else {
                 SuccessScreen(
                     currentState = rpgUIState.currentState,
                     onDismissRequest = {
@@ -288,9 +338,16 @@ fun ReadingPracticeGeneratorScreen(
         is GeneratorState.Error -> {
             ErrorScreen(
                 currentState = rpgUIState.currentState,
-//                onDismissRequest = { currentState = GeneratorState.Idle },
-                onDismissRequest = {basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle)},
-                onLeaveButtonClick = { basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Idle) },
+                onDismissRequest = {
+                    basePracticeGeneratorViewModel.updateReadingGeneratorState(
+                        GeneratorState.Idle
+                    )
+                },
+                onLeaveButtonClick = {
+                    basePracticeGeneratorViewModel.updateReadingGeneratorState(
+                        GeneratorState.Idle
+                    )
+                },
 
                 imageResourceId = R.drawable.fairy_sorry,
                 message = "Tiên nữ học việc của chúng tôi mắc lỗi nào đó, thử lại hoặc chọn tiên nữ khác"
@@ -307,7 +364,7 @@ fun PasteTextField(
     inputParagraph: String,
     inputNumStatement: String,
     onTextChanged: (String) -> Unit,
-    onNumStatementChanged: (String) -> Unit
+    onNumStatementChanged: (String) -> Unit,
 ) {
 //    var text by remember { mutableStateOf("") }
 

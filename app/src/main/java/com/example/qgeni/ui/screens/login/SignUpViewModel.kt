@@ -60,6 +60,13 @@ class SignUpViewModel : ViewModel() {
         }
     }
 
+    fun showSuccessDialog(isShow: Boolean) {
+        _signUpUIState.update {
+            it.copy(
+                showSuccessDialog = isShow
+            )
+        }
+    }
 
     fun signUp() {
 
@@ -86,4 +93,5 @@ data class SignUpUIState(
     val password: String = "",
     val passwordVisible: Boolean = false,
     val termsAccepted: Boolean = false,
+    val showSuccessDialog: Boolean = false
 )
