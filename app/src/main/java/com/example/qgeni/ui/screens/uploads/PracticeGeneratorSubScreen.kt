@@ -21,10 +21,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,12 +42,7 @@ import com.example.qgeni.ui.theme.QGenITheme
     Các thành phần dùng chung trong Generator
  */
 
-sealed class GeneratorState {
-    data object Idle : GeneratorState() // Lúc bình thường
-    data object Loading : GeneratorState() // Đang tạo đề
-    data object Success : GeneratorState() // Tạo xong
-    data object Error : GeneratorState() // Bị lỗi
-}
+
 
 @Composable
 fun LoadingScreen(
@@ -103,7 +94,6 @@ fun LoadingScreen(
 
 @Composable
 fun SuccessScreen(
-    currentState: GeneratorState,
     onDismissRequest: () -> Unit,
     onStayButtonClick: () -> Unit,
     onLeaveButtonClick: () -> Unit,
@@ -273,7 +263,6 @@ fun MissingFieldDialog(
 fun SaveScreen(
     title: String,
     onTitleChange: (String) -> Unit,
-    currentState: GeneratorState,
     onNextButtonClick: () -> Unit,
     @DrawableRes
     imageResourceId: Int = R.drawable.fairy3,
@@ -371,7 +360,6 @@ fun SaveScreen(
 
 @Composable
 fun ErrorScreen(
-    currentState: GeneratorState,
     onDismissRequest: () -> Unit,
     onLeaveButtonClick: () -> Unit,
     @DrawableRes
@@ -448,7 +436,6 @@ fun ErrorScreen(
 @Composable
 fun MissingFieldScreenLightPreview() {
     QGenITheme(dynamicColor = false) {
-        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         MissingFieldDialog(
             message = "Vui lòng nhập số câu hỏi",
             {},
@@ -461,7 +448,6 @@ fun MissingFieldScreenLightPreview() {
 @Composable
 fun MissingFieldScreenDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         MissingFieldDialog(
             message = "Vui lòng nhập số câu hỏi",
             {},
@@ -474,11 +460,9 @@ fun MissingFieldScreenDarkPreview() {
 @Composable
 fun SaveScreenLightPreview() {
     QGenITheme(dynamicColor = false) {
-        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         SaveScreen(
             title = "",
             {},
-            currentState = currentState,
             {},
             imageResourceId = R.drawable.avatar_3,
         )
@@ -489,11 +473,9 @@ fun SaveScreenLightPreview() {
 @Composable
 fun SaveScreenDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         SaveScreen(
             "",
             {},
-            currentState = currentState,
             {},
             imageResourceId = R.drawable.savescreengenie,
         )
@@ -504,9 +486,7 @@ fun SaveScreenDarkPreview() {
 @Composable
 fun ErrorLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
-        var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         ErrorScreen(
-            currentState = currentState,
             {},
             {},
             imageResourceId = R.drawable.fairy_sorry,
@@ -519,9 +499,7 @@ fun ErrorLightScreenPreview() {
 @Composable
 fun ErrorDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         ErrorScreen(
-            currentState = currentState,
             {},
             {},
             imageResourceId = R.drawable.fairy_sorry,
@@ -554,9 +532,7 @@ fun LoadingDarkScreenPreview() {
 @Composable
 fun SuccessLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
-        var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         SuccessScreen(
-            currentState = currentState,
             {},
             {},
             {},
@@ -569,9 +545,7 @@ fun SuccessLightScreenPreview() {
 @Composable
 fun SuccessDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        var currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
         SuccessScreen(
-            currentState = currentState,
             {},
             {},
             {},

@@ -1,33 +1,60 @@
 package com.example.qgeni.application
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.example.qgeni.api.ids.IdsGeminiAPI
 import com.example.qgeni.api.ids.IdsHostAPI
+import com.example.qgeni.data.model.ListeningPracticeItem
+import com.example.qgeni.data.model.ListeningQuestion
+import org.bson.types.ObjectId
+import java.util.Date
 
 object IdsApplication {
-    suspend fun getQuestions(image: Bitmap, numQuestion: Int): List<Pair<Bitmap, String>> {
-        val pair = IdsHostAPI.createQuestion(image, numQuestion)
-        val imgList = pair.first
-        val descList = pair.second.toMutableList()
+    suspend fun getListeningPracticeItem(
+        image: Bitmap,
+        numQuestion: Int
+    ) : ListeningPracticeItem? {
 
-        for (idx in 0 until imgList.size - descList.size) {
-            descList.add("")
+        try {
+            var imageList = IdsHostAPI.getSimilarImage(image, numQuestion * 4 - 1)
+
+            imageList = imageList.toMutableList()
+            imageList.add(image)
+            imageList.shuffled()
+
+            val descImageList = imageList.subList(0, numQuestion)
+            val unDescImageList = imageList.subList(numQuestion, imageList.size)
+
+            val descList = IdsGeminiAPI.describeMany(descImageList)
+
+            val questionList = mutableListOf<ListeningQuestion>()
+
+            for (i in 0 until numQuestion) {
+
+                var imageForQuestion = unDescImageList.subList(4 * i, 4 * i + 4)
+                val indexToAdd = (0 until 4).random()
+                imageForQuestion = imageForQuestion.toMutableList()
+                imageForQuestion.add(indexToAdd, descImageList[i])
+
+                questionList.add(
+                    ListeningQuestion(
+                        imageList = imageForQuestion,
+                        description = descList[i],
+                        answerIndex = i
+                    )
+                )
+            }
+
+            return ListeningPracticeItem(
+                id = ObjectId(),
+                title = "",
+                creationDate = Date(),
+                isNew = true,
+                questionList = questionList
+            )
+        } catch (e: Exception) {
+            Log.e("IdsApplication", Log.getStackTraceString(e))
+            return null
         }
-
-        return imgList.zip(descList)
-    }
-
-    suspend fun getSimilarAndDescribe(image: Bitmap, numQuestion: Int): List<Pair<Bitmap, String>> {
-        var imgList = IdsHostAPI.getSimilarImage(image, numQuestion * 4 - 1)
-
-        imgList = imgList.toMutableList()
-        imgList.add(image)
-        imgList = imgList.shuffled()
-
-        val descList = IdsGeminiAPI.describeMany(imgList.subList(0, numQuestion)).toMutableList()
-        for (idx in 0 until imgList.size - descList.size) {
-            descList.add("---")
-        }
-        return imgList.zip(descList)
     }
 }

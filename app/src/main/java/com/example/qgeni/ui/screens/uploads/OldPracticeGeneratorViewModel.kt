@@ -1,8 +1,6 @@
 package com.example.qgeni.ui.screens.uploads
 
 import android.content.Context
-import android.graphics.pdf.PdfDocument
-import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
@@ -15,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-open class BasePracticeGeneratorViewModel : ViewModel() {
+open class OldPracticeGeneratorViewModel : ViewModel() {
     private val _listeningUIState = MutableStateFlow(ListeningPracticeGeneratorUIState())
     val listeningUIState = _listeningUIState.asStateFlow()
 
@@ -84,6 +82,7 @@ open class BasePracticeGeneratorViewModel : ViewModel() {
             )
         }
     }
+
 
     suspend fun fetchReadingQuestions(paragraph: String): List<McqQuestion> {
         return try {
@@ -159,6 +158,7 @@ private fun readFileContent(context: Context, uri: Uri): String {
     val reader = BufferedReader(InputStreamReader(inputStream))
     return reader.readText()
 }
+
 
 
 
