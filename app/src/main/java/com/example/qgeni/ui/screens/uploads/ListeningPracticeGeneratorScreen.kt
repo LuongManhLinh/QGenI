@@ -173,7 +173,7 @@ fun ListeningPracticeGeneratorScreen(
         Dialog(onDismissRequest = { basePracticeGeneratorViewModel.updateListeningUploadFileDialog(false) }) {
             UploadFileScreen(
                 iconId = R.drawable.file_text,
-                description = "JPEG, PNG, PDG, up to 50MB",
+                description = "JPEG, PNG, up to 50MB",
                 color = MaterialTheme.colorScheme.onPrimary,
 //                onImagePicked = {basePracticeGeneratorViewModel.updateImageUri(it)}
             ) {

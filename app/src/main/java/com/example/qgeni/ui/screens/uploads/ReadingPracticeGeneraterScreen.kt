@@ -313,12 +313,14 @@ fun ReadingPracticeGeneratorScreen(
     if( false ) {
         MissingFieldDialog(
             message = "",
-            onNextButtonClick = {}
+            onNextButtonClick = {},
+            imageResourceId = R.drawable.avatar_3,
         )
-    } else if ( true) {
+    } else if ( false ) {
         MissingFieldDialog(
-            message = "",
-            onNextButtonClick = {}
+            message = "Vui lòng nhập số câu hỏi",
+            onNextButtonClick = {},
+            imageResourceId = R.drawable.avatar_3,
         )
     }
     when (rpgUIState.currentState) {

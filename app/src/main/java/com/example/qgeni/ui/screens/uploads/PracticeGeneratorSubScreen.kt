@@ -236,9 +236,10 @@ fun MissingFieldDialog(
                 ) {
                     Text(
                         text = message,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Row {
 
                         Spacer(modifier = Modifier.weight(1f))
