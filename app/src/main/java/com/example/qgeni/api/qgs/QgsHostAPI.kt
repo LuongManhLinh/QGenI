@@ -7,6 +7,8 @@ import com.example.qgeni.api.CommunicationUtils.DEFAULT_PORT
 import com.example.qgeni.api.RequestType
 import com.example.qgeni.api.ResponseType
 import com.example.qgeni.api.ids.IdsHostAPI
+import com.example.qgeni.data.model.ReadingAnswer
+import com.example.qgeni.data.model.ReadingQuestion
 
 
 import java.io.DataOutputStream
@@ -19,7 +21,7 @@ object QgsHostAPI : IQgsAPI {
     private var host = DEFAULT_HOST
     private var port = DEFAULT_PORT
 
-    override suspend fun generateQuestions(paragraph: String, numQuestions: Int): List<QgsForm> {
+    override suspend fun generateQuestions(paragraph: String, numQuestions: Int): List<ReadingQuestion> {
         try {
             val socket = Socket(host, port)
 
@@ -51,7 +53,7 @@ object QgsHostAPI : IQgsAPI {
         outputStream.write(paragraphByteArray)
     }
 
-    private fun getResponse(socket: Socket) : List<QgsForm> {
+    private fun getResponse(socket: Socket) : List<ReadingQuestion> {
         val inputStream = socket.getInputStream()
         val outputStream = socket.getOutputStream()
 
@@ -73,7 +75,7 @@ object QgsHostAPI : IQgsAPI {
 
         val allStatements = inputStream.bufferedReader().readText().split("\n")
 
-        val output = mutableListOf<QgsForm>()
+        val output = mutableListOf<ReadingQuestion>()
 
         for (idx in allStatements.indices) {
             val statement = allStatements[idx]
@@ -82,7 +84,9 @@ object QgsHostAPI : IQgsAPI {
                 idx >= numTrue && idx < numTrue + numFalse -> "False"
                 else -> "Not Given"
             }
-            output.add(QgsForm(statement, answer))
+            val uppercasedString = answer.uppercase().replace(" ", "_")
+            val enumValue = ReadingAnswer.valueOf(uppercasedString)
+            output.add(ReadingQuestion(statement, enumValue))
         }
 
         return output
