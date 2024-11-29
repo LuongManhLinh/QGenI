@@ -98,15 +98,24 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
 
     fun saveListeningPractice() {
         if (listeningPracticeItem == null) {
-            return
+            _uiState.update {
+                it.copy(
+                    currentState = GeneratorState.Error
+                )
+            }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-
             DefaultListeningRepository.insert(
                 listeningPracticeItem!!.copy(
                     title = _uiState.value.practiceTitle
                 )
+            )
+        }
+
+        _uiState.update {
+            it.copy(
+                currentState = GeneratorState.Success
             )
         }
     }
