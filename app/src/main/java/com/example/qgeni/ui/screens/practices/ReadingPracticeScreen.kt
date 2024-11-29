@@ -20,11 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.model.ReadingAnswer
-import com.example.qgeni.data.model.ReadingPracticeItem
+import com.example.qgeni.ui.theme.QGenITheme
 
 /*
     Màn hình thực hiện đề đọc
@@ -39,7 +40,7 @@ fun ReadingPracticeScreen(
         viewModel(factory = ReadingPracticeViewModel.factory(idHexString))
 ) {
 
-    val readingPracticeUIState by readingPracticeViewModel.readingPracticeUIState.collectAsState()
+    val readingPracticeUIState by readingPracticeViewModel.uiState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -108,4 +109,14 @@ fun ReadingPracticeScreen(
     }
 }
 
+@Preview
+@Composable
+fun ReadingPracticeScreenPreview() {
+    QGenITheme {
+         ReadingPracticeScreen(
+            idHexString = "123",
+            onBackClick = { }, readingPracticeViewModel = ReadingPracticeViewModel("123")
+        )
+    }
+}
 

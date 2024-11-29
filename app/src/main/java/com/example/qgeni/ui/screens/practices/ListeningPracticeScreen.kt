@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.McqQuestion
+import com.example.qgeni.ui.screens.utils.formatTime
 
 /*
     Màn hình thực hiện đề nghe, gồm ImageQuestionView và McQuestionView
@@ -20,11 +21,11 @@ import com.example.qgeni.data.model.McqQuestion
 fun ListeningPracticeScreen(
     idHexString: String,
     onBackClick: () -> Unit,
-    listeningPracticeViewModel: ListeningPracticeViewModel =
+    viewModel: ListeningPracticeViewModel =
         viewModel(factory = ListeningPracticeViewModel.factory(idHexString))
 ) {
 
-    val listeningUIState by listeningPracticeViewModel.listeningPracticeUIState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -63,33 +64,29 @@ fun ListeningPracticeScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        val imageList = if (listeningUIState.listeningPracticeItem != null) {
-            listeningUIState.listeningPracticeItem!!.questionList[listeningUIState.currentQuestionIndex].imageList
+        val imageList = if (uiState.listeningPracticeItem != null) {
+            uiState.listeningPracticeItem!!.questionList[uiState.currentQuestionIndex].imageList
         } else {
             emptyList()
         }
 
-        val questionList = if (listeningUIState.listeningPracticeItem != null) {
-            listeningUIState.listeningPracticeItem!!.questionList
+        val questionList = if (uiState.listeningPracticeItem != null) {
+            uiState.listeningPracticeItem!!.questionList
         } else {
             emptyList()
         }
 
 
         ImageQuestionView(
-            currentQuestion = listeningUIState.currentQuestionIndex,
-            timeString = "Ghi thời gian vào đây",
+            currentQuestion = uiState.currentQuestionIndex,
+            timeString = formatTime(uiState.time),
             imageList = imageList,
             imageLabelList = List(imageList.size) { index ->
                 "Pic. " + ('A' + index)
             },
             modifier = Modifier.weight(1f),
-            onPlayClick = {
-                //Làm gì đó
-            },
-            onSubmitClick = {
-                //Làm gì đó
-            }
+            onPlayClick = viewModel::play,
+            onSubmitClick = viewModel::submit
         )
 
         McqQuestionView(
@@ -103,7 +100,7 @@ fun ListeningPracticeScreen(
                 )
             },
             onQuestionChange = { index ->
-                listeningPracticeViewModel.updateCurrentQuestionIndex(index)
+                viewModel.updateCurrentQuestionIndex(index)
             },
             modifier = Modifier.weight(0.6f)
                 .padding(
@@ -111,7 +108,7 @@ fun ListeningPracticeScreen(
                     end = 16.dp,
                     bottom = 16.dp
                 ),
-            viewModel = listeningPracticeViewModel
+            viewModel = viewModel
         )
     }
 }

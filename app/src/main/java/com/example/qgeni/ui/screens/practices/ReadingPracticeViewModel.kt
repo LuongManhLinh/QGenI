@@ -1,38 +1,61 @@
 package com.example.qgeni.ui.screens.practices
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.TextLayoutInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.qgeni.data.model.ReadingPracticeItem
+import com.example.qgeni.data.repository.DefaultReadingRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.bson.types.ObjectId
 
 class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
-    private val _readingPracticeUIState = MutableStateFlow(ReadingPracticeUIState())
-    val readingPracticeUIState = _readingPracticeUIState.asStateFlow()
+    private val _uiState = MutableStateFlow(ReadingPracticeUIState())
+    val uiState = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val readingPracticeItem = DefaultReadingRepository.getItem(ObjectId(idHexString))
+            _uiState.update {
+                it.copy(
+                    readingPracticeItem = readingPracticeItem
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            if (
+                _uiState.value.readingPracticeItem != null
+            ) {
+                while (true) {
+                    updateTime()
+                    kotlinx.coroutines.delay(1000)
+                }
+            }
+        }
+
+    }
 
     fun toggleHighlightEnabled() {
-        _readingPracticeUIState.update { it.copy(isHighlightEnabled = !it.isHighlightEnabled) }
+        _uiState.update { it.copy(isHighlightEnabled = !it.isHighlightEnabled) }
     }
 
     fun toggleHighlightMode() {
-        _readingPracticeUIState.update { it.copy(isHighlightMode = !it.isHighlightMode) }
+        _uiState.update { it.copy(isHighlightMode = !it.isHighlightMode) }
     }
 
     fun updateTime() {
-        _readingPracticeUIState.update { it.copy(time = it.time + 1000L) }
+        _uiState.update { it.copy(time = it.time + 1000L) }
     }
 
     fun updateHighlightedIndices(index: Int, isHighlightMode: Boolean) {
-        _readingPracticeUIState.update {
+        _uiState.update {
             val newIndices = it.highlightedIndices.toMutableList()
             if(isHighlightMode) {
                 if(!newIndices.contains(index)) {
@@ -47,11 +70,11 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
     }
 
     fun updateTextLayoutResult(result: TextLayoutResult?) {
-        _readingPracticeUIState.update { it.copy(textLayoutResult = result) }
+        _uiState.update { it.copy(textLayoutResult = result) }
     }
 
     fun updateCurrentQuestionIndex(index: Int) {
-        _readingPracticeUIState.update {
+        _uiState.update {
             it.copy(
                 currentQuestionIndex = index
             )
@@ -59,7 +82,7 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
     }
 
     fun updateSelectAnswer(selectAnswer: String?) {
-        _readingPracticeUIState.update {
+        _uiState.update {
             it.copy(
                 selectAnswer = selectAnswer
             )
@@ -67,7 +90,7 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
     }
 
     fun updateAnsweredQuestions(questionIndex: Int, answer: String?) {
-        _readingPracticeUIState.update {
+        _uiState.update {
             val currentAnswer = it.answeredQuestions.toMutableMap()
             if (answer != null)
                 currentAnswer[questionIndex] = answer

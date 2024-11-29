@@ -1,7 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,7 +34,7 @@ fun McqQuestionView(
     viewModel: ListeningPracticeViewModel
 ) {
 
-    val mcqUIState by viewModel.listeningPracticeUIState.collectAsState()
+    val mcqUIState by viewModel.uiState.collectAsState()
     Column(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.onPrimary)

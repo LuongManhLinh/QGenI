@@ -47,16 +47,7 @@ import com.example.qgeni.ui.screens.components.CustomSolidButton
 import com.example.qgeni.ui.screens.utils.formatTime
 import com.example.qgeni.ui.theme.QGenITheme
 
-/*
-    Phần hiển thị AudioPlayer, lựa chọn ảnh,
-    và thời gian cho ListeningPracticeScren
- */
 
-sealed class PlaybackState {
-    data object Paused : PlaybackState()
-    data object Playing : PlaybackState()
-    data object Finished : PlaybackState()
-}
 
 @Composable
 fun ImageQuestionView(
@@ -189,6 +180,56 @@ fun ImageQuestionView(
     }
 }
 
+
+@Composable
+fun ImageBox(
+    image: Bitmap,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .wrapContentSize()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(10.dp),
+            )
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(8.dp)
+        )
+        Image(
+            bitmap = image.asImageBitmap(),
+            contentDescription = label,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.clip(
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 10.dp,
+                    bottomEnd = 10.dp
+                )
+            )
+        )
+    }
+}
+
+/*
+    Phần hiển thị AudioPlayer, lựa chọn ảnh,
+    và thời gian cho ListeningPracticeScren
+ */
+
+sealed class PlaybackState {
+    data object Paused : PlaybackState()
+    data object Playing : PlaybackState()
+    data object Finished : PlaybackState()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioPlayer(
@@ -266,43 +307,7 @@ fun AudioPlayer(
     }
 }
 
-@Composable
-fun ImageBox(
-    image: Bitmap,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .wrapContentSize()
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(10.dp),
-            )
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(8.dp)
-        )
-        Image(
-            bitmap = image.asImageBitmap(),
-            contentDescription = label,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.clip(
-                shape = RoundedCornerShape(
-                    topStart = 0.dp,
-                    topEnd = 0.dp,
-                    bottomStart = 10.dp,
-                    bottomEnd = 10.dp
-                )
-            )
-        )
-    }
-}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

@@ -1,7 +1,6 @@
 package com.example.qgeni.ui.screens.navigation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.qgeni.data.preferences.ThemeMode
-import com.example.qgeni.data.repository.ReadingRepository
 import com.example.qgeni.ui.screens.HomeScreen
 import com.example.qgeni.ui.screens.login.ForgotPasswordScreen
 import com.example.qgeni.ui.screens.login.SignInScreen
@@ -170,7 +168,6 @@ fun QGNavHost(
         composable(Screen.ListeningPracticeList.route) {
             ListeningPracticeListScreen(
                 onBackClick = { navController.navigateUp() },
-                onDeleteClick = {},
                 onItemClick = {
                     navController.navigate(
                         Screen.ListeningPractice.route.replace("{idHexString}", it)
@@ -182,7 +179,6 @@ fun QGNavHost(
         composable(Screen.ListeningPracticeGenerator.route) {
             ListeningPracticeGeneratorScreen(
                 onBackClick = { navController.navigateUp() },
-                onNextButtonClick = {},
                 onLeaveButtonClick = { navController.navigate(Screen.ListeningPracticeList.route) }
             )
         }
@@ -190,7 +186,6 @@ fun QGNavHost(
         composable(Screen.ReadingPracticeList.route) {
             ReadingPracticeListScreen(
                 onBackClick = { navController.navigateUp() },
-                onDeleteClick = {},
                 onItemClick = {
                     navController.navigate(
                         Screen.ReadingPractice.route.replace("{idHexString}", it)

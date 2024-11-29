@@ -28,34 +28,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
-import com.example.qgeni.data.model.MockReadingPracticeItem
-import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
     Màn hình hiển thị danh sách đề đọc
  */
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ReadingPracticeListScreen(
-    readingPracticeItemList: List<ReadingPracticeItem>,
     onBackClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    readingPracticeListViewModel: ReadingPracticeListViewModel = viewModel()
+    viewModel: ReadingPracticeListViewModel = viewModel()
 ) {
 
-    val rplUIState by readingPracticeListViewModel.practiceListUIState.collectAsState()
+    val uiState by viewModel.practiceListUIState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -125,18 +116,18 @@ fun ReadingPracticeListScreen(
                     .background(color = MaterialTheme.colorScheme.onPrimary),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(items = readingPracticeItemList, key = {item -> item.id}) { item ->
+                items(items = uiState.practiceItemList, key = { item -> item.id}) { item ->
                     PracticeItemCard(
                         practiceItem = item,
                         onDeleteClick = {
-                            readingPracticeListViewModel.selectItem(item.id)
-                            readingPracticeListViewModel.toggleDeleteDialog(true)
+                            viewModel.selectItem(item.id)
+                            viewModel.toggleDeleteDialog(true)
                         },
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-                                    readingPracticeListViewModel.selectItem(item.id)
-                                    readingPracticeListViewModel.toggleOpenDialog(true)
+                                    viewModel.selectItem(item.id)
+                                    viewModel.toggleOpenDialog(true)
                                 }
                             )
                     )
@@ -144,19 +135,19 @@ fun ReadingPracticeListScreen(
             }
         }
     }
-    if (rplUIState.showDeleteDialog) {
+    if (uiState.showDeleteDialog) {
         DeleteConfirmDialog(
-            onDismissRequest = {readingPracticeListViewModel.toggleDeleteDialog(false)},
-            onDeleteClick = {readingPracticeListViewModel.toggleDeleteDialog(false)},
+            onDismissRequest = {viewModel.toggleDeleteDialog(false)},
+            onDeleteClick = {viewModel.toggleDeleteDialog(false)},
             imageResourceId = R.drawable.reading_open_delete_confirm
         )
     }
-    if (rplUIState.showOpenDialog) {
+    if (uiState.showOpenDialog) {
         OpenConfirmDialog(
-            onDismissRequest = {readingPracticeListViewModel.toggleOpenDialog(false)},
+            onDismissRequest = {viewModel.toggleOpenDialog(false)},
             onOpenClick = {
-                readingPracticeListViewModel.toggleOpenDialog(false)
-                onItemClick(rplUIState.selectedItemId)
+                viewModel.toggleOpenDialog(false)
+                onItemClick(uiState.selectedItemId!!.toHexString())
             },
             imageResourceId = R.drawable.reading_open_delete_confirm
         )
@@ -172,10 +163,7 @@ fun ReadingPracticeListScreen(
 fun ReadingPracticeListLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         ReadingPracticeListScreen(
-            readingPracticeItemList =
-            MockReadingPracticeItem.readingPracticeItemList,
             onBackClick = {},
-            onDeleteClick = {},
             onItemClick = {}
         )
     }
@@ -187,10 +175,7 @@ fun ReadingPracticeListLightScreenPreview() {
 fun ReadingPracticeListDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ReadingPracticeListScreen(
-            readingPracticeItemList =
-            MockReadingPracticeItem.readingPracticeItemList,
             onBackClick = {},
-            onDeleteClick = {},
             onItemClick = {}
         )
     }

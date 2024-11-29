@@ -41,7 +41,6 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun ListeningPracticeGeneratorScreen(
     onBackClick: () -> Unit,
-    onNextButtonClick: () -> Unit,
     onLeaveButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ListeningPracticeGeneratorViewModel = viewModel()
@@ -237,7 +236,6 @@ fun ListeningPracticeGeneratorLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         ListeningPracticeGeneratorScreen(
             onBackClick = {},
-            onNextButtonClick = {},
             {}
         )
     }
@@ -249,7 +247,6 @@ fun ListeningPracticeGeneratorDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ListeningPracticeGeneratorScreen(
             onBackClick = {},
-            onNextButtonClick = {},
             {}
         )
     }

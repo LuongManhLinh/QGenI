@@ -57,12 +57,12 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun PassageView(
-    text: String,
     modifier: Modifier = Modifier,
+    text: String,
     viewModel: ReadingPracticeViewModel
 ) {
 
-    val passageUIState by viewModel.readingPracticeUIState.collectAsState()
+    val passageUIState by viewModel.uiState.collectAsState()
 //    var isHighlightEnabled by remember { mutableStateOf(false) }
 //    var isHighlightMode by remember { mutableStateOf(true) }
 //    var time by remember { mutableStateOf(0L) }
@@ -77,7 +77,6 @@ fun PassageView(
 
     val annotatedText = buildAnnotatedString {
         words.forEachIndexed { index, word ->
-//            if (highlightedIndices.contains(index) && isHighlightEnabled) {
             if(passageUIState.highlightedIndices.contains(index) && passageUIState.isHighlightEnabled) {
                 withStyle(
                     style = SpanStyle(

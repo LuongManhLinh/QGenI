@@ -36,7 +36,7 @@ fun TrueFalseQuestionView(
 //    var selectedAnswer by remember { mutableStateOf<String?>(null) }
 //    var currentQuestionIndex by remember { mutableIntStateOf(0) }
 
-    val tfqUIState by viewModel.readingPracticeUIState.collectAsState()
+    val tfqUIState by viewModel.uiState.collectAsState()
     Column(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.onPrimary)
@@ -195,7 +195,6 @@ fun TrueFalseQuestionView(
 @Composable
 fun TrueFalseQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
-        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
         TrueFalseQuestionView(
             questions = listOf(
                 McqQuestion(
@@ -208,7 +207,6 @@ fun TrueFalseQuestionLightViewPreview() {
                     correctAnswer = "True"
                 )
             ),
-//            answeredQuestions = answeredQuestions,
             viewModel = viewModel()
         )
     }
@@ -219,10 +217,8 @@ fun TrueFalseQuestionLightViewPreview() {
 @Composable
 fun TrueFalseQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
         TrueFalseQuestionView(
             questions = listOf(),
-//            answeredQuestions = answeredQuestions,
             viewModel = viewModel()
         )
     }

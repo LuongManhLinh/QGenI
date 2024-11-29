@@ -27,16 +27,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
-import com.example.qgeni.data.model.ListeningPracticeItem
-import com.example.qgeni.data.model.MockListeningPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
@@ -46,18 +40,13 @@ import com.example.qgeni.ui.theme.QGenITheme
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ListeningPracticeListScreen(
-    listeningPracticeItemList: List<ListeningPracticeItem>,
     onBackClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onItemClick: () -> Unit,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    listeningPracticeListViewModel: ListeningPracticeListViewModel = viewModel()
+    viewModel: ListeningPracticeListViewModel = viewModel()
 ) {
 
-//    var showDeleteDialog by remember { mutableStateOf(false) }
-//    var showOpenDialog by remember { mutableStateOf(false) }
-//    var selectedItemId by remember { mutableIntStateOf(-1) }
-    val lplUIState by listeningPracticeListViewModel.practiceListUIState.collectAsState()
+    val uiState by viewModel.practiceListUIState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -127,22 +116,18 @@ fun ListeningPracticeListScreen(
                     .background(color = MaterialTheme.colorScheme.onPrimary),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(items = listeningPracticeItemList, key = {item -> item.id}) { item ->
+                items(items =uiState.practiceItemList, key = { item -> item.id}) { item ->
                     PracticeItemCard(
                         practiceItem = item,
                         onDeleteClick = {
-//                            selectedItemId = item.id
-//                            showDeleteDialog = true
-                            listeningPracticeListViewModel.selectItem(item.id)
-                            listeningPracticeListViewModel.toggleDeleteDialog(true)
+                            viewModel.selectItem(item.id)
+                            viewModel.toggleDeleteDialog(true)
                         },
                         modifier = Modifier
                             .clickable(
                                 onClick = {
-//                                    selectedItemId = item.id
-//                                    showOpenDialog = true
-                                    listeningPracticeListViewModel.selectItem(item.id)
-                                    listeningPracticeListViewModel.toggleOpenDialog(true)
+                                    viewModel.selectItem(item.id)
+                                    viewModel.toggleOpenDialog(true)
                                 }
                             )
                     )
@@ -150,24 +135,20 @@ fun ListeningPracticeListScreen(
             }
         }
     }
-//    if (showDeleteDialog) {
-    if(lplUIState.showDeleteDialog) {
+
+    if(uiState.showDeleteDialog) {
         DeleteConfirmDialog(
-//            onDismissRequest = { showDeleteDialog = false },
-//            onDeleteClick = { showDeleteDialog = false }
-            onDismissRequest = {listeningPracticeListViewModel.toggleDeleteDialog(false)},
-            onDeleteClick = {listeningPracticeListViewModel.toggleDeleteDialog(false)},
+            onDismissRequest = {viewModel.toggleDeleteDialog(false)},
+            onDeleteClick = {viewModel.toggleDeleteDialog(false)},
             imageResourceId = R.drawable.listening_open_delete_confirm
         )
     }
-//    if (showOpenDialog) {
-    if(lplUIState.showOpenDialog) {
+    if(uiState.showOpenDialog) {
         OpenConfirmDialog(
-//            onDismissRequest = { showOpenDialog = false },
-            onDismissRequest = {listeningPracticeListViewModel.toggleOpenDialog(false)},
+            onDismissRequest = {viewModel.toggleOpenDialog(false)},
             onOpenClick = {
-                listeningPracticeListViewModel.toggleOpenDialog(false)
-                onItemClick()
+                viewModel.toggleOpenDialog(false)
+                onItemClick(uiState.selectedItemId!!.toHexString())
             },
             imageResourceId = R.drawable.listening_open_delete_confirm
         )
@@ -180,10 +161,7 @@ fun ListeningPracticeListScreen(
 fun ListeningPracticeListLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         ListeningPracticeListScreen(
-            listeningPracticeItemList =
-            MockListeningPracticeItem.listeningPracticeItemList,
             onBackClick = {},
-            onDeleteClick = {},
             onItemClick = {}
         )
     }
@@ -195,10 +173,7 @@ fun ListeningPracticeListLightScreenPreview() {
 fun ListeningPracticeListDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ListeningPracticeListScreen(
-            listeningPracticeItemList =
-            MockListeningPracticeItem.listeningPracticeItemList,
             onBackClick = {},
-            onDeleteClick = {},
             onItemClick = {}
         )
     }

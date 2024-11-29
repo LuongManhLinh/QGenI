@@ -42,6 +42,7 @@ import com.example.qgeni.data.model.PracticeItem
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.utils.formatDate
 import com.example.qgeni.ui.theme.QGenITheme
+import org.bson.types.ObjectId
 import java.util.Date
 
 
@@ -442,7 +443,7 @@ fun PracticeItemLightPreview() {
     QGenITheme(dynamicColor = false) {
         PracticeItemCard(
             ListeningPracticeItem(
-                id = 0,
+                id = ObjectId(),
                 title = "Capybara",
                 creationDate = Date(),
                 isNew = true,
@@ -461,7 +462,7 @@ fun PracticeItemDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         PracticeItemCard(
             ListeningPracticeItem(
-                id = 0,
+                id = ObjectId(),
                 title = "Capybara",
                 creationDate = Date(),
                 isNew = true,
