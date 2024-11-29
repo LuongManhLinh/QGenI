@@ -27,13 +27,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.data.model.ListeningPracticeItem
+import com.example.qgeni.data.model.MockListeningPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
-import java.util.Date
 
 /*
     Hiển thị danh sách đề nghe
@@ -42,13 +46,17 @@ import java.util.Date
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ListeningPracticeListScreen(
+    listeningPracticeItemList: List<ListeningPracticeItem>,
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onItemClick: (String) -> Unit,
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
     listeningPracticeListViewModel: ListeningPracticeListViewModel = viewModel()
 ) {
 
+//    var showDeleteDialog by remember { mutableStateOf(false) }
+//    var showOpenDialog by remember { mutableStateOf(false) }
+//    var selectedItemId by remember { mutableIntStateOf(-1) }
     val lplUIState by listeningPracticeListViewModel.practiceListUIState.collectAsState()
 
     Column(
@@ -119,16 +127,20 @@ fun ListeningPracticeListScreen(
                     .background(color = MaterialTheme.colorScheme.onPrimary),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(items = lplUIState.practiceItemList, key = {item -> item.id}) { item ->
+                items(items = listeningPracticeItemList, key = {item -> item.id}) { item ->
                     PracticeItemCard(
                         practiceItem = item,
                         onDeleteClick = {
+//                            selectedItemId = item.id
+//                            showDeleteDialog = true
                             listeningPracticeListViewModel.selectItem(item.id)
                             listeningPracticeListViewModel.toggleDeleteDialog(true)
                         },
                         modifier = Modifier
                             .clickable(
                                 onClick = {
+//                                    selectedItemId = item.id
+//                                    showOpenDialog = true
                                     listeningPracticeListViewModel.selectItem(item.id)
                                     listeningPracticeListViewModel.toggleOpenDialog(true)
                                 }
@@ -154,7 +166,7 @@ fun ListeningPracticeListScreen(
             onDismissRequest = {listeningPracticeListViewModel.toggleOpenDialog(false)},
             onOpenClick = {
                 listeningPracticeListViewModel.toggleOpenDialog(false)
-                onItemClick(lplUIState.selectedItemId!!.toHexString())
+                onItemClick()
             }
         )
     }
@@ -166,6 +178,8 @@ fun ListeningPracticeListScreen(
 fun ListeningPracticeListLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         ListeningPracticeListScreen(
+            listeningPracticeItemList =
+            MockListeningPracticeItem.listeningPracticeItemList,
             onBackClick = {},
             onDeleteClick = {},
             onItemClick = {}
@@ -179,6 +193,8 @@ fun ListeningPracticeListLightScreenPreview() {
 fun ListeningPracticeListDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ListeningPracticeListScreen(
+            listeningPracticeItemList =
+            MockListeningPracticeItem.listeningPracticeItemList,
             onBackClick = {},
             onDeleteClick = {},
             onItemClick = {}

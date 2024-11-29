@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -120,10 +121,14 @@ fun PracticeItemCard(
     }
 }
 
+//reading thì truyền R.drawable.reading_submit_confirm
+//leading thì truyền R.drawable.listening_submit_confirm
 @Composable
-fun DeleteConfirmDialog(
+fun SubmitConfirm(
     onDismissRequest: () -> Unit,
-    onDeleteClick: () -> Unit
+    onSubmitClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Box(
@@ -146,39 +151,132 @@ fun DeleteConfirmDialog(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Bạn có chắc chắn muốn xóa đề này không",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Button(
-                        onClick = onDismissRequest,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent
-                        ),
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(imageResourceId),
+                        contentDescription = "fairy",
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.tertiary,
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "HỦY",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    CustomOutlinedButton(
-                        onClick = onDeleteClick,
-                        text = "XÓA",
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Bạn có chắc chắn muốn nộp bài không",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row {
+                        Button(
+                            onClick = onDismissRequest,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "HỦY",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        CustomOutlinedButton(
+                            onClick = onSubmitClick,
+                            text = "XÁC NHẬN",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DeleteConfirmDialog(
+    onDismissRequest: () -> Unit,
+    onDeleteClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .clip(RoundedCornerShape(10.dp))
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp)
+                ),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(imageResourceId),
+                        contentDescription = "fairy",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Bạn có chắc chắn muốn xóa đề này",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row {
+                        Button(
+                            onClick = onDismissRequest,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "HỦY",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        CustomOutlinedButton(
+                            onClick = onDeleteClick,
+                            text = "XÓA",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
         }
@@ -188,7 +286,9 @@ fun DeleteConfirmDialog(
 @Composable
 fun OpenConfirmDialog(
     onDismissRequest: () -> Unit,
-    onOpenClick: () -> Unit
+    onOpenClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Box(
@@ -211,39 +311,52 @@ fun OpenConfirmDialog(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Bạn có chắc chắn muốn mở đề này không",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Button(
-                        onClick = onDismissRequest,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent
-                        ),
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(imageResourceId),
+                        contentDescription = "fairy",
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.tertiary,
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "HỦY",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    CustomOutlinedButton(
-                        onClick = onOpenClick,
-                        text = "MỞ",
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Bạn có chắc chắn muốn mở đề này",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row {
+                        Button(
+                            onClick = onDismissRequest,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "HỦY",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        CustomOutlinedButton(
+                            onClick = onOpenClick,
+                            text = "MỞ",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
         }
@@ -252,11 +365,37 @@ fun OpenConfirmDialog(
 
 @Preview
 @Composable
+fun SubmitConfirmDialogLightPreview() {
+    QGenITheme(dynamicColor = false) {
+        SubmitConfirm(
+            {},
+            {},
+            imageResourceId = R.drawable.reading_submit_confirm
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SubmitConfirmDialogDarkPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        SubmitConfirm(
+            {},
+            {},
+            imageResourceId = R.drawable.reading_open_delete_confirm
+        )
+    }
+}
+
+@Preview
+@Composable
 fun OpenConfirmDialogLightPreview() {
     QGenITheme(dynamicColor = false) {
         OpenConfirmDialog(
-            {}
-        ) { }
+            {},
+            {},
+            imageResourceId = R.drawable.reading_submit_confirm
+        )
     }
 }
 
@@ -265,8 +404,10 @@ fun OpenConfirmDialogLightPreview() {
 fun OpenConfirmDialogDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         OpenConfirmDialog(
-            {}
-        ) { }
+            {},
+            {},
+            imageResourceId = R.drawable.reading_open_delete_confirm
+        )
     }
 }
 
@@ -275,8 +416,10 @@ fun OpenConfirmDialogDarkPreview() {
 fun DeleteConfirmDialogLightPreview() {
     QGenITheme(dynamicColor = false) {
         DeleteConfirmDialog(
-            {}
-        ) { }
+            {},
+            {},
+            imageResourceId = R.drawable.listening_submit_confirm
+        )
     }
 }
 
@@ -285,8 +428,10 @@ fun DeleteConfirmDialogLightPreview() {
 fun DeleteConfirmDialogDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         DeleteConfirmDialog(
-            {}
-        ) { }
+            {},
+            {},
+            imageResourceId = R.drawable.listening_open_delete_confirm
+        )
     }
 }
 
