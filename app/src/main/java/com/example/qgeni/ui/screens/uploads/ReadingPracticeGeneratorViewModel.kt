@@ -1,45 +1,32 @@
-package com.example.qgeni.ui.screens.uploads
 
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.qgeni.api.qgs.QgsGeminiAPI
+import com.example.qgeni.application.IdsApplication
+import com.example.qgeni.application.QgsApplication
 import com.example.qgeni.data.model.McqQuestion
+import com.example.qgeni.data.model.ReadingPracticeItem
+import com.example.qgeni.data.repository.DefaultListeningRepository
+import com.example.qgeni.data.repository.DefaultReadingRepository
+import com.example.qgeni.ui.screens.uploads.GeneratorState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-open class OldPracticeGeneratorViewModel : ViewModel() {
-    private val _listeningUIState = MutableStateFlow(ListeningPracticeGeneratorUIState())
-    val listeningUIState = _listeningUIState.asStateFlow()
+open class ReadingPracticeGeneratorViewModel : ViewModel() {
 
     private val _readingUIState = MutableStateFlow(ReadingPracticeGeneratorUIState())
     val readingUIState = _readingUIState.asStateFlow()
 
-    fun updateListeningUploadFileDialog(show: Boolean) {
-        _listeningUIState.update { it.copy(showUploadFileDialog = show) }
-    }
-
-    fun selectListeningOption(option: String) {
-        _listeningUIState.update { it.copy(selectedOption = option) }
-    }
-
-    fun updateListeningGeneratorState(state: GeneratorState) {
-        _listeningUIState.update { it.copy(currentState = state) }
-    }
-
-    fun updateImageUri(uri: Uri) {
-        _listeningUIState.update {
-            it.copy(
-                imageUri = uri
-            )
-        }
-    }
-
+    private val readingPracticeItem: ReadingPracticeItem? = null
     fun updateReadingUploadFileDialog(show: Boolean) {
         _readingUIState.update { it.copy(showUploadFileDialog = show) }
     }
@@ -83,36 +70,57 @@ open class OldPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-
-    suspend fun fetchReadingQuestions(paragraph: String): List<McqQuestion> {
-        return try {
-            val result = QgsGeminiAPI.generateQuestions(
-                paragraph,
-                _readingUIState.value.inputNumStatement.toInt()
-            )
-            val resultMcqQuestion: List<McqQuestion> = result.map { qgsForm ->
-                McqQuestion(
-                    question = qgsForm.statement,
-                    answerList = listOf("True", "False", "Not given"),
-                    correctAnswer = qgsForm.answer
-                )
-            }
-            resultMcqQuestion.forEach { mcqQuestion ->
-                Log.i("readingQuestion", mcqQuestion.question)
-                Log.i("answerList", mcqQuestion.answerList.joinToString { ", " })
-                Log.i("answer", mcqQuestion.correctAnswer)
-            }
+    fun saveReadingPractice() {
+        if (readingPracticeItem == null) {
             _readingUIState.update {
                 it.copy(
-                    listReadingQuestion = resultMcqQuestion,
+                    currentState = GeneratorState.Error
                 )
             }
-            Log.d("Fetch success", result.toString())
-            resultMcqQuestion
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("Fetch error", e.toString())
-            emptyList() // Return empty list if there is an error
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            DefaultReadingRepository.insert(
+                readingPracticeItem!!.copy(
+                    title = _readingUIState.value.title
+                )
+            )
+        }
+
+        _readingUIState.update {
+            it.copy(
+                currentState = GeneratorState.Success
+            )
+        }
+    }
+
+    fun createReadingPractice() {
+        _readingUIState.update {
+            it.copy(
+                currentState = GeneratorState.Loading
+            )
+        }
+
+        viewModelScope.launch {
+            val practiceItem = QgsApplication.getReadingPracticeItem(
+                _readingUIState.value.inputParagraph,
+                _readingUIState.value.inputNumStatement.toInt()
+            )
+            Log.i("Item practice", practiceItem.toString())
+            if (practiceItem != null) {
+                _readingUIState.update {
+                    it.copy(
+                        currentState = GeneratorState.Success
+                    )
+                }
+                DefaultReadingRepository.insert(practiceItem)
+            } else {
+                _readingUIState.update {
+                    it.copy(
+                        currentState = GeneratorState.Error
+                    )
+                }
+            }
         }
     }
 
@@ -124,6 +132,11 @@ open class OldPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
+    fun isFullInfo(): Boolean {
+        return !(_readingUIState.value.inputParagraph == ""
+                || _readingUIState.value.inputNumStatement == ""
+                || _readingUIState.value.textUri == Uri.EMPTY)
+    }
     fun updateTextUri(context: Context, uri: Uri) {
         val fileName = getFileName(context, uri)
         val fileContent = readFileContent(context, uri)
@@ -137,7 +150,6 @@ open class OldPracticeGeneratorViewModel : ViewModel() {
         }
     }
 }
-
 
 private fun getFileName(context: Context, uri: Uri): String {
     var fileName = ""
@@ -158,16 +170,6 @@ private fun readFileContent(context: Context, uri: Uri): String {
     val reader = BufferedReader(InputStreamReader(inputStream))
     return reader.readText()
 }
-
-
-
-
-data class ListeningPracticeGeneratorUIState(
-    val showUploadFileDialog: Boolean = false,
-    val selectedOption: String = "Chọn model",
-    val currentState: GeneratorState = GeneratorState.Idle,
-    val imageUri: Uri = Uri.EMPTY
-)
 
 
 data class ReadingPracticeGeneratorUIState(

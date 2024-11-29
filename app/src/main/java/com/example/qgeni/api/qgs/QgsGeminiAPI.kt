@@ -1,6 +1,8 @@
 package com.example.qgeni.api.qgs
 
 import android.util.Log
+import com.example.qgeni.data.model.ReadingAnswer
+import com.example.qgeni.data.model.ReadingQuestion
 import com.google.ai.client.generativeai.GenerativeModel
 
 object QgsGeminiAPI : IQgsAPI {
@@ -14,8 +16,8 @@ object QgsGeminiAPI : IQgsAPI {
         apiKey = key
     )
 
-    override suspend fun generateQuestions(paragraph: String, numQuestions: Int): List<QgsForm> {
-        val output = mutableListOf<QgsForm>()
+    override suspend fun generateQuestions(paragraph: String, numQuestions: Int): List<ReadingQuestion> {
+        val output = mutableListOf<ReadingQuestion>()
         val input = paragraph + REQUEST.format(numQuestions)
         Log.i("INPUT", input)
         try {
@@ -28,7 +30,9 @@ object QgsGeminiAPI : IQgsAPI {
             for (match in matches) {
                 val statement = match.groups[1]?.value ?: ""
                 val answer = match.groups[2]?.value ?: ""
-                output.add(QgsForm(statement, answer))
+                val uppercasedString = answer.uppercase().replace(" ", "_")
+                val enumValue = ReadingAnswer.valueOf(uppercasedString)
+                output.add(ReadingQuestion(statement, enumValue))
             }
         } catch (e: Exception) {
             Log.e("Gemini false", "Exception occur: $e")
