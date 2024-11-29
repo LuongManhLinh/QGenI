@@ -1,25 +1,19 @@
 package com.example.qgeni.ui.screens.uploads
 
 import android.content.Context
+import android.graphics.pdf.PdfDocument
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.qgeni.api.qgs.QgsForm
 import com.example.qgeni.api.qgs.QgsGeminiAPI
 import com.example.qgeni.data.model.McqQuestion
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 open class BasePracticeGeneratorViewModel : ViewModel() {
     private val _listeningUIState = MutableStateFlow(ListeningPracticeGeneratorUIState())
@@ -162,9 +156,9 @@ private fun getFileName(context: Context, uri: Uri): String {
 
 private fun readFileContent(context: Context, uri: Uri): String {
     val inputStream = context.contentResolver.openInputStream(uri)
-    return inputStream?.bufferedReader().use { it?.readText() } ?: "Error"
+    val reader = BufferedReader(InputStreamReader(inputStream))
+    return reader.readText()
 }
-
 
 
 
@@ -174,6 +168,7 @@ data class ListeningPracticeGeneratorUIState(
     val currentState: GeneratorState = GeneratorState.Idle,
     val imageUri: Uri = Uri.EMPTY
 )
+
 
 data class ReadingPracticeGeneratorUIState(
     val showUploadFileDialog: Boolean = false,

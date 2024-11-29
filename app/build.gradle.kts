@@ -79,8 +79,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
 
-
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

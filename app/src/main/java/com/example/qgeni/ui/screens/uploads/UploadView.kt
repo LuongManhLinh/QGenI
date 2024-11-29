@@ -199,7 +199,7 @@ fun UploadFileScreen(
                                 } else {
                                     filePicker.launch(
                                         arrayOf(
-                                            "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"
+                                            "text/plain"
                                         )
                                     )
                                 }
