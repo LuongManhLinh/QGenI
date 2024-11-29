@@ -28,15 +28,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
-import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -47,10 +42,9 @@ import com.example.qgeni.ui.theme.QGenITheme
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ReadingPracticeListScreen(
-    readingPracticeItemList: List<ReadingPracticeItem>,
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     readingPracticeListViewModel: ReadingPracticeListViewModel = viewModel()
 ) {
@@ -125,7 +119,7 @@ fun ReadingPracticeListScreen(
                     .background(color = MaterialTheme.colorScheme.onPrimary),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(items = readingPracticeItemList, key = {item -> item.id}) { item ->
+                items(items = rplUIState.practiceItemList, key = {item -> item.id}) { item ->
                     PracticeItemCard(
                         practiceItem = item,
                         onDeleteClick = {
@@ -155,42 +149,11 @@ fun ReadingPracticeListScreen(
             onDismissRequest = {readingPracticeListViewModel.toggleOpenDialog(false)},
             onOpenClick = {
                 readingPracticeListViewModel.toggleOpenDialog(false)
-                onItemClick(rplUIState.selectedItemId)
+                onItemClick(rplUIState.selectedItemId?.toHexString() ?: "")
             }
         )
     }
 }
 
 
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ReadingPracticeListLightScreenPreview() {
-    QGenITheme(dynamicColor = false) {
-        ReadingPracticeListScreen(
-            readingPracticeItemList =
-            MockReadingPracticeItem.readingPracticeItemList,
-            onBackClick = {},
-            onDeleteClick = {},
-            onItemClick = {}
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ReadingPracticeListDarkScreenPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        ReadingPracticeListScreen(
-            readingPracticeItemList =
-            MockReadingPracticeItem.readingPracticeItemList,
-            onBackClick = {},
-            onDeleteClick = {},
-            onItemClick = {}
-        )
-    }
-}
 

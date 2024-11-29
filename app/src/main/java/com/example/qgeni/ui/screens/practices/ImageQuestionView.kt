@@ -1,14 +1,23 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.media.AudioRecord
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -16,23 +25,27 @@ import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.qgeni.data.model.ImageData
-import com.example.qgeni.data.model.ImageItem
+import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomSolidButton
 import com.example.qgeni.ui.screens.utils.formatTime
 import com.example.qgeni.ui.theme.QGenITheme
-import kotlinx.coroutines.delay
 
 /*
     Phần hiển thị AudioPlayer, lựa chọn ảnh,
@@ -48,42 +61,13 @@ sealed class PlaybackState {
 @Composable
 fun ImageQuestionView(
     currentQuestion: Int,
-    record: String,
-    imageList: List<ImageItem>,
+    timeString: String,
+    imageList: List<Bitmap>,
+    imageLabelList: List<String>,
     modifier: Modifier = Modifier,
     onPlayClick: () -> Unit,
-    viewModel: ListeningPracticeViewModel
+    onSubmitClick: () -> Unit,
 ) {
-//    var time by remember { mutableLongStateOf(0L) }
-//
-//    var playbackState by remember { mutableStateOf<PlaybackState>(PlaybackState.Paused) }
-//    var sliderPosition by remember { mutableFloatStateOf(0f) }
-    val ImqUIState by viewModel.listeningPracticeUIState.collectAsState()
-    val duration = 100f
-
-    // Chạy bộ đếm khi trạng thái là Playing
-    LaunchedEffect(ImqUIState.playbackState) {
-        if (ImqUIState.playbackState is PlaybackState.Playing) {
-            while (ImqUIState.sliderPosition < duration) {
-//                sliderPosition += 1f
-                viewModel.updateSliderPosition(ImqUIState.sliderPosition + 1f)
-                delay(1000)
-            }
-            if (ImqUIState.sliderPosition >= duration) {
-//                    playbackState = PlaybackState.Finished
-                viewModel.updatePlaybackState(PlaybackState.Finished)
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1000L)
-//            time += 1000L
-            viewModel.updateTime()
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -107,14 +91,14 @@ fun ImageQuestionView(
                 color = MaterialTheme.colorScheme.tertiary
             )
             Text(
-                text = formatTime(ImqUIState.time),
+                text = timeString,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
             CustomSolidButton(
-                onClick = { /* Submit action */ },
+                onClick = onSubmitClick,
                 text = "NỘP BÀI",
             )
         }
@@ -177,37 +161,6 @@ fun ImageQuestionView(
                 modifier = Modifier.weight(1f)
             )
         }
-//        AudioPlayer(
-//            playbackState = ImqUIState.playbackState,
-//            sliderPosition = ImqUIState.sliderPosition,
-//            duration = duration,
-//            onSliderPositionChange = { viewModel.updateSliderPosition(it) },
-//            onPlayClick = {
-////                playbackState = when (playbackState) {
-////                    is PlaybackState.Paused -> PlaybackState.Playing
-////                    is PlaybackState.Playing -> PlaybackState.Paused
-////                    is PlaybackState.Finished -> {
-////                        sliderPosition = 0f
-////                        PlaybackState.Playing
-////                    }
-////                }
-//                when (ImqUIState.playbackState) {
-//                    PlaybackState.Paused -> viewModel.updatePlaybackState(PlaybackState.Playing)
-//                    PlaybackState.Playing -> viewModel.updatePlaybackState(PlaybackState.Paused)
-//                    else -> {
-//                        viewModel.updateSliderPosition(0f)
-//                        viewModel.updatePlaybackState(PlaybackState.Playing)
-//                    }
-//                }
-//            },
-//            onValueChangeFinished = {
-//                if (ImqUIState.sliderPosition >= duration) {
-////                    playbackState =
-////                        PlaybackState.Finished
-//                    viewModel.updatePlaybackState(PlaybackState.Finished)
-//                }
-//            }
-//        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -226,8 +179,11 @@ fun ImageQuestionView(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(imageList) { item ->
-                ImageBox(item)
+            items(imageList.size) { index ->
+                ImageBox(
+                    image = imageList[index],
+                    label = imageLabelList[index],
+                )
             }
         }
     }
@@ -312,12 +268,13 @@ fun AudioPlayer(
 
 @Composable
 fun ImageBox(
-    item: ImageItem,
+    image: Bitmap,
+    label: String,
     modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .wrapContentSize()
             .border(
                 width = 1.dp,
@@ -326,14 +283,14 @@ fun ImageBox(
             )
     ) {
         Text(
-            text = item.label,
+            text = label,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(8.dp)
         )
         Image(
-            painter = painterResource(item.imageRes),
-            contentDescription = item.label,
+            bitmap = image.asImageBitmap(),
+            contentDescription = label,
             contentScale = ContentScale.Fit,
             modifier = Modifier.clip(
                 shape = RoundedCornerShape(
@@ -351,12 +308,16 @@ fun ImageBox(
 @Composable
 fun ImageQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
+        val context = LocalContext.current
+        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.avatar)
+        val bitmapList = listOf(bitmap, bitmap, bitmap)
         ImageQuestionView(
             currentQuestion = 0,
-            "null",
-            imageList = ImageData.imageList,
+            timeString = "00:00",
+            imageList = bitmapList,
+            imageLabelList = listOf("Pic. A", "Pic. B", "Pic. C"),
             onPlayClick = {},
-            viewModel = viewModel()
+            onSubmitClick = {}
         )
     }
 }
@@ -365,31 +326,21 @@ fun ImageQuestionLightViewPreview() {
 @Composable
 fun ImageQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
+        val context = LocalContext.current
+        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.avatar)
+        val bitmapList = listOf(bitmap, bitmap, bitmap)
         ImageQuestionView(
             currentQuestion = 0,
-            "null",
-            imageList = ImageData.imageList,
+            timeString = "00:00",
+            imageList = bitmapList,
+            imageLabelList = listOf("Pic. A", "Pic. B", "Pic. C"),
             onPlayClick = {},
-            viewModel = viewModel()
+            onSubmitClick = {}
         )
     }
 }
 
-@Preview
-@Composable
-fun ImageBoxLightPreview() {
-    QGenITheme(dynamicColor = false) {
-        ImageBox(ImageData.imageList[0])
-    }
-}
 
-@Preview
-@Composable
-fun ImageBoxDarkPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        ImageBox(ImageData.imageList[0])
-    }
-}
 
 
 

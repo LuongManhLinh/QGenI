@@ -10,9 +10,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.qgeni.data.model.MockListeningPracticeItem
-import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.data.preferences.ThemeMode
+import com.example.qgeni.data.repository.ReadingRepository
 import com.example.qgeni.ui.screens.HomeScreen
 import com.example.qgeni.ui.screens.login.ForgotPasswordScreen
 import com.example.qgeni.ui.screens.login.SignInScreen
@@ -21,7 +20,6 @@ import com.example.qgeni.ui.screens.login.VerificationScreen
 import com.example.qgeni.ui.screens.practices.ListeningPracticeListScreen
 import com.example.qgeni.ui.screens.practices.ListeningPracticeScreen
 import com.example.qgeni.ui.screens.practices.ReadingPracticeListScreen
-import com.example.qgeni.ui.screens.practices.ReadingPracticeListViewModel
 import com.example.qgeni.ui.screens.practices.ReadingPracticeScreen
 import com.example.qgeni.ui.screens.practices.SelectionScreen
 import com.example.qgeni.ui.screens.profile.ChangeInformationScreen
@@ -35,10 +33,10 @@ sealed class Screen(val route: String) {
     data object SignIn : Screen("sign_in")
     data object SignUp : Screen("sign_up")
     data object Verification : Screen("verification")
-    data object ListeningPractice : Screen("listening_practice")
+    data object ListeningPractice : Screen("listening_practice/{idHexString}")
     data object ListeningPracticeList: Screen("listening_practice_list")
     data object ListeningPracticeGenerator : Screen("listening_practice_generator")
-    data object ReadingPractice : Screen("reading_practice/{itemId}")
+    data object ReadingPractice : Screen("reading_practice/{idHexString}")
     data object ReadingPracticeList: Screen("reading_practice_list")
     data object ReadingPracticeGenerator : Screen("reading_practice_generator")
     data object Selection : Screen("selection")
@@ -62,12 +60,14 @@ fun QGNavHost(
         startDestination = Screen.Welcome.route,
         modifier = modifier
     ) {
+
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClick = { navController.navigateUp() },
                 onNextButtonClick = {navController.navigate(Screen.Verification.route)}
             )
         }
+
         composable(
             Screen.SignIn.route,
 //            enterTransition = {
@@ -87,6 +87,7 @@ fun QGNavHost(
                 onSignUpClick = { navController.navigate(Screen.SignUp.route) }
             )
         }
+
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 onBackClick = { navController.navigateUp() },
@@ -94,6 +95,7 @@ fun QGNavHost(
                 onSignInClick = { navController.navigate(Screen.SignIn.route) }
             )
         }
+
         composable(Screen.Verification.route) {
             VerificationScreen(
                 otpValue = "",
@@ -101,27 +103,27 @@ fun QGNavHost(
                 onNextButtonClick = { navController.navigate(Screen.SignIn.route) }
             )
         }
-        composable(Screen.ListeningPractice.route) {
+
+        composable(
+            route = Screen.ListeningPractice.route,
+            arguments = listOf(navArgument("idHexString") { type = NavType.StringType })
+        ) { backStackEntry ->
             ListeningPracticeScreen(
-                listeningPracticeItem = MockListeningPracticeItem.listeningPracticeItem,
+                idHexString = backStackEntry.arguments?.getString("idHexString") ?: "",
                 onBackClick = { navController.navigateUp() }
             )
         }
 
         composable(
             Screen.ReadingPractice.route,
-            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
-            ) {backStackEntry ->
-            Log.i("this is detail qs", 123.toString())
-            val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
-//            val readingPracticeItem = MockListeningPracticeItem.listeningPracticeItemList.find { it.id == itemId }
-            MockReadingPracticeItem.readingPracticeItemList.find { it.id == itemId }?.let {
-                ReadingPracticeScreen(
-                    readingPracticeItem = it,
-                    onBackClick = { navController.navigateUp() },
-                )
-            }
+            arguments = listOf(navArgument("idHexString") { type = NavType.StringType })
+        ) { backStackEntry ->
+            ReadingPracticeScreen(
+                idHexString = backStackEntry.arguments?.getString("idHexString") ?: "",
+                onBackClick = { navController.navigateUp() }
+            )
         }
+
         composable(Screen.Selection.route) {
             SelectionScreen(
                 onBackClick = { navController.navigateUp() },
@@ -129,6 +131,7 @@ fun QGNavHost(
                 onReadingListClick = { navController.navigate(Screen.ReadingPracticeList.route) }
             )
         }
+
         composable(
             Screen.Welcome.route,
 //            exitTransition = {
@@ -145,6 +148,7 @@ fun QGNavHost(
                 onNextButtonClick = { navController.navigate(Screen.SignIn.route) }
             )
         }
+
         composable(Screen.Home.route) {
             HomeScreen(
                 onListeningClick = { navController.navigate(Screen.ListeningPracticeGenerator.route) },
@@ -153,6 +157,7 @@ fun QGNavHost(
                 onAvatarClick = { navController.navigate(Screen.Profile.route) }
             )
         }
+
         composable(Screen.Profile.route) {
             ProfileScreen(
                 onBackClick = { navController.navigateUp() },
@@ -161,15 +166,19 @@ fun QGNavHost(
                 onThemeChange = onThemeChange
             )
         }
+
         composable(Screen.ListeningPracticeList.route) {
             ListeningPracticeListScreen(
-                listeningPracticeItemList =
-                MockListeningPracticeItem.listeningPracticeItemList,
                 onBackClick = { navController.navigateUp() },
                 onDeleteClick = {},
-                onItemClick = { navController.navigate(Screen.ListeningPractice.route) }
+                onItemClick = {
+                    navController.navigate(
+                        Screen.ListeningPractice.route.replace("{idHexString}", it)
+                    )
+                }
             )
         }
+
         composable(Screen.ListeningPracticeGenerator.route) {
             ListeningPracticeGeneratorScreen(
                 onBackClick = { navController.navigateUp() },
@@ -177,18 +186,19 @@ fun QGNavHost(
                 onLeaveButtonClick = { navController.navigate(Screen.ListeningPracticeList.route) }
             )
         }
+
         composable(Screen.ReadingPracticeList.route) {
             ReadingPracticeListScreen(
-                readingPracticeItemList =
-                MockReadingPracticeItem.readingPracticeItemList,
                 onBackClick = { navController.navigateUp() },
                 onDeleteClick = {},
                 onItemClick = {
-                    Log.i("idlist", it.toString())
-                    navController.navigate(Screen.ReadingPractice.route.replace("{itemId}", "$it"))
+                    navController.navigate(
+                        Screen.ReadingPractice.route.replace("{idHexString}", it)
+                    )
                 }
             )
         }
+
         composable(Screen.ReadingPracticeGenerator.route) {
             ReadingPracticeGeneratorScreen(
                 onBackClick = { navController.navigateUp() },
@@ -196,6 +206,7 @@ fun QGNavHost(
                 onLeaveButtonClick = { navController.navigate(Screen.ReadingPracticeList.route) }
             )
         }
+
         composable(Screen.ChangeInfo.route) {
             ChangeInformationScreen(
                 onBackClick = { navController.navigateUp() },

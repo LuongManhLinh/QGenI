@@ -1,21 +1,45 @@
 package com.example.qgeni.data.model
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import java.time.LocalDate
+import org.bson.types.ObjectId
+import java.util.Date
+
+
 
 data class ReadingPracticeItem(
-    override val id: Int,
+    override val id: ObjectId,
     override val title: String,
     val passage: String,
-    val numStatement: String,
-    override val creationDate: LocalDate,
+    override val creationDate: Date,
     override val isNew: Boolean,
-    val questionList: List<McqQuestion>
-) : PracticeItem
+    val questionList: List<ReadingQuestion>
+) : PracticeItem(id, title, creationDate, isNew)
 
-object MockReadingPracticeItem {
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    val readingPracticeItemList: MutableList<ReadingPracticeItem> = mutableListOf()
+
+data class ReadingQuestion(
+    val statement: String,
+    val answer: ReadingAnswer
+)
+
+
+
+enum class ReadingAnswer {
+    TRUE {
+        override fun toString(): String {
+            return "TRUE"
+        }
+    },
+
+    FALSE {
+        override fun toString(): String {
+            return "FALSE"
+        }
+    },
+
+    NOT_GIVEN {
+        override fun toString(): String {
+            return "NOT GIVEN"
+        }
+    }
 }
+

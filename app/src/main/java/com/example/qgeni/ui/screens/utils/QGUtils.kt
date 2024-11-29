@@ -1,10 +1,6 @@
 package com.example.qgeni.ui.screens.utils
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -27,8 +23,4 @@ fun formatDate(date: Date): String {
     return formatter.format(date)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun formatDate(date: LocalDate): String {
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-    return date.format(formatter)
-}
+

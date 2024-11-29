@@ -1,52 +1,52 @@
 package com.example.qgeni.data.repository
 
-import kotlinx.coroutines.runBlocking
+import com.example.qgeni.data.model.PracticeItem
+import com.example.qgeni.data.model.ReadingAnswer
+import com.example.qgeni.data.model.ReadingPracticeItem
+import com.example.qgeni.data.model.ReadingQuestion
+import com.example.qgeni.data.preferences.UserPreferenceManager
 import org.bson.Document
 import org.bson.types.ObjectId
 import java.util.Date
 
 
-data class ReadingItem(
-    val userId: ObjectId,
-    val title: String,
-    val passage: String,
-    val creationDate: Date,
-    val statements: List<String>,
-    val answers: List<String>,
-    val isNew: Boolean
-)
-
-
 interface ReadingRepository {
+
     suspend fun insert(
-        item: ReadingItem,
+        item: ReadingPracticeItem,
         serverAddress: Pair<String, Int>? = null
     )
-    suspend fun getAll(
-        userId: ObjectId,
+
+    suspend fun getItem(
+        id: ObjectId,
         serverAddress: Pair<String, Int>? = null
-    ): List<ReadingItem>
+    ): ReadingPracticeItem
+
 }
 
 
-object DefaultReadingRepository : ReadingRepository {
+object DefaultReadingRepository : ReadingRepository, PracticeRepository {
     object Names {
         const val COLLECTION_NAME = "reading"
+        const val ID = "_id"
         const val USER_ID = "userId"
         const val TITLE = "title"
         const val CREATION_DATE = "creationDate"
         const val PASSAGE = "passage"
-        const val STATEMENTS = "statements"
-        const val ANSWERS = "answers"
+        const val QUESTIONS = "questions"
+        const val Q_STATEMENTS = "statement"
+        const val Q_ANSWERS = "answer"
         const val IS_NEW = "isNew"
     }
 
+
     override suspend fun insert(
-        item: ReadingItem,
+        item: ReadingPracticeItem,
         serverAddress: Pair<String, Int>?
     ) {
+        val userId = UserPreferenceManager.getUserId()
         val document = Document(
-            Names.USER_ID, item.userId
+            Names.USER_ID, userId
         ).append(
             Names.TITLE, item.title
         ).append(
@@ -54,9 +54,13 @@ object DefaultReadingRepository : ReadingRepository {
         ).append(
             Names.PASSAGE, item.passage
         ).append(
-            Names.STATEMENTS, item.statements
-        ).append(
-            Names.ANSWERS, item.answers
+            Names.QUESTIONS, item.questionList.map {
+                Document(
+                    Names.Q_STATEMENTS, it.statement
+                ).append(
+                    Names.Q_ANSWERS, answerToInt(it.answer)
+                )
+            }
         ).append(
             Names.IS_NEW, item.isNew
         )
@@ -66,25 +70,70 @@ object DefaultReadingRepository : ReadingRepository {
         collection.insertOne(document)
     }
 
-    override suspend fun getAll(
+
+
+    override suspend fun getItem(
+        id: ObjectId,
+        serverAddress: Pair<String, Int>?
+    ): ReadingPracticeItem {
+
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val cursor = collection.find(Document(Names.ID, id))
+        val document = cursor.first()
+
+        return ReadingPracticeItem(
+            id = document?.get(Names.ID) as ObjectId,
+            title = document[Names.TITLE] as String,
+            creationDate = document[Names.CREATION_DATE] as Date,
+            passage = document[Names.PASSAGE] as String,
+            questionList = (document[Names.QUESTIONS] as List<Document>).map {
+                ReadingQuestion(
+                    statement = it[Names.Q_STATEMENTS] as String,
+                    answer = when (it[Names.Q_ANSWERS] as Int) {
+                        1 -> ReadingAnswer.TRUE
+                        -1 -> ReadingAnswer.FALSE
+                        else -> ReadingAnswer.NOT_GIVEN
+                    }
+                )
+            },
+            isNew = document[Names.IS_NEW] as Boolean
+        )
+    }
+
+
+    override suspend fun getAllPracticeItem(
         userId: ObjectId,
         serverAddress: Pair<String, Int>?
-    ): List<ReadingItem> {
+    ): List<PracticeItem> {
         val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
 
-        val cursor = collection.find(Document(Names.USER_ID, userId))
+        val cursor = collection
+            .find(Document(Names.USER_ID, userId))
+            .projection(
+                Document(Names.ID, 1)
+                    .append(Names.TITLE, 1)
+                    .append(Names.CREATION_DATE, 1)
+                    .append(Names.IS_NEW, 1)
+            )
 
         return cursor.toList().map { document ->
-            ReadingItem(
-                userId = document?.get(Names.USER_ID) as ObjectId,
+            PracticeItem(
+                id = document?.get(Names.ID) as ObjectId,
                 title = document[Names.TITLE] as String,
                 creationDate = document[Names.CREATION_DATE] as Date,
-                passage = document[Names.PASSAGE] as String,
-                statements = document[Names.STATEMENTS] as List<String>,
-                answers = document[Names.ANSWERS] as List<String>,
                 isNew = document[Names.IS_NEW] as Boolean
             )
         }
+    }
+
+
+}
+
+private fun answerToInt(answer: ReadingAnswer): Int {
+    return when (answer) {
+        ReadingAnswer.TRUE -> 1
+        ReadingAnswer.FALSE -> -1
+        ReadingAnswer.NOT_GIVEN -> 0
     }
 }
 

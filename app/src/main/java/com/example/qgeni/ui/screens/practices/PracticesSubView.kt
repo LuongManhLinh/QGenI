@@ -36,11 +36,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.qgeni.R
-import com.example.qgeni.data.model.MockListeningPracticeItem
+import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.PracticeItem
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.utils.formatDate
 import com.example.qgeni.ui.theme.QGenITheme
+import java.util.Date
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -295,7 +296,13 @@ fun DeleteConfirmDialogDarkPreview() {
 fun PracticeItemLightPreview() {
     QGenITheme(dynamicColor = false) {
         PracticeItemCard(
-            MockListeningPracticeItem.listeningPracticeItem,
+            ListeningPracticeItem(
+                id = 0,
+                title = "Capybara",
+                creationDate = Date(),
+                isNew = true,
+                questionList = listOf()
+            ),
             newIconResId = R.drawable.resource_new,
             onDeleteClick = {}
         )
@@ -308,7 +315,13 @@ fun PracticeItemLightPreview() {
 fun PracticeItemDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         PracticeItemCard(
-            MockListeningPracticeItem.listeningPracticeItem,
+            ListeningPracticeItem(
+                id = 0,
+                title = "Capybara",
+                creationDate = Date(),
+                isNew = true,
+                questionList = listOf()
+            ),
             newIconResId = R.drawable.resource_new,
             onDeleteClick = {}
         )

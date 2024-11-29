@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.qgeni.data.model.McqMockData
 import com.example.qgeni.data.model.McqQuestion
-import com.example.qgeni.data.model.MockListeningPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
@@ -190,7 +190,7 @@ fun McqQuestionView(
 fun MsqQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
         McqQuestionView(
-            questions = MockListeningPracticeItem.listeningPracticeItem.questionList,
+            questions = McqMockData.questions,
             onQuestionChange = {},
             viewModel = viewModel()
         )
@@ -204,7 +204,7 @@ fun MsqQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
 
         McqQuestionView(
-            questions = MockListeningPracticeItem.listeningPracticeItem.questionList,
+            questions = McqMockData.questions,
             onQuestionChange = {},
             viewModel = viewModel()
         )

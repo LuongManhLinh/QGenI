@@ -1,75 +1,26 @@
 package com.example.qgeni.data.model
 
-import android.media.AudioRecord
-import android.os.Build
-import androidx.annotation.RequiresApi
-import com.example.qgeni.R
-import java.time.LocalDate
+import android.graphics.Bitmap
+import org.bson.types.ObjectId
+import java.util.Date
 
 
 data class ListeningPracticeItem(
-    override val id: Int,
+    override val id: ObjectId,
     override val title: String,
-    override val creationDate: LocalDate,
+    override val creationDate: Date,
     override val isNew: Boolean,
-    val record: List<String>,
-    val imageList: List<List<ImageItem>>,
-    val questionList: List<McqQuestion>
-) : PracticeItem
+    val questionList: List<ListeningQuestion>
+) : PracticeItem(id, title, creationDate, isNew)
 
-data class ImageItem(
-    val label: String,
-    val imageRes: Int
+
+/**
+ *  @property imageList: danh sách hình ảnh cho 1 câu hỏi
+ *  @property description: mô tả cho hình ảnh được chọn
+ *  @property answerIndex: vị trí của hình ảnh được mô tả trong imageList
+ */
+data class ListeningQuestion(
+    val imageList: List<Bitmap>,
+    val description: String,
+    val answerIndex: Int
 )
-
-object MockListeningPracticeItem {
-    @RequiresApi(Build.VERSION_CODES.O)
-    val listeningPracticeItem = ListeningPracticeItem(
-        id = 0,
-        title = "Capybara",
-        creationDate = LocalDate.now(),
-        isNew = true,
-        record = listOf("null"),
-        imageList = ImageSelection.imageSelection, // Thay đổi để tương thích kiểu mới
-        questionList = McqMockData.questions
-    )
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    val listeningPracticeItemList = List(8) { index ->
-        ListeningPracticeItem(
-            id = index,
-            title = "Bài nghe ${index + 1}",
-            creationDate = LocalDate.now().minusDays(index.toLong()), // Ngày lùi dần
-            isNew = index < 3, // Đánh dấu "NEW" cho 3 item đầu
-            record = listOf("null"), // Danh sách record giả
-            imageList = ImageSelection.imageSelection, // Danh sách hình ảnh giả
-            questionList = McqMockData.questions // Danh sách câu hỏi giả
-        )
-    }
-}
-
-object ImageSelection {
-    val imageSelection = listOf(
-            ImageData.imageList,
-            ImageData.imageList2,
-            ImageData.imageList3
-    )
-}
-
-object ImageData {
-    val imageList = listOf(
-        ImageItem("Pic. A", R.drawable.avatar),
-        ImageItem("Pic. B", R.drawable.avatar),
-        ImageItem("Pic. C", R.drawable.avatar)
-    )
-    val imageList2 = listOf(
-        ImageItem("Pic. A", R.drawable.avatar),
-        ImageItem("Pic. B", R.drawable.reading),
-        ImageItem("Pic. C", R.drawable.backpack1)
-    )
-    val imageList3 = listOf(
-        ImageItem("Pic. A", R.drawable.backpack1),
-        ImageItem("Pic. B", R.drawable.backpack1),
-        ImageItem("Pic. C", R.drawable.backpack1)
-    )
-}

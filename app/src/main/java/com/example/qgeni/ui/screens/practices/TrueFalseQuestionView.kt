@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.McqQuestion
-import com.example.qgeni.data.model.MockReadingPracticeItem
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
@@ -191,30 +190,40 @@ fun TrueFalseQuestionView(
 }
 
 
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun TrueFalseQuestionLightViewPreview() {
-//    QGenITheme(dynamicColor = false) {
-//        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
-//        TrueFalseQuestionView(
-//            questions = MockReadingPracticeItem.readingPracticeItem.questionList,
-////            answeredQuestions = answeredQuestions,
-//            viewModel = viewModel()
-//        )
-//    }
-//}
-//
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun TrueFalseQuestionDarkViewPreview() {
-//    QGenITheme(dynamicColor = false, darkTheme = true) {
-//        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
-//        TrueFalseQuestionView(
-//            questions = MockReadingPracticeItem.readingPracticeItem.questionList,
-////            answeredQuestions = answeredQuestions,
-//            viewModel = viewModel()
-//        )
-//    }
-//}
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun TrueFalseQuestionLightViewPreview() {
+    QGenITheme(dynamicColor = false) {
+        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
+        TrueFalseQuestionView(
+            questions = listOf(
+                McqQuestion(
+                    question = "Choose the correct picture",
+                    answerList = listOf(
+                        "True",
+                        "False",
+                        "Not Given"
+                    ),
+                    correctAnswer = "True"
+                )
+            ),
+//            answeredQuestions = answeredQuestions,
+            viewModel = viewModel()
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun TrueFalseQuestionDarkViewPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
+        TrueFalseQuestionView(
+            questions = listOf(),
+//            answeredQuestions = answeredQuestions,
+            viewModel = viewModel()
+        )
+    }
+}

@@ -1,15 +1,27 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.view.View
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.qgeni.data.model.PracticeItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.bson.types.ObjectId
 
 
-open class BasePracticeListViewModel : ViewModel() {
+abstract class PracticeListViewModel : ViewModel() {
     private val _practiceListUIState = MutableStateFlow(PracticeListUIState())
     val practiceListUIState = _practiceListUIState.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            _practiceListUIState.update { it.copy(practiceItemList = getPracticeItemList()) }
+        }
+    }
+
+    abstract suspend fun getPracticeItemList(): List<PracticeItem>
 
     fun toggleDeleteDialog(show: Boolean) {
         _practiceListUIState.update { it.copy(showDeleteDialog = show) }
@@ -19,20 +31,15 @@ open class BasePracticeListViewModel : ViewModel() {
         _practiceListUIState.update { it.copy(showOpenDialog = show) }
     }
 
-    fun selectItem(id: Int) {
+    fun selectItem(id: ObjectId) {
         _practiceListUIState.update { it.copy(selectedItemId = id) }
     }
 }
 
-class ListeningPracticeListViewModel : BasePracticeListViewModel() {
-}
-
-class ReadingPracticeListViewModel : BasePracticeListViewModel() {
-}
-
 
 data class PracticeListUIState(
+    val practiceItemList: List<PracticeItem> = emptyList(),
     val showDeleteDialog: Boolean = false,
     val showOpenDialog: Boolean = false,
-    val selectedItemId: Int = -1
+    val selectedItemId: ObjectId? = null
 )

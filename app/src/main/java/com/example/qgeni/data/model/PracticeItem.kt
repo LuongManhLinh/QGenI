@@ -1,10 +1,12 @@
 package com.example.qgeni.data.model
 
-import java.time.LocalDate
+import org.bson.types.ObjectId
+import java.util.Date
 
-interface PracticeItem {
-    val id: Int
-    val title: String
-    val creationDate: LocalDate
-    val isNew: Boolean
-}
+open class PracticeItem(
+    open val id: ObjectId,
+    open val title: String,
+    open val creationDate: Date,
+    open val isNew: Boolean,
+)
+

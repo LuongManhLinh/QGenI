@@ -1,7 +1,5 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -11,27 +9,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.qgeni.data.model.ListeningPracticeItem
-import com.example.qgeni.data.model.MockListeningPracticeItem
-import com.example.qgeni.ui.theme.QGenITheme
+import com.example.qgeni.data.model.McqQuestion
 
 /*
     Màn hình thực hiện đề nghe, gồm ImageQuestionView và McQuestionView
  */
-
 @Composable
 fun ListeningPracticeScreen(
-    listeningPracticeItem: ListeningPracticeItem,
+    idHexString: String,
     onBackClick: () -> Unit,
-    listeningPracticeViewModel: ListeningPracticeViewModel = viewModel()
+    listeningPracticeViewModel: ListeningPracticeViewModel =
+        viewModel(factory = ListeningPracticeViewModel.factory(idHexString))
 ) {
-//    var currentQuestionIndex by remember { mutableStateOf(0) }
-//    val answeredQuestions = remember { mutableStateMapOf<Int, String>() }
 
     val listeningUIState by listeningPracticeViewModel.listeningPracticeUIState.collectAsState()
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,20 +62,46 @@ fun ListeningPracticeScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
         }
+
+        val imageList = if (listeningUIState.listeningPracticeItem != null) {
+            listeningUIState.listeningPracticeItem!!.questionList[listeningUIState.currentQuestionIndex].imageList
+        } else {
+            emptyList()
+        }
+
+        val questionList = if (listeningUIState.listeningPracticeItem != null) {
+            listeningUIState.listeningPracticeItem!!.questionList
+        } else {
+            emptyList()
+        }
+
+
         ImageQuestionView(
             currentQuestion = listeningUIState.currentQuestionIndex,
-            record = "null",
-            imageList = listeningPracticeItem.imageList[listeningUIState.currentQuestionIndex],
+            timeString = "Ghi thời gian vào đây",
+            imageList = imageList,
+            imageLabelList = List(imageList.size) { index ->
+                "Pic. " + ('A' + index)
+            },
             modifier = Modifier.weight(1f),
             onPlayClick = {
                 //Làm gì đó
             },
-            viewModel = listeningPracticeViewModel
+            onSubmitClick = {
+                //Làm gì đó
+            }
         )
+
         McqQuestionView(
-            questions = listeningPracticeItem.questionList,
-//            currentQuestionIndex = listeningUIState.currentQuestionIndex,
-//            answeredQuestions = listeningUIState.answeredQuestions,
+            questions = questionList.map {
+                McqQuestion(
+                    question = "Choose the correct picture",
+                    answerList = List(it.imageList.size) { index ->
+                        ('A' + index).toString()
+                    },
+                    correctAnswer = ('A' + it.answerIndex).toString()
+                )
+            },
             onQuestionChange = { index ->
                 listeningPracticeViewModel.updateCurrentQuestionIndex(index)
             },
@@ -92,32 +112,6 @@ fun ListeningPracticeScreen(
                     bottom = 16.dp
                 ),
             viewModel = listeningPracticeViewModel
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ListeningPracticeLightScreenPreview() {
-    QGenITheme(dynamicColor = false) {
-        ListeningPracticeScreen(
-            listeningPracticeItem =
-            MockListeningPracticeItem.listeningPracticeItem,
-            {}
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ListeningPracticeDarkScreenPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        ListeningPracticeScreen(
-            listeningPracticeItem =
-            MockListeningPracticeItem.listeningPracticeItem,
-            {}
         )
     }
 }
