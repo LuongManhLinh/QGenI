@@ -174,7 +174,7 @@ data class ReadingPracticeGeneratorUIState(
     val showUploadFileDialog: Boolean = false,
     val selectedOption: String = "Chọn model",
     val currentState: GeneratorState = GeneratorState.Idle,
-    val isUploadMode: Boolean = false,
+    val isUploadMode: Boolean = true,
     val title: String = "",
     val inputParagraph: String = "",
     val inputNumStatement: String = "",

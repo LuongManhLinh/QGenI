@@ -195,6 +195,78 @@ fun SuccessScreen(
     }
 }
 
+@Composable
+fun MissingFieldDialog(
+    message: String = "error",
+    onNextButtonClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int = R.drawable.fairy3,
+) {
+    Dialog(onDismissRequest = {}) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Row {
+
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = onNextButtonClick,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "XÁC NHẬN",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun SaveScreen(
@@ -283,7 +355,7 @@ fun SaveScreen(
                                 )
                         ) {
                             Text(
-                                text = "Xác nhận",
+                                text = "XÁC NHẬN",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
@@ -371,6 +443,31 @@ fun ErrorScreen(
     }
 }
 
+@Preview
+@Composable
+fun MissingFieldScreenLightPreview() {
+    QGenITheme(dynamicColor = false) {
+        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
+        MissingFieldDialog(
+            message = "Vui lòng nhập số câu hỏi",
+            {},
+            imageResourceId = R.drawable.avatar_3,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun MissingFieldScreenDarkPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        val currentState by remember { mutableStateOf<GeneratorState>(GeneratorState.Loading) }
+        MissingFieldDialog(
+            message = "Vui lòng nhập số câu hỏi",
+            {},
+            imageResourceId = R.drawable.savescreengenie,
+        )
+    }
+}
 
 @Preview
 @Composable

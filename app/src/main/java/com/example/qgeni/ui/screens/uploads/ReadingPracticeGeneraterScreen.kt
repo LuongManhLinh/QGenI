@@ -173,10 +173,13 @@ fun ReadingPracticeGeneratorScreen(
                 }
                 Box(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
                 ) {
                     if (rpgUIState.isUploadMode) {
-                        Column {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             if (rpgUIState.textUri == Uri.EMPTY) {
                                 CustomOutlinedButton(
 //                            onClick = { showUploadFileDialog = true },
@@ -197,13 +200,58 @@ fun ReadingPracticeGeneratorScreen(
                                     )
                                 }
                             }
-                            Spacer(Modifier.height(75.dp))
-                            OutlinedTextField(
-                                value = rpgUIState.inputNumStatement,
-                                onValueChange = {
-                                    basePracticeGeneratorViewModel.updateReadingInputNumStatement(it)
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(100.dp))
+                                        .background(color = MaterialTheme.colorScheme.primary)
+                                        .padding(
+                                            top = 4.dp,
+                                            bottom = 4.dp,
+                                            start = 6.dp,
+                                            end = 6.dp
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Số câu hỏi",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                    )
                                 }
-                            )
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row {
+                                OutlinedTextField(
+                                    value = rpgUIState.inputNumStatement,
+                                    onValueChange = {
+                                        basePracticeGeneratorViewModel.updateReadingInputNumStatement(it)
+                                    },
+                                    placeholder = {
+                                        Text(
+                                            text = "",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.tertiary
+                                        )
+                                    },
+                                    modifier = modifier
+                                        .weight(1f),
+                                    singleLine = false,
+                                    shape = RoundedCornerShape(size = 10.dp),
+                                    maxLines = Int.MAX_VALUE,
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Default,
+                                        keyboardType = KeyboardType.Number // Bàn phím số
+                                    ),
+                                    colors = OutlinedTextFieldDefaults
+                                        .colors(
+                                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                            unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                                        ),
+                                )
+                                Spacer(modifier = Modifier.weight(3f))
+                            }
                         }
                     } else {
                         PasteTextField(
@@ -228,6 +276,8 @@ fun ReadingPracticeGeneratorScreen(
                 NextButton(
                     onPrimary = false,
                     onClick = {
+                        // nếu đủ thì mới cho nhập
+                        // k thì hiện MissingFielialog
                         basePracticeGeneratorViewModel.updateReadingGeneratorState(GeneratorState.Loading)
                         onNextButtonClick()
                     }
@@ -254,6 +304,22 @@ fun ReadingPracticeGeneratorScreen(
                 }
             )
         }
+    }
+    // Nếu thiếu file thì hiện j
+    // chưa điền só câu hỏi hiện message j
+    // chưa có văn bản thì hiện message j
+    // ví dụ "Vui lòng upload file"
+    //"Vui lòng nhập số câu hỏi"
+    if( false ) {
+        MissingFieldDialog(
+            message = "",
+            onNextButtonClick = {}
+        )
+    } else if ( true) {
+        MissingFieldDialog(
+            message = "",
+            onNextButtonClick = {}
+        )
     }
     when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
