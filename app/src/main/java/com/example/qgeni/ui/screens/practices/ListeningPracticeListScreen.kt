@@ -156,7 +156,8 @@ fun ListeningPracticeListScreen(
 //            onDismissRequest = { showDeleteDialog = false },
 //            onDeleteClick = { showDeleteDialog = false }
             onDismissRequest = {listeningPracticeListViewModel.toggleDeleteDialog(false)},
-            onDeleteClick = {listeningPracticeListViewModel.toggleDeleteDialog(false)}
+            onDeleteClick = {listeningPracticeListViewModel.toggleDeleteDialog(false)},
+            imageResourceId = R.drawable.listening_open_delete_confirm
         )
     }
 //    if (showOpenDialog) {
@@ -167,7 +168,8 @@ fun ListeningPracticeListScreen(
             onOpenClick = {
                 listeningPracticeListViewModel.toggleOpenDialog(false)
                 onItemClick()
-            }
+            },
+            imageResourceId = R.drawable.listening_open_delete_confirm
         )
     }
 }

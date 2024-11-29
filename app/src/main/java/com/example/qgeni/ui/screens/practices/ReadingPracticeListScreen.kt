@@ -147,7 +147,8 @@ fun ReadingPracticeListScreen(
     if (rplUIState.showDeleteDialog) {
         DeleteConfirmDialog(
             onDismissRequest = {readingPracticeListViewModel.toggleDeleteDialog(false)},
-            onDeleteClick = {readingPracticeListViewModel.toggleDeleteDialog(false)}
+            onDeleteClick = {readingPracticeListViewModel.toggleDeleteDialog(false)},
+            imageResourceId = R.drawable.reading_open_delete_confirm
         )
     }
     if (rplUIState.showOpenDialog) {
@@ -156,7 +157,8 @@ fun ReadingPracticeListScreen(
             onOpenClick = {
                 readingPracticeListViewModel.toggleOpenDialog(false)
                 onItemClick(rplUIState.selectedItemId)
-            }
+            },
+            imageResourceId = R.drawable.reading_open_delete_confirm
         )
     }
 }
