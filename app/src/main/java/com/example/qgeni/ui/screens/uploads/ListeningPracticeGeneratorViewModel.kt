@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.application.IdsApplication
+import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.repository.DefaultListeningRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,8 @@ import kotlinx.coroutines.launch
 class ListeningPracticeGeneratorViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ListeningGeneratorUIState())
     val uiState = _uiState.asStateFlow()
+
+    private var listeningPracticeItem : ListeningPracticeItem? = null
 
     fun updateUploadFileDialogVisibility(showUploadFileDialog: Boolean) {
         _uiState.update {
@@ -67,11 +70,11 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             if (practiceItem != null) {
                 _uiState.update {
                     it.copy(
-                        currentState = GeneratorState.Success
+                        currentState = GeneratorState.Saving
                     )
                 }
 
-                DefaultListeningRepository.insert(practiceItem)
+                listeningPracticeItem = practiceItem
             } else {
                 _uiState.update {
                     it.copy(
@@ -83,6 +86,30 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
 
         }
     }
+
+
+    fun updatePracticeTitle(title: String) {
+        _uiState.update {
+            it.copy(
+                practiceTitle = title
+            )
+        }
+    }
+
+    fun saveListeningPractice() {
+        if (listeningPracticeItem == null) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            DefaultListeningRepository.insert(
+                listeningPracticeItem!!.copy(
+                    title = _uiState.value.practiceTitle
+                )
+            )
+        }
+    }
 }
 
 
@@ -92,7 +119,8 @@ data class ListeningGeneratorUIState(
     val selectedOption: String = "",
     val currentState: GeneratorState = GeneratorState.Idle,
     val numQuestion: String = "1",
-    val image: Bitmap? = null
+    val image: Bitmap? = null,
+    val practiceTitle: String = ""
 )
 
 

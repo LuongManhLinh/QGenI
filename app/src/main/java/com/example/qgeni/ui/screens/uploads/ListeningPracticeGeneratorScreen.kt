@@ -188,6 +188,16 @@ fun ListeningPracticeGeneratorScreen(
             )
         }
 
+        is GeneratorState.Saving -> {
+            SaveScreen(
+                title = uiState.practiceTitle,
+                onTitleChange = {
+                    viewModel.updatePracticeTitle(it)
+                },
+                onNextButtonClick = viewModel::saveListeningPractice
+            )
+        }
+
         is GeneratorState.Success -> {
             SuccessScreen(
                 onDismissRequest = {
