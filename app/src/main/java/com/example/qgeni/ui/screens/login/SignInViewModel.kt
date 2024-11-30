@@ -1,21 +1,22 @@
 package com.example.qgeni.ui.screens.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.data.repository.DefaultAccountRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.bson.types.ObjectId
 
 class SignInViewModel : ViewModel() {
-    private val _signInUIState = MutableStateFlow(SignInUIState())
-    val signInUIState = _signInUIState.asStateFlow()
+    private val _uiState = MutableStateFlow(SignInUIState())
+    val uiState = _uiState.asStateFlow()
 
     fun updateEmail(email: String) {
-        _signInUIState.update {
+        _uiState.update {
             it.copy(
                 email = email
             )
@@ -23,7 +24,7 @@ class SignInViewModel : ViewModel() {
     }
 
     fun updatePassword(password: String) {
-        _signInUIState.update {
+        _uiState.update {
             it.copy(
                 password = password
             )
@@ -31,27 +32,47 @@ class SignInViewModel : ViewModel() {
     }
 
     fun togglePasswordVisible() {
-        _signInUIState.update {
+        _uiState.update {
             it.copy(
                 passwordVisible = !it.passwordVisible
             )
         }
     }
 
-    fun signIn() : ObjectId? {
-        var userId: ObjectId? = null
+    fun signIn(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            userId = DefaultAccountRepository.checkExistence(
-                usernameOrEmailOrPhone = signInUIState.value.email.trim(),
-                password = signInUIState.value.password
+            val userId = DefaultAccountRepository.checkExistence(
+                usernameOrEmailOrPhone = uiState.value.email.trim(),
+                password = uiState.value.password
             )
+
+            if (userId != null) {
+                UserPreferenceManager.saveUserId(context, userId)
+                _uiState.update {
+                    it.copy(
+                        signInEvent = SignInEvent.SUCCESS
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        signInEvent = SignInEvent.FAILURE
+                    )
+                }
+            }
         }
-        return userId
     }
 }
 
 data class SignInUIState(
     val email: String = "",
     val password: String = "",
-    val passwordVisible: Boolean = false
+    val passwordVisible: Boolean = false,
+    val signInEvent: SignInEvent = SignInEvent.IDLE
 )
+
+sealed interface SignInEvent {
+    data object IDLE : SignInEvent
+    data object SUCCESS : SignInEvent
+    data object FAILURE : SignInEvent
+}

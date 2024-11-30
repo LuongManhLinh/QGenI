@@ -2,14 +2,18 @@ package com.example.qgeni.ui.screens.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.qgeni.data.preferences.ThemeMode
+import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.ui.screens.HomeScreen
 import com.example.qgeni.ui.screens.login.ForgotPasswordScreen
 import com.example.qgeni.ui.screens.login.SignInScreen
@@ -53,11 +57,70 @@ fun QGNavHost(
     currentTheme: ThemeMode,
     onThemeChange: (ThemeMode) -> Unit,
 ) {
+
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = Screen.Welcome.route,
         modifier = modifier
     ) {
+
+        composable(
+            Screen.Welcome.route,
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    tween(
+                        durationMillis = 500,
+                        delayMillis = 100
+                    )
+                )
+            }
+        ) {
+            WelcomeScreen(
+                onNextButtonClick = {
+                    UserPreferenceManager.loadUserId(context)
+                    val userId = UserPreferenceManager.getUserId()
+                    if (userId == null) {
+                        navController.navigate(Screen.SignIn.route)
+                    } else {
+                        navController.navigate(Screen.Home.route)
+                    }
+                }
+            )
+        }
+
+
+        composable(
+            Screen.SignIn.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    tween(
+                        durationMillis = 500,
+                        delayMillis = 100
+                    )
+                )
+            }
+        ) {
+            SignInScreen(
+                onBackClick = { navController.navigateUp() },
+                onSignInSuccess = { navController.navigate(Screen.Home.route) },
+                onForgotPasswordClick = { navController.navigate(Screen.ForgotPassword.route) },
+                onSignUpClick = { navController.navigate(Screen.SignUp.route) }
+            )
+        }
+
+
+        composable(Screen.SignUp.route) {
+            SignUpScreen(
+                onBackClick = { navController.navigateUp() },
+                onSignUpSuccess = { navController.navigate(Screen.SignIn.route) },
+                onSignInClick = { navController.navigate(Screen.SignIn.route) }
+            )
+        }
+
 
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
@@ -66,33 +129,6 @@ fun QGNavHost(
             )
         }
 
-        composable(
-            Screen.SignIn.route,
-//            enterTransition = {
-//                slideIntoContainer(
-//                    AnimatedContentTransitionScope.SlideDirection.Left,
-//                    tween(
-//                        durationMillis = 500,
-//                        delayMillis = 100
-//                    )
-//                )
-//            }
-        ) {
-            SignInScreen(
-                onBackClick = { navController.navigateUp() },
-                onNextButtonClick = { navController.navigate(Screen.Home.route) },
-                onForgotPasswordClick = { navController.navigate(Screen.ForgotPassword.route) },
-                onSignUpClick = { navController.navigate(Screen.SignUp.route) }
-            )
-        }
-
-        composable(Screen.SignUp.route) {
-            SignUpScreen(
-                onBackClick = { navController.navigateUp() },
-                onNextButtonClick = { navController.navigate(Screen.SignIn.route) },
-                onSignInClick = { navController.navigate(Screen.SignIn.route) }
-            )
-        }
 
         composable(Screen.Verification.route) {
             VerificationScreen(
@@ -130,22 +166,7 @@ fun QGNavHost(
             )
         }
 
-        composable(
-            Screen.Welcome.route,
-//            exitTransition = {
-//                slideOutOfContainer(
-//                    AnimatedContentTransitionScope.SlideDirection.Left,
-//                    tween(
-//                        durationMillis = 500,
-//                        delayMillis = 100
-//                    )
-//                )
-//            }
-        ) {
-            WelcomeScreen(
-                onNextButtonClick = { navController.navigate(Screen.SignIn.route) }
-            )
-        }
+
 
         composable(Screen.Home.route) {
             HomeScreen(

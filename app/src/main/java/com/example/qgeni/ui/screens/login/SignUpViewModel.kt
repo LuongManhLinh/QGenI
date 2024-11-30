@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SignUpViewModel : ViewModel() {
-    private val _signUpUIState = MutableStateFlow(SignUpUIState())
-    val signUpUIState = _signUpUIState.asStateFlow()
+    private val _uiState = MutableStateFlow(SignUpUIState())
+    val uiState = _uiState.asStateFlow()
 
     fun updateUsername(username: String) {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 username = username
             )
@@ -22,7 +22,7 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun updatePhoneNumber(phoneNumber: String) {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 phoneNumber = phoneNumber
             )
@@ -30,14 +30,14 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun updateEmail(email: String) {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 email = email
             )
         }
     }
     fun updatePassword(password: String) {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 password = password
             )
@@ -45,7 +45,7 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun togglePasswordVisible() {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 passwordVisible = !it.passwordVisible
             )
@@ -53,7 +53,7 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun toggleTermsAccepted() {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 termsAccepted = !it.termsAccepted
             )
@@ -61,7 +61,7 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun showSuccessDialog(isShow: Boolean) {
-        _signUpUIState.update {
+        _uiState.update {
             it.copy(
                 showSuccessDialog = isShow
             )
@@ -72,15 +72,21 @@ class SignUpViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             DefaultAccountRepository.createAccount(
-                username = _signUpUIState.value.username,
-                password = _signUpUIState.value.password,
-                email = _signUpUIState.value.email.trim().ifEmpty {
+                username = _uiState.value.username,
+                password = _uiState.value.password,
+                email = _uiState.value.email.trim().ifEmpty {
                     null
                 },
-                phoneNumber = _signUpUIState.value.phoneNumber.trim().ifEmpty {
+                phoneNumber = _uiState.value.phoneNumber.trim().ifEmpty {
                     null
                 }
             )
+
+            _uiState.update {
+                it.copy(
+                    showSuccessDialog = true
+                )
+            }
         }
 
     }

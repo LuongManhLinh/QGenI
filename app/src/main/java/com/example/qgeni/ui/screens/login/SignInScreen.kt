@@ -28,9 +28,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
@@ -38,13 +38,14 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun SignInScreen(
     onBackClick: () -> Unit,
-    onNextButtonClick: () -> Unit,
+    onSignInSuccess: () -> Unit,
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     modifier: Modifier = Modifier,
     signInViewModel: SignInViewModel = viewModel()
 ) {
-    val signInUIState by signInViewModel.signInUIState.collectAsState()
+    val signInUIState by signInViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -98,11 +99,19 @@ fun SignInScreen(
             Spacer(modifier = Modifier.weight(2f))
             NextButton(
                 onPrimary = false,
-                onClick = onNextButtonClick
+                onClick = {
+                    signInViewModel.signIn(
+                        context
+                    )
+                }
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
         Spacer(modifier = Modifier.height(56.dp))
+    }
+
+    if (signInUIState.signInEvent == SignInEvent.SUCCESS) {
+        onSignInSuccess()
     }
 }
 
@@ -164,8 +173,8 @@ fun SignInPage(
                     unfocusedBorderColor = MaterialTheme.colorScheme.primary,
                     focusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
-                    focusedTextColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                 ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -210,8 +219,8 @@ fun SignInPage(
                     unfocusedBorderColor = MaterialTheme.colorScheme.primary,
                     focusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
-                    focusedTextColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                 ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -251,6 +260,7 @@ fun SignInPage(
         }
         Spacer(modifier = Modifier.height(32.dp))
     }
+
 }
 
 @Preview(showSystemUi = true, showBackground = true)
@@ -259,7 +269,7 @@ fun SignInLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         SignInScreen(
             onBackClick = {},
-            onNextButtonClick = {},
+            onSignInSuccess = {},
             {},
             {}
         )
@@ -272,7 +282,7 @@ fun SignInDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         SignInScreen(
             onBackClick = {},
-            onNextButtonClick = {},
+            onSignInSuccess = {},
             {},
             {}
         )

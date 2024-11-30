@@ -8,7 +8,7 @@ class ListeningPracticeListViewModel : PracticeListViewModel() {
     override suspend fun getPracticeItemList(): List<PracticeItem> {
         return DefaultListeningRepository
             .getAllPracticeItem(
-                UserPreferenceManager.getUserId()
+                UserPreferenceManager.getUserId()!!
             )
     }
 }

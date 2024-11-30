@@ -11,7 +11,9 @@ val Context.dataStore by preferencesDataStore(name = "theme_preferences")
 
 class ThemePreferenceManager(private val context: Context) {
 
-    private val THEME_KEY = stringPreferencesKey("theme_mode")
+    companion object {
+        private val THEME_KEY = stringPreferencesKey("theme")
+    }
 
     // Save theme to DataStore
     suspend fun saveTheme(theme: String) {

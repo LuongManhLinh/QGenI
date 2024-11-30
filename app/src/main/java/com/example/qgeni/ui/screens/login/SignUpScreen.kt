@@ -42,27 +42,19 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.NextButton
-import com.example.qgeni.ui.screens.uploads.GeneratorState
 import com.example.qgeni.ui.theme.QGenITheme
 
 
 @Composable
 fun SignUpScreen(
     onBackClick: () -> Unit,
-    onNextButtonClick: () -> Unit,
+    onSignUpSuccess: () -> Unit,
     onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
     signUpViewModel: SignUpViewModel = viewModel(),
 ) {
-//    var username by remember { mutableStateOf("") }
-//    var phoneNumber by remember { mutableStateOf("") }
-//    var email by remember { mutableStateOf("") }
-//    var password by remember { mutableStateOf("") }
-//    var termsAccepted by remember { mutableStateOf(false) }
 
-//    var showSuccessDialog by remember { mutableStateOf(true) }
-
-    val signUpUIState by signUpViewModel.signUpUIState.collectAsState()
+    val uiState by signUpViewModel.uiState.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -102,12 +94,12 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         SignUpPage(
-            username = signUpUIState.username,
-            phoneNumber = signUpUIState.phoneNumber,
-            email = signUpUIState.email,
-            password = signUpUIState.password,
-            passwordVisible = signUpUIState.passwordVisible,
-            termsAccepted = signUpUIState.termsAccepted,
+            username = uiState.username,
+            phoneNumber = uiState.phoneNumber,
+            email = uiState.email,
+            password = uiState.password,
+            passwordVisible = uiState.passwordVisible,
+            termsAccepted = uiState.termsAccepted,
             onUsernameChange = { signUpViewModel.updateUsername(it) },
             onPhoneNumberChange = { signUpViewModel.updatePhoneNumber(it) },
             onEmailChange = { signUpViewModel.updateEmail(it) },
@@ -121,21 +113,26 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.weight(2f))
             NextButton(
                 onPrimary = false,
-                onClick = { signUpViewModel.showSuccessDialog(true) }
+                onClick = {
+                    signUpViewModel.signUp()
+                }
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
         Spacer(modifier = Modifier.height(56.dp))
     }
-    if (signUpUIState.showSuccessDialog) {
+
+
+    if (uiState.showSuccessDialog) {
         SignUpSuccess(
+            text = "TẠO TÀI KHOẢN THÀNH CÔNG",
             onDismissRequest = {
-                onNextButtonClick()
+                onSignUpSuccess()
                 signUpViewModel.showSuccessDialog(false)
             },
             onNextButtonClick =
             {
-                onNextButtonClick() //chuyển về đăng nhập
+                onSignUpSuccess() //chuyển về đăng nhập
                 signUpViewModel.showSuccessDialog(false)
             }
         )
@@ -371,6 +368,7 @@ fun SignUpPage(
 
 @Composable
 fun SignUpSuccess(
+    text: String,
     onDismissRequest: () -> Unit,
     onNextButtonClick: () -> Unit,
     @DrawableRes
@@ -409,7 +407,7 @@ fun SignUpSuccess(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "TẠO TÀI KHOẢN THÀNH CÔNG",
+                        text = text,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -447,6 +445,7 @@ fun SignUpSuccess(
 fun SignUpSuccessLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         SignUpSuccess(
+            text = "TẠO TÀI KHOẢN THÀNH CÔNG",
             onDismissRequest = {},
             onNextButtonClick = {},
             imageResourceId = R.drawable.avatar_3,
@@ -459,6 +458,7 @@ fun SignUpSuccessLightScreenPreview() {
 fun SignUpSuccessDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         SignUpSuccess(
+            text = "TẠO TÀI KHOẢN THÀNH CÔNG",
             onDismissRequest = {},
             onNextButtonClick = {},
             imageResourceId = R.drawable.avatar_3,
@@ -472,7 +472,7 @@ fun SignUpLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         SignUpScreen(
             onBackClick = {},
-            onNextButtonClick = {},
+            onSignUpSuccess = {},
             {}
         )
     }
@@ -484,7 +484,7 @@ fun SignUpDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         SignUpScreen(
             onBackClick = {},
-            onNextButtonClick = {},
+            onSignUpSuccess = {},
             {}
         )
     }
