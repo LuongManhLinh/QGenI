@@ -45,6 +45,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
         serverAddress: Pair<String, Int>?
     ) {
         val userId = UserPreferenceManager.getUserId()
+
         val document = Document(
             Names.USER_ID, userId
         ).append(

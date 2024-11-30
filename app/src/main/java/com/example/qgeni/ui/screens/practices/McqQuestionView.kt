@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -100,19 +101,19 @@ fun McqQuestionView(
             ) {
                 item {
                     // Hiển thị các lựa chọn
-                    questions[currentQuestionIdx].answerList.forEachIndexed { index,  option ->
+                    questions[currentQuestionIdx].answerList.forEachIndexed { answerIdx,  option ->
                         Row(
                             modifier = Modifier
                                 .clickable {
-                                    onAnswerSelected(index)
+                                    onAnswerSelected(answerIdx)
                                 }
                                 .height(30.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
-                                selected = index == answeredQuestions[currentQuestionIdx],
+                                selected = answerIdx == answeredQuestions[currentQuestionIdx],
                                 onClick = {
-                                   onAnswerSelected(index)
+                                    onAnswerSelected(answerIdx)
                                 },
                                 colors = RadioButtonDefaults.colors(
                                     unselectedColor = MaterialTheme.colorScheme.tertiary,

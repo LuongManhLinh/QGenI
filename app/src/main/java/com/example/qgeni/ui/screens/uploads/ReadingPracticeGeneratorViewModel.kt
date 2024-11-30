@@ -26,7 +26,8 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     private val _readingUIState = MutableStateFlow(ReadingPracticeGeneratorUIState())
     val readingUIState = _readingUIState.asStateFlow()
 
-    private val readingPracticeItem: ReadingPracticeItem? = null
+    private var readingPracticeItem: ReadingPracticeItem? = null
+
     fun updateReadingUploadFileDialog(show: Boolean) {
         _readingUIState.update { it.copy(showUploadFileDialog = show) }
     }
@@ -110,10 +111,12 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             if (practiceItem != null) {
                 _readingUIState.update {
                     it.copy(
-                        currentState = GeneratorState.Success
+                        currentState = GeneratorState.Saving,
                     )
                 }
-                DefaultReadingRepository.insert(practiceItem)
+
+                readingPracticeItem = practiceItem
+
             } else {
                 _readingUIState.update {
                     it.copy(
@@ -137,6 +140,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                 || _readingUIState.value.inputNumStatement == ""
                 || _readingUIState.value.textUri == Uri.EMPTY)
     }
+
     fun updateTextUri(context: Context, uri: Uri) {
         val fileName = getFileName(context, uri)
         val fileContent = readFileContent(context, uri)
@@ -179,7 +183,7 @@ data class ReadingPracticeGeneratorUIState(
     val isUploadMode: Boolean = true,
     val title: String = "",
     val inputParagraph: String = "",
-    val inputNumStatement: String = "",
+    val inputNumStatement: String = "1",
     val listReadingQuestion: List<McqQuestion> = emptyList(),
     val isGenerateSuccess: Boolean = false,
     val textUri: Uri = Uri.EMPTY,

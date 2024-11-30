@@ -1,6 +1,7 @@
 package com.example.qgeni.ui.screens.practices
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.repository.DefaultListeningRepository
 import com.example.qgeni.ui.screens.utils.text2speech
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,19 +30,12 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
                     listeningPracticeItem = listeningPracticeItem
                 )
             }
-        }
 
-        viewModelScope.launch {
-            if (
-                _uiState.value.listeningPracticeItem != null
-            ) {
-                while (true) {
-                    updateTime()
-                    kotlinx.coroutines.delay(1000)
-                }
+            while (true) {
+                delay(1000)
+                updateTime()
             }
         }
-
     }
 
     fun updateCurrentQuestionIndex(index: Int) {
@@ -56,12 +51,11 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
             val currentAnswer = it.answeredQuestions.toMutableMap()
 
             if (currentAnswer[questionIndex] == answer) {
-                currentAnswer[questionIndex] = null
+                currentAnswer[questionIndex] = -1
             } else {
                 currentAnswer[questionIndex] = answer
             }
 
-            currentAnswer[questionIndex] = answer
             it.copy(
                 answeredQuestions = currentAnswer
             )
@@ -70,6 +64,7 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 
 
     private fun updateTime() {
+        Log.d("ListeningPracticeViewModel", "updateTime")
         _uiState.update {
             it.copy(
                 time = it.time + 1000L
