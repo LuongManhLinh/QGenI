@@ -24,7 +24,7 @@ trong đoạn âm thanh đó.
     Lí do là vì í do vì nhóm em chạy Server ở __Local__. Để các máy ngoài LAN có thể truy cập, nhóm sử dụng __Ngrok__ để tạo tunnels nhưng các tunnels không có port cố định nên cần phải config. Hơn nữa, vì chạy Server ở Local nên khi tắt máy tính, các chức năng chính của ứng dụng sẽ không hoạt động.
     
 
-    Nhóm sẽ cố __cập nhật__ Database Port và Image Generator Port trong file README.md mỗi khi có thay đổi.
+    Nhóm sẽ cố gắng __cập nhật__ Database Port và Image Generator Port trong file README.md mỗi khi có thay đổi.
 
 3. Trải nghiệm ứng dụng
                    
