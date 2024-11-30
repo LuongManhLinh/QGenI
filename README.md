@@ -16,6 +16,12 @@ trong đoạn âm thanh đó.
 ---
 
 # 🚀 Cách chạy trên Android Studio
+## Yêu cầu
+    - minSdk: 24 (Android 7.0 Nougat)
+    - targetSdk: 34 (Tối ưu hóa cho Android 14)
+    - JDK: 8 trở lên
+    - Kotlin: 1.8 
+## Chạy ứng dụng
 1. Clone project và chạy trên Android Studio
 2. Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút `Next` sẽ có một Dialog hiện ra, hãy nhập giá trị cho các trường `Database Port` và `Image Generator Port` như sau:
     - Database Port: `15506`
