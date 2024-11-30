@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.McqQuestion
@@ -26,6 +27,8 @@ fun ListeningPracticeScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+
+    val context = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -85,11 +88,23 @@ fun ListeningPracticeScreen(
                 "Pic. " + ('A' + index)
             },
             modifier = Modifier.weight(1f),
-            onPlayClick = viewModel::play,
+            onPlayClick = {
+                viewModel.play(context)
+            },
             onSubmitClick = viewModel::submit
         )
 
+        if (questionList.isEmpty()) {
+            return
+        }
+
         McqQuestionView(
+            modifier = Modifier.weight(0.6f)
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                ),
             questions = questionList.map {
                 McqQuestion(
                     question = "Choose the correct picture",
@@ -99,16 +114,16 @@ fun ListeningPracticeScreen(
                     correctAnswer = ('A' + it.answerIndex).toString()
                 )
             },
+            currentQuestionIdx = uiState.currentQuestionIndex,
+            answeredQuestions = uiState.answeredQuestions,
             onQuestionChange = { index ->
                 viewModel.updateCurrentQuestionIndex(index)
             },
-            modifier = Modifier.weight(0.6f)
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                ),
-            viewModel = viewModel
+            onAnswerSelected = { answer ->
+                viewModel.updateAnsweredQuestions(uiState.currentQuestionIndex, answer)
+            },
+
+
         )
     }
 }

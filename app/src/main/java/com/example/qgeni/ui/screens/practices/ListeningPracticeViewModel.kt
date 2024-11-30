@@ -51,18 +51,23 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
         }
     }
 
-    fun updateAnsweredQuestions(questionIndex: Int, answer: String?) {
+    fun updateAnsweredQuestions(questionIndex: Int, answer: Int) {
         _uiState.update {
             val currentAnswer = it.answeredQuestions.toMutableMap()
-            if (answer != null)
+
+            if (currentAnswer[questionIndex] == answer) {
+                currentAnswer[questionIndex] = null
+            } else {
                 currentAnswer[questionIndex] = answer
-            else
-                currentAnswer.remove(questionIndex)
+            }
+
+            currentAnswer[questionIndex] = answer
             it.copy(
                 answeredQuestions = currentAnswer
             )
         }
     }
+
 
     private fun updateTime() {
         _uiState.update {
@@ -72,14 +77,6 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
         }
     }
 
-
-    fun updateSelectAnswer(selectAnswer: String?) {
-        _uiState.update {
-            it.copy(
-                selectAnswer = selectAnswer
-            )
-        }
-    }
 
     fun submit() {
 
@@ -105,7 +102,9 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 data class ListeningPracticeUIState(
     val currentQuestionIndex: Int = 0,
     val listeningPracticeItem: ListeningPracticeItem? = null,
-    val answeredQuestions: MutableMap<Int, String> = mutableMapOf(),
-    val time: Long = 0L,
-    val selectAnswer: String? = null
+
+    // Key: questionIndex, Value: answerIndex in answerList
+    val answeredQuestions: Map<Int, Int?> = emptyMap(),
+
+    val time: Long = 0L
 )

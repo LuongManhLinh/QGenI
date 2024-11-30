@@ -29,9 +29,10 @@ object IdsApplication {
 
             val questionList = mutableListOf<ListeningQuestion>()
 
+            Log.e("IdsApplication", "descListSize = ${descList.size}     undescListSize = ${unDescImageList.size}, totalSize = ${imageList.size}")
             for (i in 0 until numQuestion) {
 
-                var imageForQuestion = unDescImageList.subList(4 * i, 4 * i + 4)
+                var imageForQuestion = unDescImageList.subList(3 * i, 3 * i + 3)
                 val indexToAdd = (0 until 4).random()
                 imageForQuestion = imageForQuestion.toMutableList()
                 imageForQuestion.add(indexToAdd, descImageList[i])

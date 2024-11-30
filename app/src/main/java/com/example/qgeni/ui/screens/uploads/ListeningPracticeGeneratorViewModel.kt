@@ -29,7 +29,8 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
     fun updateSelectedImage(image: Bitmap) {
         _uiState.update {
             it.copy(
-                image = image
+                image = image,
+                showUploadFileDialog = false
             )
         }
     }
@@ -61,10 +62,10 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             )
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val practiceItem = IdsApplication.getListeningPracticeItem(
                 _uiState.value.image!!,
-                5
+                _uiState.value.numQuestion.toInt()
             )
 
             if (practiceItem != null) {

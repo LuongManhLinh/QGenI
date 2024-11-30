@@ -1,23 +1,32 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.data.model.McqMockData
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.ui.theme.QGenITheme
@@ -28,13 +37,14 @@ import com.example.qgeni.ui.theme.QGenITheme
 
 @Composable
 fun McqQuestionView(
-    questions: List<McqQuestion>,
-    onQuestionChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ListeningPracticeViewModel
+    questions: List<McqQuestion>,
+    currentQuestionIdx: Int,
+    answeredQuestions: Map<Int, Int?>,
+    onQuestionChange: (Int) -> Unit,
+    onAnswerSelected: (Int) -> Unit,
 ) {
 
-    val mcqUIState by viewModel.uiState.collectAsState()
     Column(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.onPrimary)
@@ -53,7 +63,7 @@ fun McqQuestionView(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Question ${mcqUIState.currentQuestionIndex + 1}",
+                text = "Question ${currentQuestionIdx + 1}",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -76,7 +86,7 @@ fun McqQuestionView(
         ) {
 
             Text(
-                text = questions[mcqUIState.currentQuestionIndex].question,
+                text = questions[currentQuestionIdx].question,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -90,25 +100,19 @@ fun McqQuestionView(
             ) {
                 item {
                     // Hiển thị các lựa chọn
-                    questions[mcqUIState.currentQuestionIndex].answerList.forEach { option ->
+                    questions[currentQuestionIdx].answerList.forEachIndexed { index,  option ->
                         Row(
                             modifier = Modifier
                                 .clickable {
-//                                    viewModel.updateSelectAnswer(option)
-//                                    viewModel.updateAnsweredQuestions(mcqUIState.currentQuestionIndex, option)
-                                    val newAnswer = if (mcqUIState.selectAnswer == option) null else option
-                                    viewModel.updateSelectAnswer(newAnswer)
-                                    viewModel.updateAnsweredQuestions(mcqUIState.currentQuestionIndex, newAnswer)
+                                    onAnswerSelected(index)
                                 }
                                 .height(30.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
-                                selected = mcqUIState.selectAnswer == option,
+                                selected = index == answeredQuestions[currentQuestionIdx],
                                 onClick = {
-                                    val newAnswer = if (mcqUIState.selectAnswer == option) null else option
-                                    viewModel.updateSelectAnswer(newAnswer)
-                                    viewModel.updateAnsweredQuestions(mcqUIState.currentQuestionIndex, newAnswer)
+                                   onAnswerSelected(index)
                                 },
                                 colors = RadioButtonDefaults.colors(
                                     unselectedColor = MaterialTheme.colorScheme.tertiary,
@@ -155,22 +159,21 @@ fun McqQuestionView(
                         .clip(RoundedCornerShape(10.dp))
                         .background(
                             when {
-                                mcqUIState.currentQuestionIndex == index -> MaterialTheme.colorScheme.surfaceContainerHigh   //Style cho câu hỏi đang chọn
-                                mcqUIState.answeredQuestions.containsKey(index) -> MaterialTheme.colorScheme.primary
+                                currentQuestionIdx == index -> MaterialTheme.colorScheme.surfaceContainerHigh   //Style cho câu hỏi đang chọn
+                                answeredQuestions[index] != null -> MaterialTheme.colorScheme.primary
                                 else -> Color.Transparent
                             }
                         )
                         .clickable {
                             onQuestionChange(index)
-                            viewModel.updateSelectAnswer(mcqUIState.answeredQuestions[index])
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "${index + 1}",
                         color = when {
-                            mcqUIState.currentQuestionIndex == index -> MaterialTheme.colorScheme.onBackground   //Style cho câu hỏi đang chọn
-                            mcqUIState.answeredQuestions.containsKey(index) -> MaterialTheme.colorScheme.onPrimary
+                            currentQuestionIdx == index -> MaterialTheme.colorScheme.onBackground   //Style cho câu hỏi đang chọn
+                            answeredQuestions[index] != null -> MaterialTheme.colorScheme.onPrimary
                             else -> MaterialTheme.colorScheme.tertiary
                         }
                     )
@@ -183,20 +186,22 @@ fun McqQuestionView(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun MsqQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
         McqQuestionView(
             questions = McqMockData.questions,
+            currentQuestionIdx = 0,
             onQuestionChange = {},
-            viewModel = viewModel()
+            onAnswerSelected = {},
+            answeredQuestions = emptyMap()
         )
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun MsqQuestionDarkViewPreview() {
@@ -204,8 +209,10 @@ fun MsqQuestionDarkViewPreview() {
 
         McqQuestionView(
             questions = McqMockData.questions,
+            currentQuestionIdx = 0,
             onQuestionChange = {},
-            viewModel = viewModel()
+            onAnswerSelected = {},
+            answeredQuestions = emptyMap()
         )
     }
 }

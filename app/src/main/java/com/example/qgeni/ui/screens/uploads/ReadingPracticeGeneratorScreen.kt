@@ -3,7 +3,6 @@ package com.example.qgeni.ui.screens.uploads
 import ReadingPracticeGeneratorViewModel
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,16 +26,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -47,15 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
-import com.example.qgeni.data.model.McqQuestion
-import com.example.qgeni.data.model.ReadingPracticeItem
-import com.example.qgeni.data.repository.DefaultReadingRepository
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.screens.practices.ModeSelectionSwitch
 import com.example.qgeni.ui.theme.QGenITheme
-import kotlinx.coroutines.delay
-import java.time.LocalDate
 
 /*
     Màn hình tạo đề đọc
