@@ -9,10 +9,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.qgeni.R
 import com.example.qgeni.data.preferences.ThemeMode
 import com.example.qgeni.ui.screens.components.CurvedBackground
+import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
@@ -39,6 +43,7 @@ import com.example.qgeni.ui.theme.QGenITheme
 fun ProfileScreen(
     onBackClick: () -> Unit,
     onChangeInfoClick: () -> Unit,
+    onLogOutClick: () -> Unit,
     currentTheme: ThemeMode,
     onThemeChange: (ThemeMode) -> Unit
 ) {
@@ -87,7 +92,10 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
-            HeaderSection()
+            HeaderSection(
+                email = "",
+                phoneNumber = ""
+            )
             Spacer(modifier = Modifier.height(16.dp))
             PersonalInfoSection(
                 onChangeInfoClick = onChangeInfoClick
@@ -97,13 +105,44 @@ fun ProfileScreen(
                 currentTheme = currentTheme,
                 onThemeChange = onThemeChange
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Row {
+                Spacer(modifier = Modifier.weight(2f))
+                IconButton(
+                    onClick = onLogOutClick,
+                    colors =
+                    IconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(shape = RoundedCornerShape(size = 100.dp))
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Logout,
+                        contentDescription = "next_button",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(0.25f))
+            }
+            Spacer(modifier = Modifier.height(56.dp))
         }
     }
 
 }
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(
+    email: String,
+    phoneNumber: String
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,7 +212,7 @@ fun HeaderSection() {
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "fantus@domain.com | +01 234 567 89",
+                text = "$email | $phoneNumber",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -366,6 +405,7 @@ fun PreviewProfileScreen() {
         ProfileScreen(
             onBackClick = {},
             {},
+            {},
             ThemeMode.LIGHT,
             {}
         )
@@ -378,6 +418,8 @@ fun PreviewProfileScreen() {
 fun PreviewHeaderSection() {
     QGenITheme(dynamicColor = false) {
         HeaderSection(
+            email = "fantus@domain.com",
+            phoneNumber = "+01 234 567 89"
         )
     }
 

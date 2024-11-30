@@ -181,6 +181,7 @@ fun QGNavHost(
             ProfileScreen(
                 onBackClick = { navController.navigateUp() },
                 onChangeInfoClick = { navController.navigate(Screen.ChangeInfo.route) },
+                onLogOutClick = { }, //thêm vào
                 currentTheme = currentTheme,
                 onThemeChange = onThemeChange
             )
