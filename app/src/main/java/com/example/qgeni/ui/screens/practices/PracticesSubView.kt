@@ -122,8 +122,8 @@ fun PracticeItemCard(
     }
 }
 
-//reading thì truyền R.drawable.reading_submit_confirm
-//leading thì truyền R.drawable.listening_submit_confirm
+//reading thì R.drawable.reading_submit_confirm
+//leading thì R.drawable.listening_submit_confirm
 @Composable
 fun SubmitConfirm(
     onDismissRequest: () -> Unit,
@@ -148,21 +148,22 @@ fun SubmitConfirm(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Image(
-                        painter = painterResource(imageResourceId),
-                        contentDescription = "fairy",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Bạn có chắc chắn muốn nộp bài không",
@@ -228,21 +229,22 @@ fun DeleteConfirmDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Image(
-                        painter = painterResource(imageResourceId),
-                        contentDescription = "fairy",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Bạn có chắc chắn muốn xóa đề này",
@@ -308,21 +310,22 @@ fun OpenConfirmDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Image(
-                        painter = painterResource(imageResourceId),
-                        contentDescription = "fairy",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Bạn có chắc chắn muốn mở đề này",
