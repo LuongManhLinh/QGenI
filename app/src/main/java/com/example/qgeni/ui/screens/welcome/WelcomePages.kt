@@ -237,6 +237,7 @@ fun PortDialog(
                         start = 16.dp,
                         end = 16.dp,
                     ),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Justify
                 )
                 Column(
