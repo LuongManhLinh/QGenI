@@ -2,6 +2,7 @@ package com.example.qgeni.ui.screens.uploads
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -129,18 +134,37 @@ fun ListeningPracticeGeneratorScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     ),
             ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CustomOutlinedButton(
-                        onClick = {
-                            viewModel.updateUploadFileDialogVisibility(true)
-                        },
-                        text = "TẢI TỆP",
-                        color = MaterialTheme.colorScheme.primary
+                if (uiState.image == null) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CustomOutlinedButton(
+                            onClick = {
+                                viewModel.updateUploadFileDialogVisibility(true)
+                            },
+                            text = "TẢI TỆP",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else {
+                    Image(
+                        bitmap = uiState.image!!.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(
+                                shape = RoundedCornerShape(10.dp),
+                            )
+                            .heightIn(max = 80.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(10.dp),
+                            ),
+
                     )
                 }
+
                 Spacer(Modifier.padding(vertical = 16.dp))
                 Box(
                     modifier = Modifier
@@ -192,12 +216,12 @@ fun ListeningPracticeGeneratorScreen(
                     Spacer(modifier = Modifier.weight(3f))
                 }
 
-                if (uiState.image != null) {
-                    Image(
-                        bitmap = uiState.image!!.asImageBitmap(),
-                        contentDescription = null
-                    )
-                }
+//                if (uiState.image != null) {
+//                    Image(
+//                        bitmap = uiState.image!!.asImageBitmap(),
+//                        contentDescription = null
+//                    )
+//                }
 
             }
             Row {
