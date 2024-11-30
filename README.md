@@ -13,9 +13,11 @@ Hệ thống sẽ dựa trên hình ảnh để tìm kiếm các hình ảnh kh�
 Mỗi câu hỏi sẽ gồm 4 hình ảnh và 1 đoạn âm thanh, nhiệm vụ của người dùng là chọn hình ảnh đúng nhất với mô tả 
 trong đoạn âm thanh đó.
 
+---
+
 # 🚀 Cách chạy trên Android Studio
 1. Clone project và chạy trên Android Studio
-2. Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút "Next" sẽ có một Dialog hiện ra, hãy nhập giá trị cho các trường "Database Port" và "Image Generator Port" như sau:
+2. Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút `Next` sẽ có một Dialog hiện ra, hãy nhập giá trị cho các trường `Database Port` và `Image Generator Port` như sau:
     - Database Port: `15506`
     - Image Generator Port: `18478`
 
