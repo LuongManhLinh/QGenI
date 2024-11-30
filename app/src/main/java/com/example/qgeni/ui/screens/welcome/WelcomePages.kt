@@ -42,6 +42,7 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -114,7 +115,7 @@ fun PageScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 fun PageChanger(
     tabItems: List<Item> = Items.getTabList(),
@@ -223,10 +224,29 @@ fun PortDialog(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                 )
+
+                Text(
+                    text = """
+                        NHẬP PORT TRONG FILE README.md
+                        
+                        Lí do vì nhóm em chạy server ở Local. 
+                        Để các máy ngoài LAN có thể truy cập, nhóm sử dụng Ngrok để tạo tunnels nhưng các tunnels không có port cố định nên cần config tại đây
+                    """.trimIndent(),
+                    modifier = Modifier.padding(
+                        top = 16.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                    ),
+                    textAlign = TextAlign.Justify
+                )
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 16.dp
+                        ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -235,7 +255,7 @@ fun PortDialog(
                         onValueChange = onPortDBChange,
                         label = {
                             Text(
-                                text = "Port DB",
+                                text = "Database Port",
                             )
                         },
                         shape = RoundedCornerShape(size = 10.dp),
@@ -256,7 +276,7 @@ fun PortDialog(
                         onValueChange = onPortImageChange,
                         label = {
                             Text(
-                                text = "Port Image Generator",
+                                text = "Image Generator Port",
                             )
                         },
                         shape = RoundedCornerShape(size = 10.dp),

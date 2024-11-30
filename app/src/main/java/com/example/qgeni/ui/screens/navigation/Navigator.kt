@@ -28,6 +28,7 @@ import com.example.qgeni.ui.screens.profile.ChangeInformationScreen
 import com.example.qgeni.ui.screens.profile.ProfileScreen
 import com.example.qgeni.ui.screens.uploads.ListeningPracticeGeneratorScreen
 import com.example.qgeni.ui.screens.uploads.ReadingPracticeGeneratorScreen
+import com.example.qgeni.ui.screens.welcome.PortDialog
 import com.example.qgeni.ui.screens.welcome.WelcomeScreen
 
 sealed class Screen(val route: String) {
@@ -181,7 +182,10 @@ fun QGNavHost(
             ProfileScreen(
                 onBackClick = { navController.navigateUp() },
                 onChangeInfoClick = { navController.navigate(Screen.ChangeInfo.route) },
-                onLogOutClick = { }, //thêm vào
+                onLogOutClick = {
+                    UserPreferenceManager.removeUserId(context)
+                    navController.navigate(Screen.SignIn.route)
+                }, //thêm vào
                 currentTheme = currentTheme,
                 onThemeChange = onThemeChange
             )

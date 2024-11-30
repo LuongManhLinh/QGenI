@@ -32,4 +32,11 @@ object UserPreferenceManager {
         this.userId = userId
     }
 
+    fun removeUserId(context: Context) {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().remove(ID_KEY).apply()
+        this.userId = null
+    }
+
 }

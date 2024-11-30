@@ -2,8 +2,8 @@ package com.example.qgeni.application
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.example.qgeni.api.ids.IdsGeminiAPI
-import com.example.qgeni.api.ids.IdsHostAPI
+import com.example.qgeni.data.api.ids.IdsGeminiAPI
+import com.example.qgeni.data.api.ids.IdsHostAPI
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.ListeningQuestion
 import org.bson.types.ObjectId

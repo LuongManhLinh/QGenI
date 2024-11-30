@@ -1,4 +1,4 @@
-package com.example.qgeni.api
+package com.example.qgeni.data.api
 
 object RequestType {
     const val TFN = 1

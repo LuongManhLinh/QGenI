@@ -1,4 +1,4 @@
-package com.example.qgeni.api
+package com.example.qgeni.data.api
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,8 +8,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 object CommunicationUtils {
-    const val DEFAULT_HOST = "0.tcp.ap.ngrok.io"
-    const val DEFAULT_PORT = 18478
+
 
     fun encodeImage(image: Bitmap): ByteArray {
         val outputStream = ByteArrayOutputStream()

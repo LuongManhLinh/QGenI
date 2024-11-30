@@ -1,7 +1,7 @@
 package com.example.qgeni.data.repository
 
 
-import com.example.qgeni.api.CommunicationUtils
+import com.example.qgeni.data.api.CommunicationUtils
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.ListeningQuestion
 import com.example.qgeni.data.model.PracticeItem

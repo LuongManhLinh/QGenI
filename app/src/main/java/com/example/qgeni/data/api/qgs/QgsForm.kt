@@ -1,4 +1,4 @@
-package com.example.qgeni.api.qgs
+package com.example.qgeni.data.api.qgs
 
 data class QgsForm(
     val statement: String,

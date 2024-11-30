@@ -1,5 +1,6 @@
 package com.example.qgeni.data.repository
 
+import com.example.qgeni.data.DefaultConnection
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
@@ -21,9 +22,9 @@ object DefaultMongoDBService : MongoDBService {
         return mongoClient.getDatabase(dbName)
     }
 
-    suspend fun getDefaultDatabaseConnection() : MongoDatabase {
+    private suspend fun getDefaultDatabaseConnection() : MongoDatabase {
         return getDatabaseConnection(
-            DefaultConnection.HOST, DefaultConnection.PORT, DefaultConnection.DB_NAME
+            DefaultConnection.HOST, DefaultConnection.dbPort, DefaultConnection.DB_NAME
         )
     }
 

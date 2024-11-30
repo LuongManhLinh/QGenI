@@ -5,7 +5,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.qgeni.api.qgs.QgsGeminiAPI
+import com.example.qgeni.data.api.qgs.QgsGeminiAPI
 import com.example.qgeni.application.IdsApplication
 import com.example.qgeni.application.QgsApplication
 import com.example.qgeni.data.model.McqQuestion

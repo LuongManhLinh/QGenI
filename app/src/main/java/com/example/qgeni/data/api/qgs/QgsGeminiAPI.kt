@@ -1,4 +1,4 @@
-package com.example.qgeni.api.qgs
+package com.example.qgeni.data.api.qgs
 
 import android.util.Log
 import com.example.qgeni.data.model.ReadingAnswer

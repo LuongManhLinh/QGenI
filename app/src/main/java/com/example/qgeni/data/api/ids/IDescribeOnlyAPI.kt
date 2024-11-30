@@ -1,4 +1,4 @@
-package com.example.qgeni.api.ids
+package com.example.qgeni.data.api.ids
 
 import android.graphics.Bitmap
 

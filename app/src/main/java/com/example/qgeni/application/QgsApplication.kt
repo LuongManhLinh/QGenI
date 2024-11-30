@@ -2,7 +2,7 @@ package com.example.qgeni.application
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.example.qgeni.api.qgs.QgsGeminiAPI
+import com.example.qgeni.data.api.qgs.QgsGeminiAPI
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.data.model.ReadingQuestion

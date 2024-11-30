@@ -1,13 +1,11 @@
-package com.example.qgeni.api.ids
+package com.example.qgeni.data.api.ids
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
-import com.example.qgeni.api.CommunicationUtils
-import com.example.qgeni.api.CommunicationUtils.DEFAULT_HOST
-import com.example.qgeni.api.CommunicationUtils.DEFAULT_PORT
-import com.example.qgeni.api.RequestType
-import com.example.qgeni.api.ResponseType
+import com.example.qgeni.data.api.CommunicationUtils
+import com.example.qgeni.data.api.RequestType
+import com.example.qgeni.data.api.ResponseType
+import com.example.qgeni.data.DefaultConnection
 import java.io.DataOutputStream
 import java.net.Socket
 
@@ -16,8 +14,8 @@ object IdsHostAPI : IFullIdsAPI {
 
     private const val IMG_PER_QUESTION = 4
 
-    private var host = DEFAULT_HOST
-    private var port = DEFAULT_PORT
+    private var host = DefaultConnection.HOST
+    private var port = DefaultConnection.genPort
 
     override suspend fun getSimilarImage(image: Bitmap, numDesiredImage: Int): List<Bitmap> {
         return performSocketOperation(
@@ -141,13 +139,13 @@ object IdsHostAPI : IFullIdsAPI {
 
 
     fun setHostPort(host: String, port: Int) {
-        this.host = host
-        this.port = port
+        IdsHostAPI.host = host
+        IdsHostAPI.port = port
     }
 
 
     fun resetHostPort() {
-        host = DEFAULT_HOST
-        port = DEFAULT_PORT
+        host = DefaultConnection.HOST
+        port = DefaultConnection.genPort
     }
 }
