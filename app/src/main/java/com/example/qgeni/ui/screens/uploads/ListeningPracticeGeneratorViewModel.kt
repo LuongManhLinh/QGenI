@@ -112,11 +112,23 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
                     title = _uiState.value.practiceTitle
                 )
             )
-        }
 
+            _uiState.update {
+                it.copy(
+                    currentState = GeneratorState.Success
+                )
+            }
+        }
+    }
+
+    fun reset() {
         _uiState.update {
             it.copy(
-                currentState = GeneratorState.Success
+                showUploadFileDialog = false,
+                currentState = GeneratorState.Idle,
+                numQuestion = it.numQuestion,
+                image = null,
+                practiceTitle = ""
             )
         }
     }
@@ -126,7 +138,6 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
 
 data class ListeningGeneratorUIState(
     val showUploadFileDialog: Boolean = false,
-    val selectedOption: String = "",
     val currentState: GeneratorState = GeneratorState.Idle,
     val numQuestion: String = "1",
     val image: Bitmap? = null,

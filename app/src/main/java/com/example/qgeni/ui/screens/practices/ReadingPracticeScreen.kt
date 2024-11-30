@@ -87,6 +87,10 @@ fun ReadingPracticeScreen(
             viewModel = readingPracticeViewModel
         )
 
+        if (questionList.isEmpty()) {
+            return
+        }
+
         TrueFalseQuestionView(
             questions = questionList.map {
                 McqQuestion(

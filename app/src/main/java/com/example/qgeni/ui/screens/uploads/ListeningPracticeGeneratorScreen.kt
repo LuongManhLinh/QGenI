@@ -276,10 +276,10 @@ fun ListeningPracticeGeneratorScreen(
         is GeneratorState.Success -> {
             SuccessScreen(
                 onDismissRequest = {
-                    viewModel.updateCurrentState(GeneratorState.Idle)
+                    viewModel.reset()
                 },
                 onStayButtonClick = {
-                    viewModel.updateCurrentState(GeneratorState.Idle)
+                    viewModel.reset()
                 },
                 onLeaveButtonClick = {
                     onLeaveButtonClick()
