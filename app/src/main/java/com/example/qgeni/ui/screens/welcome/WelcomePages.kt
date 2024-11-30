@@ -267,6 +267,7 @@ fun PortDialog(
                                 unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
                                 focusedTextColor = MaterialTheme.colorScheme.onPrimary,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary
                             ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -288,6 +289,7 @@ fun PortDialog(
                                 unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
                                 focusedTextColor = MaterialTheme.colorScheme.onPrimary,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary
                             ),
                         modifier = Modifier.fillMaxWidth()
                     )

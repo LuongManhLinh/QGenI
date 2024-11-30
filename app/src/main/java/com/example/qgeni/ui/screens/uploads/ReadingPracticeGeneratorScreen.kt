@@ -232,7 +232,20 @@ fun ReadingPracticeGeneratorScreen(
                                     colors = OutlinedTextFieldDefaults
                                         .colors(
                                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                            unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                            unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                            cursorColor = MaterialTheme.colorScheme.onBackground
+
+//                                                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+//                                            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+//                                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+//                                            unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+//                                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+//                                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+//                                            cursorColor = MaterialTheme.colorScheme.onPrimary
                                         ),
                                 )
                                 Spacer(modifier = Modifier.weight(3f))

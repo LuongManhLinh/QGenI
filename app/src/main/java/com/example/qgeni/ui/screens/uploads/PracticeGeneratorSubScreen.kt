@@ -324,7 +324,12 @@ fun SaveScreen(
                         colors = OutlinedTextFieldDefaults
                             .colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary
                             ),
                     )
                     Spacer(modifier = Modifier.height(16.dp))

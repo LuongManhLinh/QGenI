@@ -143,8 +143,9 @@ fun ForgotPasswordPage(
                     unfocusedBorderColor = MaterialTheme.colorScheme.primary,
                     focusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
-                    focusedTextColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
             modifier = Modifier.fillMaxWidth()
         )

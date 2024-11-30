@@ -175,6 +175,7 @@ fun SignInPage(
                     unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
                     focusedTextColor = MaterialTheme.colorScheme.onBackground,
                     unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -221,6 +222,7 @@ fun SignInPage(
                     unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
                     focusedTextColor = MaterialTheme.colorScheme.onBackground,
                     unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
             modifier = Modifier.fillMaxWidth()
         )
