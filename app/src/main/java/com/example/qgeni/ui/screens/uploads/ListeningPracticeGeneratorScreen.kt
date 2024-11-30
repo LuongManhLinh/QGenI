@@ -11,21 +11,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -137,15 +143,53 @@ fun ListeningPracticeGeneratorScreen(
                 }
                 Spacer(Modifier.padding(vertical = 16.dp))
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(color = MaterialTheme.colorScheme.primary)
+                        .padding(
+                            top = 4.dp,
+                            bottom = 4.dp,
+                            start = 6.dp,
+                            end = 6.dp
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
+                    Text(
+                        text = "Số câu hỏi",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
                     OutlinedTextField(
                         value = uiState.numQuestion,
                         onValueChange = {
                             viewModel.updateNumQuestion(it)
                         },
+                        placeholder = {
+                            Text(
+                                text = "",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = modifier
+                            .weight(1f),
+                        singleLine = false,
+                        shape = RoundedCornerShape(size = 10.dp),
+                        maxLines = Int.MAX_VALUE,
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Default,
+                            keyboardType = KeyboardType.Number // Bàn phím số
+                        ),
+                        colors = OutlinedTextFieldDefaults
+                            .colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                            ),
                     )
+                    Spacer(modifier = Modifier.weight(3f))
                 }
 
                 if (uiState.image != null) {
