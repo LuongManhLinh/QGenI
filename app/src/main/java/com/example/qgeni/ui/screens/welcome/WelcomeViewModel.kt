@@ -2,6 +2,7 @@ package com.example.qgeni.ui.screens.welcome
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.qgeni.data.DefaultConnection
 import com.example.qgeni.data.preferences.PortPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,8 +50,13 @@ class WelcomeViewModel : ViewModel() {
     }
 
     fun writePort(context: Context) {
-        PortPreferenceManager.saveDbPort(context, _uiState.value.dbPort.toInt())
-        PortPreferenceManager.saveGenPort(context, _uiState.value.genPort.toInt())
+        val dbPort = _uiState.value.dbPort.toInt()
+        val genPort = _uiState.value.genPort.toInt()
+        PortPreferenceManager.saveDbPort(context, dbPort)
+        PortPreferenceManager.saveGenPort(context, genPort)
+
+        DefaultConnection.dbPort = dbPort
+        DefaultConnection.genPort = genPort
     }
 
 }

@@ -9,10 +9,9 @@ import java.nio.ByteOrder
 
 object CommunicationUtils {
 
-
     fun encodeImage(image: Bitmap): ByteArray {
         val outputStream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        image.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
         return outputStream.toByteArray()
     }
 
@@ -47,6 +46,5 @@ object CommunicationUtils {
     fun encodeText(text: String): ByteArray {
         return text.toByteArray()
     }
-
 
 }
