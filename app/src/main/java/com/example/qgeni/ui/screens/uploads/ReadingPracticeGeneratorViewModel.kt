@@ -154,6 +154,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                 fileContent = fileContent
             )
         }
+        updateReadingInputParagraph(fileContent)
     }
 }
 
