@@ -86,13 +86,15 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                     title = _readingUIState.value.title
                 )
             )
+
+            _readingUIState.update {
+                it.copy(
+                    currentState = GeneratorState.Success
+                )
+            }
         }
 
-        _readingUIState.update {
-            it.copy(
-                currentState = GeneratorState.Success
-            )
-        }
+
     }
 
     fun createReadingPractice() {
