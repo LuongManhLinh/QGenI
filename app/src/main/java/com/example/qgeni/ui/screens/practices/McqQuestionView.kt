@@ -1,6 +1,5 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -75,7 +74,7 @@ fun McqQuestionView(
             modifier = Modifier
                 .background(color = Color.Transparent)
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(0.7f)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.primary,

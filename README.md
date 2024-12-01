@@ -8,8 +8,8 @@ Người dùng sẽ dán một đoạn văn bản hoặc upload một file text 
 Hệ thống sẽ dựa trên phần văn bản đó, sinh ra đề bao gồm các câu hỏi dạng "True - False - Not Given". 
 
 ### ✨ Tạo đề nghe
-Người dùng sẽ upload một hình ảnh đại diện cho chủ đề, đồng thời nhập số câu hỏi.
-Hệ thống sẽ dựa trên hình ảnh để tìm kiếm các hình ảnh khác tương đương, sau đó tạo ra đề có dạng như sau:
+Người dùng sẽ upload tối đa 4 hình aảnh, mỗi hình ảnh đại diện cho 1 chủ đề, mỗi chủ đề sẽ gồm 4 câu hỏi.
+Hệ thống sẽ dựa trên các hình ảnh chủ đề để tìm kiếm các hình ảnh khác tương đương, sau đó tạo ra đề có dạng như sau:
 Mỗi câu hỏi sẽ gồm 4 hình ảnh và 1 đoạn âm thanh, nhiệm vụ của người dùng là chọn hình ảnh đúng nhất với mô tả 
 trong đoạn âm thanh đó.
 
