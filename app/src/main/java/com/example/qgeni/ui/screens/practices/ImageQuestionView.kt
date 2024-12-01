@@ -206,15 +206,18 @@ fun ImageBox(
         Image(
             bitmap = image.asImageBitmap(),
             contentDescription = label,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.clip(
-                shape = RoundedCornerShape(
-                    topStart = 0.dp,
-                    topEnd = 0.dp,
-                    bottomStart = 10.dp,
-                    bottomEnd = 10.dp
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 10.dp,
+                        bottomEnd = 10.dp
+                    )
                 )
-            )
+
         )
     }
 }
