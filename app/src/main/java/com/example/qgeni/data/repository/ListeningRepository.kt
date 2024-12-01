@@ -1,6 +1,7 @@
 package com.example.qgeni.data.repository
 
 
+import android.util.Log
 import com.example.qgeni.data.api.CommunicationUtils
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.ListeningQuestion
@@ -15,15 +16,17 @@ import java.util.Date
 
 interface ListeningRepository {
     suspend fun insert(
-        item: ListeningPracticeItem,
-        serverAddress: Pair<String, Int>? = null
+        item: ListeningPracticeItem
     )
 
     suspend fun getItem(
-        id: ObjectId,
-        serverAddress: Pair<String, Int>? = null
+        id: ObjectId
     ): ListeningPracticeItem
 
+    suspend fun changeTitle(
+        id: ObjectId,
+        title: String
+    )
 }
 
 object DefaultListeningRepository : ListeningRepository, PracticeRepository {
@@ -42,8 +45,7 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
 
 
     override suspend fun insert(
-        item: ListeningPracticeItem,
-        serverAddress: Pair<String, Int>?
+        item: ListeningPracticeItem
     ) {
         val userId = UserPreferenceManager.getUserId()
         val document = Document(
@@ -68,16 +70,15 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
             Names.IS_NEW, item.isNew
         )
 
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
         collection.insertOne(document)
     }
 
 
     override suspend fun getItem(
-        id: ObjectId,
-        serverAddress: Pair<String, Int>?
+        id: ObjectId
     ): ListeningPracticeItem {
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
         val cursor = collection.find(Document(Names.ID, id))
         val document = cursor.first()
         return ListeningPracticeItem(
@@ -97,12 +98,19 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
             )
     }
 
+    override suspend fun changeTitle(id: ObjectId, title: String) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.updateOne(
+            Document(Names.ID, id),
+            Document("\$set", Document(Names.TITLE, title))
+        )
+    }
+
 
     override suspend fun getAllPracticeItem(
-        userId: ObjectId,
-        serverAddress: Pair<String, Int>?
+        userId: ObjectId
     ): List<PracticeItem> {
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
 
         val cursor = collection
             .find(Document(Names.USER_ID, userId))
@@ -112,7 +120,7 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
                     .append(Names.CREATION_DATE, 1)
                     .append(Names.IS_NEW, 1)
             )
-
+        Log.e("ListeningRepository", "getAllPracticeItem: ${cursor.toList().size}")
         return cursor.toList().map { document ->
             PracticeItem(
                 id = document?.get(Names.ID) as ObjectId,

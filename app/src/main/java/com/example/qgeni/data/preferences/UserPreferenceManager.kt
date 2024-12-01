@@ -8,7 +8,6 @@ object UserPreferenceManager {
 
     private const val ID_KEY = "user_id"
     private const val PREFERENCE_NAME = "id_preferences"
-    val rootUserId =  ObjectId("5f9f4f3f1c9d440000f3f3f3")
 
     private var userId: ObjectId? = null
 

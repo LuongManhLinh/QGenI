@@ -29,10 +29,10 @@ class WelcomeViewModel : ViewModel() {
         }
     }
 
-    fun showDialog() {
+    fun showDialog(show: Boolean) {
         _uiState.update {
             it.copy(
-                showDialog = true
+                showDialog = show
             )
         }
     }

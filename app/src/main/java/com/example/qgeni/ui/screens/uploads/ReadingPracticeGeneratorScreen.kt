@@ -298,7 +298,7 @@ fun ReadingPracticeGeneratorScreen(
                 false
             )
         }) {
-            UploadFileScreen(
+            TextUploadScreen(
                 iconId = R.drawable.file_text,
                 description = "TXT, up to 50MB",
                 color = MaterialTheme.colorScheme.onPrimary,
@@ -345,6 +345,21 @@ fun ReadingPracticeGeneratorScreen(
             )
         }
 
+        is GeneratorState.Titling -> {
+            SaveScreen(
+                title = rpgUIState.title,
+                onTitleChange = { viewModel.updateTitle(it) },
+                onNextButtonClick = viewModel::saveReadingPractice
+            )
+        }
+
+        is GeneratorState.Saving -> {
+            LoadingScreen(
+                lottieResourceId = R.raw.fairy,
+                message = "Tiên nữ đang lưu đề"
+            )
+        }
+
         is GeneratorState.Success -> {
             SuccessScreen(
                 onDismissRequest = {
@@ -362,14 +377,6 @@ fun ReadingPracticeGeneratorScreen(
                     onLeaveButtonClick()
                 },
                 imageResourceId = R.drawable.fairy3
-            )
-        }
-
-        is GeneratorState.Saving -> {
-            SaveScreen(
-                title = rpgUIState.title,
-                onTitleChange = { viewModel.updateTitle(it) },
-                onNextButtonClick = viewModel::saveReadingPractice
             )
         }
 

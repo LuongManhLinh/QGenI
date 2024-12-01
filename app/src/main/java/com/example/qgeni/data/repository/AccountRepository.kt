@@ -1,7 +1,5 @@
 package com.example.qgeni.data.repository
 
-import kotlinx.coroutines.runBlocking
-import org.bson.BsonObjectId
 import org.bson.Document
 import org.bson.types.ObjectId
 
@@ -9,16 +7,14 @@ import org.bson.types.ObjectId
 interface AccountRepository {
     suspend fun checkExistence(
         usernameOrEmailOrPhone: String,
-        password: String,
-        serverAddress: Pair<String, Int>? = null
+        password: String
     ): ObjectId?
 
     suspend fun createAccount(
         username: String,
         phoneNumber: String? = null,
         email: String? = null,
-        password: String,
-        serverAddress: Pair<String, Int>? = null
+        password: String
     )
 }
 
@@ -36,11 +32,10 @@ object DefaultAccountRepository : AccountRepository {
 
     override suspend fun checkExistence(
         usernameOrEmailOrPhone: String,
-        password: String,
-        serverAddress: Pair<String, Int>?
+        password: String
     ): ObjectId? {
 
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
 
         val query = Document(
             "\$and", listOf(
@@ -67,11 +62,10 @@ object DefaultAccountRepository : AccountRepository {
         username: String,
         phoneNumber: String?,
         email: String?,
-        password: String,
-        serverAddress: Pair<String, Int>?
+        password: String
     ) {
 
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
 
         collection.insertOne(
             Document(Names.USERNAME, username)

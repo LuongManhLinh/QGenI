@@ -1,19 +1,17 @@
 package com.example.qgeni.data.api.ids
 
 import android.graphics.Bitmap
+import org.bson.types.ObjectId
 
 interface IFullIdsAPI {
-    /**
-     * @param image: the image to be used as the topic to generate similar images
-     * @param numDesiredImage: the number of similar images to be generated
-     */
-    suspend fun getSimilarImage(image: Bitmap, numDesiredImage: Int) : List<Bitmap>
+    companion object {
+        const val QUESTION_PER_TOPIC = 4
+        const val IMG_PER_QUESTION = 4
+    }
 
     /**
-     * @param image: the image to be used as the topic to generate questions
-     * @param numQuestion: the number of questions to be generated
-     * @return: a pair of list of images and list of numQuestion descriptions of numQuestion
-     *         first images of the list
+     * @param topicImageList: the list of image to be used as the topic to generate similar images
+     * @return: if successfully create the item, return true otherwise return false
      */
-    suspend fun createQuestion(image: Bitmap, numQuestion: Int) : Pair<List<Bitmap>, List<String>>
+    suspend fun createListeningPracticeItem(topicImageList: List<Bitmap>) : ObjectId?
 }

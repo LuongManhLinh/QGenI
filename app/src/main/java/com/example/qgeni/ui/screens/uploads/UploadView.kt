@@ -47,42 +47,88 @@ import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.theme.QGenITheme
 
+
+
+@Composable fun ImageUploadScreen(
+    modifier: Modifier = Modifier,
+    @DrawableRes iconId: Int,
+    description: String,
+    color: Color,
+    onImagePicked: (List<Bitmap>) -> Unit = {}
+) {
+    val context = LocalContext.current
+
+    val imagePicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(4)
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            val imageList = uris.map { uri ->
+                val stream = context.contentResolver.openInputStream(uri)
+                val image = BitmapFactory.decodeStream(stream)
+                image
+            }
+
+            onImagePicked(imageList)
+        }
+    }
+
+    UploadFileScreen(
+        modifier = modifier,
+        iconId = iconId,
+        description = description,
+        color = color,
+        onPicking = {
+            imagePicker.launch(
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+            )
+        }
+    )
+}
+
+
+@Composable
+fun TextUploadScreen(
+    modifier: Modifier = Modifier,
+    @DrawableRes iconId: Int,
+    description: String,
+    color: Color,
+    onFilePicked: (Uri) -> Unit = {}
+) {
+    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            onFilePicked(uri)
+        }
+    }
+
+    UploadFileScreen(
+        modifier = modifier,
+        iconId = iconId,
+        description = description,
+        color = color,
+        onPicking = {
+            filePicker.launch(
+                arrayOf(
+                    "text/plain"
+                )
+            )
+        }
+    )
+}
+
 /*
     UploadView cho Generator
  */
-
 @Composable
-fun UploadFileScreen(
+private fun UploadFileScreen(
     modifier: Modifier = Modifier,
     @DrawableRes
     iconId: Int,
     description: String,
     color: Color,
-    pickImage: Boolean = false,
-    onFilePicked: (Uri) -> Unit = {},
-    onImagePicked: (Bitmap) -> Unit = {},
+    onPicking: () -> Unit = {},
 ) {
-
-    val context = LocalContext.current
-
-    val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            val stream = context.contentResolver.openInputStream(uri)
-            val image = BitmapFactory.decodeStream(stream)
-            onImagePicked(image)
-        }
-    }
-
-    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-//            val text = context.contentResolver.openInputStream(uri)?.bufferedReader().use {
-//                it?.readText()
-//            }
-//            onFilePicked(text ?: "")
-            onFilePicked(uri)
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -189,21 +235,7 @@ fun UploadFileScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
-                            onClick = {
-                                if (pickImage) {
-                                   imagePicker.launch(
-                                       PickVisualMediaRequest(
-                                             ActivityResultContracts.PickVisualMedia.ImageOnly
-                                       )
-                                   )
-                                } else {
-                                    filePicker.launch(
-                                        arrayOf(
-                                            "text/plain"
-                                        )
-                                    )
-                                }
-                            },
+                            onClick = onPicking,
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent

@@ -46,7 +46,7 @@ fun WelcomeScreen(
             NextButton(
                 onPrimary = true,
                 onClick = {
-                    viewModel.showDialog()
+                    viewModel.showDialog(true)
                 }
             )
             Spacer(modifier = Modifier.weight(0.25f))
@@ -62,6 +62,7 @@ fun WelcomeScreen(
             onPortImageChange = { viewModel.updateGenPort(it) },
             onNextButtonClick = {
                 viewModel.writePort(context = context)
+                viewModel.showDialog(false)
                 onNextButtonClick()
             }
         )

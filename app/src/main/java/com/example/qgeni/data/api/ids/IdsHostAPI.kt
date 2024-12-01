@@ -3,84 +3,82 @@ package com.example.qgeni.data.api.ids
 import android.graphics.Bitmap
 import android.util.Log
 import com.example.qgeni.data.api.CommunicationUtils
-import com.example.qgeni.data.api.RequestType
 import com.example.qgeni.data.api.ResponseType
 import com.example.qgeni.data.DefaultConnection
+import com.example.qgeni.data.api.RequestType
+import com.example.qgeni.data.preferences.UserPreferenceManager
+import org.bson.types.ObjectId
 import java.io.DataOutputStream
 import java.net.Socket
 
 object IdsHostAPI : IFullIdsAPI {
-    private const val LOG_TAG = "IgsHostAPI"
-
-    private const val IMG_PER_QUESTION = 4
+    private const val LOG_TAG = "IdsHostAPI"
 
     private var host = DefaultConnection.HOST
     private var port = DefaultConnection.genPort
 
-    override suspend fun getSimilarImage(image: Bitmap, numDesiredImage: Int): List<Bitmap> {
-        return performSocketOperation(
-            requestType = RequestType.IMG_FIND_SIMILAR_ONLY,
-            image = image,
-            numItems = numDesiredImage
-        ) { socket, numItems ->
-            getResponseForFindSimilarOnly(socket, numItems)
-        } ?: emptyList()
-    }
-
-    override suspend fun createQuestion(
-        image: Bitmap,
-        numQuestion: Int
-    ): Pair<List<Bitmap>, List<String>> {
-        return performSocketOperation(
-            requestType = RequestType.IMG_FIND_AND_DESC,
-            image = image,
-            numItems = numQuestion
-        ) { socket, numItems ->
-            getResponseForFindAndDesc(socket, numItems)
-        } ?: Pair(emptyList(), emptyList())
-    }
-
-    private fun <T> performSocketOperation(
-        requestType: Int,
-        image: Bitmap,
-        numItems: Int,
-        responseHandler: (Socket, Int) -> T
-    ): T? {
+    override suspend fun createListeningPracticeItem(
+        topicImageList: List<Bitmap>
+    ): ObjectId? {
         try {
             val socket = Socket(host, port)
 
-            sendRequest(requestType, socket, image, numItems)
+            sendRequest(RequestType.IMG_FIND_SIMILAR_ONLY, socket, topicImageList)
 
-            val response = responseHandler(socket, numItems)
-
+            val response = getResponseForCreatingItem(socket)
             socket.close()
 
+            Log.d(LOG_TAG, "Response: $response")
+
             return response
+
         } catch (e: Exception) {
             Log.e(LOG_TAG, Log.getStackTraceString(e))
+            return null
         }
-
-        return null
     }
 
 
     private fun sendRequest(
         requestType: Int,
         socket: Socket,
-        image: Bitmap,
-        numImgOrQuestion: Int
+        topicImageList: List<Bitmap>
     ) {
         val outputStream = DataOutputStream(socket.getOutputStream())
 
-        val requestTypeByteArray = CommunicationUtils.intToBigEndianBytes(requestType)
-        val numImgOrQuestionArray = CommunicationUtils.intToBigEndianBytes(numImgOrQuestion)
-        val imageByteArray = CommunicationUtils.encodeImage(image)
-        val imageSizeByteArray = CommunicationUtils.intToBigEndianBytes(imageByteArray.size)
+        // Send the request type
+        outputStream.write(CommunicationUtils.intToBigEndianBytes(requestType))
 
-        outputStream.write(requestTypeByteArray)
-        outputStream.write(numImgOrQuestionArray)
-        outputStream.write(imageSizeByteArray)
-        outputStream.write(imageByteArray)
+        // Send the user id as string
+        val userId = UserPreferenceManager.getUserId()!!.toHexString()
+        val userIdByteArray = CommunicationUtils.encodeText(userId)
+        val userIdSizeByteArray = CommunicationUtils.intToBigEndianBytes(userIdByteArray.size)
+        outputStream.write(userIdSizeByteArray)
+        outputStream.write(userIdByteArray)
+
+        // Send the number of topic images
+        outputStream.write(CommunicationUtils.intToBigEndianBytes(topicImageList.size))
+
+        // Send the topic images
+        for (topicImage in topicImageList) {
+            val imgByteArray = CommunicationUtils.encodeImage(topicImage, quality = 70)
+            val imgSizeByteArray = CommunicationUtils.intToBigEndianBytes(imgByteArray.size)
+            outputStream.write(imgSizeByteArray)
+            outputStream.write(imgByteArray)
+        }
+    }
+
+    private fun getResponseForCreatingItem(socket: Socket) : ObjectId? {
+        val inputStream = socket.getInputStream()
+        val bArr4b = CommunicationUtils.readNBytes(inputStream, 4)
+        val responseType = CommunicationUtils.bigEndianBytesToInt(bArr4b)
+        if (responseType != ResponseType.SUCCESS) {
+            Log.e(LOG_TAG, "Server status: $responseType")
+            return null
+        }
+        val itemId = inputStream.bufferedReader().readText().trim()
+
+        return ObjectId(itemId)
     }
 
 
@@ -109,32 +107,16 @@ object IdsHostAPI : IFullIdsAPI {
                 if (img == null) {
                     val rpBytes = CommunicationUtils.intToBigEndianBytes(ResponseType.CLIENT_ERROR)
                     outputStream.write(rpBytes)
-                    Log.e(LOG_TAG, "Error converting image at index ${idx + 1}")
                 } else {
                     imgList.add(img)
                     val rpBytes = CommunicationUtils.intToBigEndianBytes(ResponseType.SUCCESS)
                     outputStream.write(rpBytes)
-                    Log.d(LOG_TAG, "Successfully received image at index ${idx + 1}")
                     break
                 }
             }
         }
 
         return imgList
-    }
-
-
-    private fun getResponseForFindAndDesc(
-        socket: Socket,
-        numQuestion: Int)
-    : Pair<List<Bitmap>, List<String>> {
-        val inputStream = socket.getInputStream()
-        val imgList = getResponseForFindSimilarOnly(socket, numQuestion * IMG_PER_QUESTION)
-
-        val desc = inputStream.bufferedReader().readText()
-        val descList = desc.split("\n")
-
-        return Pair(imgList, descList)
     }
 
 

@@ -29,16 +29,9 @@ object DefaultMongoDBService : MongoDBService {
     }
 
     suspend fun getCollection(
-        collectionName: String,
-        serverAddress: Pair<String, Int>? = null
+        collectionName: String
     ) : MongoCollection<Document?> {
-        val db = if (serverAddress == null) {
-            getDefaultDatabaseConnection()
-        } else {
-            getDatabaseConnection(
-                serverAddress.first, serverAddress.second, DefaultConnection.DB_NAME
-            )
-        }
+        val db = getDefaultDatabaseConnection()
         return db.getCollection(collectionName)
     }
 }

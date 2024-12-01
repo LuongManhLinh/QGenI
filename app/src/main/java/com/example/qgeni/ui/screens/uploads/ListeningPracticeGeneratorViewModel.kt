@@ -1,22 +1,23 @@
 package com.example.qgeni.ui.screens.uploads
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.qgeni.application.IdsApplication
-import com.example.qgeni.data.model.ListeningPracticeItem
+import com.example.qgeni.data.api.ids.IdsHostAPI
 import com.example.qgeni.data.repository.DefaultListeningRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.bson.types.ObjectId
 
 class ListeningPracticeGeneratorViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ListeningGeneratorUIState())
     val uiState = _uiState.asStateFlow()
 
-    private var listeningPracticeItem : ListeningPracticeItem? = null
+    private var itemId: ObjectId? = null
 
     fun updateUploadFileDialogVisibility(showUploadFileDialog: Boolean) {
         _uiState.update {
@@ -26,10 +27,10 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun updateSelectedImage(image: Bitmap) {
+    fun updateSelectedImage(imageList: List<Bitmap>) {
         _uiState.update {
             it.copy(
-                image = image,
+                imageList = imageList,
                 showUploadFileDialog = false
             )
         }
@@ -43,16 +44,9 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun updateNumQuestion(numQuestion: String) {
-        _uiState.update {
-            it.copy(
-                numQuestion = numQuestion
-            )
-        }
-    }
 
     fun createListeningPractice() {
-        if (_uiState.value.image == null) {
+        if (_uiState.value.imageList.isEmpty()) {
             return
         }
 
@@ -63,25 +57,24 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val practiceItem = IdsApplication.getListeningPracticeItem(
-                _uiState.value.image!!,
-                _uiState.value.numQuestion.toInt()
+            val id = IdsHostAPI.createListeningPracticeItem(
+                _uiState.value.imageList
             )
 
-            if (practiceItem != null) {
+            if (id != null) {
                 _uiState.update {
                     it.copy(
-                        currentState = GeneratorState.Saving
+                        currentState = GeneratorState.Titling
                     )
                 }
-
-                listeningPracticeItem = practiceItem
+                itemId = id
             } else {
                 _uiState.update {
                     it.copy(
                         currentState = GeneratorState.Error
                     )
                 }
+                Log.d("ListeningPracticeGeneratorViewModel", "Failed to create item")
             }
 
 
@@ -97,8 +90,9 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun saveListeningPractice() {
-        if (listeningPracticeItem == null) {
+
+    fun saveListeningPracticeTitle() {
+        if (itemId == null) {
             _uiState.update {
                 it.copy(
                     currentState = GeneratorState.Error
@@ -106,11 +100,16 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             }
         }
 
+        _uiState.update {
+            it.copy(
+                currentState = GeneratorState.Saving
+            )
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            DefaultListeningRepository.insert(
-                listeningPracticeItem!!.copy(
-                    title = _uiState.value.practiceTitle
-                )
+            DefaultListeningRepository.changeTitle(
+                itemId!!,
+                _uiState.value.practiceTitle
             )
 
             _uiState.update {
@@ -126,8 +125,7 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             it.copy(
                 showUploadFileDialog = false,
                 currentState = GeneratorState.Idle,
-                numQuestion = it.numQuestion,
-                image = null,
+                imageList = emptyList(),
                 practiceTitle = ""
             )
         }
@@ -139,8 +137,7 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
 data class ListeningGeneratorUIState(
     val showUploadFileDialog: Boolean = false,
     val currentState: GeneratorState = GeneratorState.Idle,
-    val numQuestion: String = "1",
-    val image: Bitmap? = null,
+    val imageList: List<Bitmap> = emptyList(),
     val practiceTitle: String = ""
 )
 

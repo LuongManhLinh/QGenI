@@ -13,13 +13,11 @@ import java.util.Date
 interface ReadingRepository {
 
     suspend fun insert(
-        item: ReadingPracticeItem,
-        serverAddress: Pair<String, Int>? = null
+        item: ReadingPracticeItem
     )
 
     suspend fun getItem(
-        id: ObjectId,
-        serverAddress: Pair<String, Int>? = null
+        id: ObjectId
     ): ReadingPracticeItem
 
 }
@@ -41,8 +39,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
 
 
     override suspend fun insert(
-        item: ReadingPracticeItem,
-        serverAddress: Pair<String, Int>?
+        item: ReadingPracticeItem
     ) {
         val userId = UserPreferenceManager.getUserId()
 
@@ -66,7 +63,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
             Names.IS_NEW, item.isNew
         )
 
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
 
         collection.insertOne(document)
     }
@@ -74,11 +71,10 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
 
 
     override suspend fun getItem(
-        id: ObjectId,
-        serverAddress: Pair<String, Int>?
+        id: ObjectId
     ): ReadingPracticeItem {
 
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
         val cursor = collection.find(Document(Names.ID, id))
         val document = cursor.first()
 
@@ -103,10 +99,9 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
 
 
     override suspend fun getAllPracticeItem(
-        userId: ObjectId,
-        serverAddress: Pair<String, Int>?
+        userId: ObjectId
     ): List<PracticeItem> {
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME, serverAddress)
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
 
         val cursor = collection
             .find(Document(Names.USER_ID, userId))
