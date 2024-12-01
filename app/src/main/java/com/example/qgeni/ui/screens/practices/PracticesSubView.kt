@@ -9,16 +9,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -121,6 +126,37 @@ fun PracticeItemCard(
         }
     }
 }
+
+@Composable
+fun DeleteBox(
+    modifier: Modifier = Modifier,
+    onDeleteClick: () -> Unit,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .border(
+                1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .heightIn(max = 80.dp)
+            .wrapContentSize()
+    ) {
+        content()
+        Icon(
+            imageVector = Icons.Default.Cancel,
+            contentDescription = "Delete",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .padding(2.dp)
+                .align(
+                    Alignment.TopEnd
+                )
+        )
+    }
+}
+
 
 //reading thì R.drawable.reading_submit_confirm
 //leading thì R.drawable.listening_submit_confirm
@@ -364,6 +400,29 @@ fun OpenConfirmDialog(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeleteBoxLightPreview() {
+    QGenITheme(dynamicColor = false) {
+        DeleteBox(
+            onDeleteClick = {}
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.avatar_2), // Thay bằng hình ảnh của bạn
+                contentDescription = "Sample Image",
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun DeleteBoxDarkPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+
     }
 }
 

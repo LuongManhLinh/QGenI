@@ -43,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.components.NextButton
+import com.example.qgeni.ui.screens.practices.DeleteBox
 import com.example.qgeni.ui.screens.practices.ModeSelectionSwitch
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -177,7 +178,9 @@ fun ReadingPracticeGeneratorScreen(
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             } else {
-                                Column {
+                                DeleteBox(
+                                    onDeleteClick = {}
+                                ) {
                                     CustomOutlinedButton(
                                         onClick = {},
                                         text = rpgUIState.fileName,
