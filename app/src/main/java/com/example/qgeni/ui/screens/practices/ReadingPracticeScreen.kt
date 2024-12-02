@@ -141,6 +141,7 @@ fun ReadingPracticeScreen(
     }
     if (readingPracticeUIState.showScoreDialog) {
         DisplayScore(
+            message = "10/10", // Score
             onNextButtonClick = {
                 //
             },

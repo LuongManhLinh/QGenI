@@ -158,6 +158,7 @@ fun ListeningPracticeScreen(
     }
     if (uiState.showScoreDialog) {
         DisplayScore(
+            message = "10/10", //Score
             onNextButtonClick = {
                 //
             },
