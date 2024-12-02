@@ -72,9 +72,12 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
         }
     }
 
+    fun toggleSubmitConfirmDialog(show: Boolean) {
+        _uiState.update { it.copy(showSubmitConfirmDialog = show) }
+    }
 
-    fun submit() {
-
+    fun toggleScoreDialog(show: Boolean) {
+        _uiState.update { it.copy(showScoreDialog = show) }
     }
 
     fun play(context: Context) {
@@ -97,6 +100,9 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 data class ListeningPracticeUIState(
     val currentQuestionIndex: Int = 0,
     val listeningPracticeItem: ListeningPracticeItem? = null,
+
+    val showSubmitConfirmDialog: Boolean = false,
+    val showScoreDialog: Boolean = false,
 
     // Key: questionIndex, Value: answerIndex in answerList
     val answeredQuestions: Map<Int, Int?> = emptyMap(),

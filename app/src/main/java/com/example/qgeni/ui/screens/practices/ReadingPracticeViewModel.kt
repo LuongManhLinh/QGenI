@@ -81,6 +81,14 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
         }
     }
 
+    fun toggleSubmitConfirmDialog(show: Boolean) {
+        _uiState.update { it.copy(showSubmitConfirmDialog = show) }
+    }
+
+    fun toggleScoreDialog(show: Boolean) {
+        _uiState.update { it.copy(showScoreDialog = show) }
+    }
+
     fun updateSelectAnswer(selectAnswer: String?) {
         _uiState.update {
             it.copy(
@@ -122,6 +130,8 @@ data class ReadingPracticeUIState(
     val highlightedIndices: List<Int> = listOf(),
     val textLayoutResult: TextLayoutResult? = null,
     val currentQuestionIndex: Int = 0,
+    val showSubmitConfirmDialog: Boolean = false,
+    val showScoreDialog: Boolean = false,
     val selectAnswer: String? = null,
     val answeredQuestions: MutableMap<Int, String> = mutableMapOf(),
 )

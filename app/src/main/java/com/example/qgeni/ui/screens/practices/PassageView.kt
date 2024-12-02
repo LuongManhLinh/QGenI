@@ -137,7 +137,9 @@ fun PassageView(
             )
             Spacer(modifier = Modifier.weight(1f))
             CustomSolidButton(
-                onClick = { /* Submit action */ },
+                onClick = {
+                    viewModel.toggleSubmitConfirmDialog(true)
+                },
                 text = "NỘP BÀI",
             )
         }

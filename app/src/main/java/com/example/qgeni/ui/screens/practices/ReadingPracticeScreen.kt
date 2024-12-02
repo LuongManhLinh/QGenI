@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.qgeni.R
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.model.ReadingAnswer
 import com.example.qgeni.ui.theme.QGenITheme
@@ -127,12 +128,31 @@ fun ReadingPracticeScreen(
             viewModel = readingPracticeViewModel
         )
     }
+    if (readingPracticeUIState.showSubmitConfirmDialog) {
+        SubmitConfirm(
+            onDismissRequest = {
+                readingPracticeViewModel.toggleSubmitConfirmDialog(false)
+            },
+            onSubmitClick = {
+                readingPracticeViewModel.toggleScoreDialog(true)
+            },
+            imageResourceId = R.drawable.reading_submit_confirm
+        )
+    }
+    if (readingPracticeUIState.showScoreDialog) {
+        DisplayScore(
+            onNextButtonClick = {
+                //
+            },
+            imageResourceId = R.drawable.reading_open_delete_confirm
+        )
+    }
 }
 
 @Preview
 @Composable
 fun ReadingPracticeScreenPreview() {
-    QGenITheme {
+    QGenITheme(dynamicColor = false) {
          ReadingPracticeScreen(
             idHexString = "123",
             onBackClick = { }, readingPracticeViewModel = ReadingPracticeViewModel("123")

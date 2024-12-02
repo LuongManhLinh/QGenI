@@ -174,7 +174,6 @@ fun DisplayScore(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Row {
-
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = onNextButtonClick,
@@ -190,7 +189,7 @@ fun DisplayScore(
                                 )
                         ) {
                             Text(
-                                text = "XÁC NHẬN",
+                                text = "VỀ KHO ĐỀ",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
@@ -478,6 +477,17 @@ fun OpenConfirmDialog(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun DisplayScorePreview() {
+    QGenITheme(dynamicColor = false) {
+        DisplayScore(
+            message = "10/10",
+            onNextButtonClick = {}
+        )
     }
 }
 

@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.qgeni.R
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.ui.screens.utils.formatTime
 
@@ -94,7 +95,9 @@ fun ListeningPracticeScreen(
             onPlayClick = {
                 viewModel.play(context)
             },
-            onSubmitClick = viewModel::submit
+            onSubmitClick = {
+                viewModel.toggleSubmitConfirmDialog(true)
+            }
         )
 
         if (questionList.isEmpty()) {
@@ -142,4 +145,24 @@ fun ListeningPracticeScreen(
 
         )
     }
+    if (uiState.showSubmitConfirmDialog) {
+        SubmitConfirm(
+            onDismissRequest = {
+                viewModel.toggleSubmitConfirmDialog(false)
+            },
+            onSubmitClick = {
+                viewModel.toggleScoreDialog(true)
+            },
+            imageResourceId = R.drawable.listening_submit_confirm
+        )
+    }
+    if (uiState.showScoreDialog) {
+        DisplayScore(
+            onNextButtonClick = {
+                //
+            },
+            imageResourceId = R.drawable.listening_open_delete_confirm
+        )
+    }
+
 }
