@@ -1,6 +1,7 @@
 package com.example.qgeni.ui.screens.practices
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -103,23 +104,20 @@ fun TrueFalseQuestionView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-//                            selected = selectedAnswer == option,
+                            enabled = !tfqUIState.isComplete,
                             selected = tfqUIState.selectAnswer == option,
                             onClick = {
                                 val newSelected = if (tfqUIState.selectAnswer == option) null else option
                                 viewModel.updateSelectAnswer(newSelected)
                                 viewModel.updateAnsweredQuestions(tfqUIState.currentQuestionIndex, newSelected)
-//                                if (selectedAnswer != null) {
-//                                    answeredQuestions[currentQuestionIndex] = selectedAnswer!!
-//                                } else {
-//                                    answeredQuestions.remove(currentQuestionIndex)
-//                                }
                             },
                             colors = RadioButtonDefaults.colors(
                                 unselectedColor = MaterialTheme.colorScheme.tertiary,
                                 selectedColor = MaterialTheme.colorScheme.primary,
                                 disabledSelectedColor = MaterialTheme.colorScheme.primary,
-                                disabledUnselectedColor = MaterialTheme.colorScheme.tertiary
+                                disabledUnselectedColor = if(tfqUIState.isComplete &&
+                                    tfqUIState.readingPracticeItem?.questionList?.get(tfqUIState.currentQuestionIndex)?.answer.toString() == option)
+                                    Color.Red else MaterialTheme.colorScheme.tertiary,
                             )
                         )
                         Text(
@@ -207,7 +205,7 @@ fun TrueFalseQuestionLightViewPreview() {
                     correctAnswer = "True"
                 )
             ),
-            viewModel = viewModel()
+            viewModel = ReadingPracticeViewModel("1")
         )
     }
 }
@@ -219,7 +217,7 @@ fun TrueFalseQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         TrueFalseQuestionView(
             questions = listOf(),
-            viewModel = viewModel()
+            viewModel = ReadingPracticeViewModel("1")
         )
     }
 }

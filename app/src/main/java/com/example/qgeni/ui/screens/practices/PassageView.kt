@@ -59,20 +59,13 @@ import kotlinx.coroutines.delay
 fun PassageView(
     modifier: Modifier = Modifier,
     text: String,
+    onBackButton: () -> Unit,
     viewModel: ReadingPracticeViewModel
 ) {
 
     val passageUIState by viewModel.uiState.collectAsState()
-//    var isHighlightEnabled by remember { mutableStateOf(false) }
-//    var isHighlightMode by remember { mutableStateOf(true) }
-//    var time by remember { mutableStateOf(0L) }
     val words = text.split(Regex("(?<=\\s)|(?=\\s)|(?<=\\n)|(?=\\n)|(?<=\\t)|(?=\\t)")).filter { it.isNotEmpty() }
 
-//    val highlightedIndices = remember { mutableStateListOf<Int>() }
-//    val textLayoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
-
-
-    // State để theo dõi vị trí cuộn của LazyColumn
     val lazyListState = rememberLazyListState()
 
     val annotatedText = buildAnnotatedString {
@@ -138,9 +131,12 @@ fun PassageView(
             Spacer(modifier = Modifier.weight(1f))
             CustomSolidButton(
                 onClick = {
-                    viewModel.toggleSubmitConfirmDialog(true)
+                    if(!passageUIState.isComplete)
+                        viewModel.toggleSubmitConfirmDialog(true)
+                    else
+                        onBackButton()
                 },
-                text = "NỘP BÀI",
+                text = if(!passageUIState.isComplete) "NỘP BÀI" else "XONG",
             )
         }
 

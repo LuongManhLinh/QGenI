@@ -179,7 +179,9 @@ fun ReadingPracticeGeneratorScreen(
                                 )
                             } else {
                                 DeleteBox(
-                                    onDeleteClick = {}
+                                    onDeleteClick = {
+                                        viewModel.updateTextUri(context, Uri.EMPTY)
+                                    }
                                 ) {
                                     CustomOutlinedButton(
                                         onClick = {},
@@ -242,13 +244,6 @@ fun ReadingPracticeGeneratorScreen(
                                             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                                             cursorColor = MaterialTheme.colorScheme.onBackground
 
-//                                                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-//                                            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-//                                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-//                                            unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
-//                                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-//                                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-//                                            cursorColor = MaterialTheme.colorScheme.onPrimary
                                         ),
                                 )
                                 Spacer(modifier = Modifier.weight(3f))

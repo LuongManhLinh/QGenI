@@ -51,7 +51,12 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
     }
 
     fun updateTime() {
-        _uiState.update { it.copy(time = it.time + 1000L) }
+        _uiState.update {
+            if(_uiState.value.isComplete)
+                it.copy(time = it.time)
+            else
+                it.copy(time = it.time + 1000L)
+        }
     }
 
     fun updateHighlightedIndices(index: Int, isHighlightMode: Boolean) {
@@ -110,6 +115,25 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
         }
     }
 
+    fun updateIsComplete(isComplete: Boolean) {
+        _uiState.update {
+            it.copy(
+                isComplete = isComplete
+            )
+        }
+    }
+
+    fun checkScore(): Int {
+        var score = 0
+        for ((index, answer) in _uiState.value.readingPracticeItem?.questionList?.withIndex()!!) {
+            val correctAnswer = answer.answer.toString()
+            val userAnswer = _uiState.value.answeredQuestions[index]
+            if(correctAnswer == userAnswer)
+                score++
+        }
+        return score
+    }
+
     companion object {
         fun factory(idHexString: String): ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -134,4 +158,5 @@ data class ReadingPracticeUIState(
     val showScoreDialog: Boolean = false,
     val selectAnswer: String? = null,
     val answeredQuestions: MutableMap<Int, String> = mutableMapOf(),
+    val isComplete: Boolean = false
 )

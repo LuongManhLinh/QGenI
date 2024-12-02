@@ -155,6 +155,7 @@ fun QGNavHost(
         ) { backStackEntry ->
             ReadingPracticeScreen(
                 idHexString = backStackEntry.arguments?.getString("idHexString") ?: "",
+                onNextButtonClick = {navController.navigate(Screen.ReadingPracticeList.route)},
                 onBackClick = { navController.navigateUp() }
             )
         }
