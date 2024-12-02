@@ -129,6 +129,80 @@ fun PracticeItemCard(
 }
 
 @Composable
+fun DisplayScore(
+    message: String = "10/10",
+    onNextButtonClick: () -> Unit,
+    @DrawableRes
+    imageResourceId: Int = R.drawable.listening_submit_confirm,
+) {
+    Dialog(onDismissRequest = {}) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(10.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(imageResourceId),
+                    contentDescription = "fairy",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row {
+
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = onNextButtonClick,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "XÁC NHẬN",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun DeleteBox(
     modifier: Modifier = Modifier,
     onDeleteClick: () -> Unit,
