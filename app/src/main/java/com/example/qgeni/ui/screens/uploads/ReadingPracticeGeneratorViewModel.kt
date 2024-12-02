@@ -149,9 +149,16 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     }
 
     fun updateTextUri(context: Context, uri: Uri) {
-        val fileName = getFileName(context, uri)
-        val fileContent = readFileContent(context, uri)
-        Log.i("file content", fileContent)
+        val fileName: String
+        val fileContent: String
+        if(uri != Uri.EMPTY) {
+            fileName = getFileName(context, uri)
+            fileContent = readFileContent(context, uri)
+        }
+        else {
+            fileName = ""
+            fileContent = ""
+        }
         _readingUIState.update {
             it.copy(
                 textUri = uri,

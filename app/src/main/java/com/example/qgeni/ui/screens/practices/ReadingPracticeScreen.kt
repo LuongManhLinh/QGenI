@@ -40,6 +40,7 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun ReadingPracticeScreen(
     idHexString: String,
+    onNextButtonClick: () -> Unit,
     onBackClick: () -> Unit,
     readingPracticeViewModel: ReadingPracticeViewModel =
         viewModel(factory = ReadingPracticeViewModel.factory(idHexString))
@@ -89,6 +90,7 @@ fun ReadingPracticeScreen(
         PassageView(
             text = passage,
             modifier = Modifier.weight(1f),
+            onBackButton = onNextButtonClick,
             viewModel = readingPracticeViewModel
         )
 
@@ -134,6 +136,7 @@ fun ReadingPracticeScreen(
                 readingPracticeViewModel.toggleSubmitConfirmDialog(false)
             },
             onSubmitClick = {
+                readingPracticeViewModel.toggleSubmitConfirmDialog(false)
                 readingPracticeViewModel.toggleScoreDialog(true)
             },
             imageResourceId = R.drawable.reading_submit_confirm
@@ -141,9 +144,15 @@ fun ReadingPracticeScreen(
     }
     if (readingPracticeUIState.showScoreDialog) {
         DisplayScore(
-            message = "10/10", // Score
+            message =
+            "${readingPracticeViewModel.checkScore()}/${readingPracticeUIState.readingPracticeItem?.questionList?.size}",
             onNextButtonClick = {
-                //
+                readingPracticeViewModel.toggleScoreDialog(false)
+                onNextButtonClick()
+            },
+            onDismissRequest = {
+                readingPracticeViewModel.toggleScoreDialog(false)
+                readingPracticeViewModel.updateIsComplete(true)
             },
             imageResourceId = R.drawable.reading_open_delete_confirm
         )
@@ -156,6 +165,7 @@ fun ReadingPracticeScreenPreview() {
     QGenITheme(dynamicColor = false) {
          ReadingPracticeScreen(
             idHexString = "123",
+             {},
             onBackClick = { }, readingPracticeViewModel = ReadingPracticeViewModel("123")
         )
     }

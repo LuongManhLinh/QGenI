@@ -162,6 +162,9 @@ fun ListeningPracticeScreen(
             onNextButtonClick = {
                 //
             },
+            onDismissRequest = {
+                viewModel.toggleScoreDialog(false)
+            },
             imageResourceId = R.drawable.listening_open_delete_confirm
         )
     }

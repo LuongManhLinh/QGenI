@@ -132,10 +132,11 @@ fun PracticeItemCard(
 fun DisplayScore(
     message: String = "10/10",
     onNextButtonClick: () -> Unit,
+    onDismissRequest: () -> Unit,
     @DrawableRes
     imageResourceId: Int = R.drawable.listening_submit_confirm,
 ) {
-    Dialog(onDismissRequest = {}) {
+    Dialog(onDismissRequest = onDismissRequest) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -174,6 +175,25 @@ fun DisplayScore(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Row {
+                        Button(
+                            onClick = onDismissRequest,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "Ở LẠI",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = onNextButtonClick,
@@ -486,7 +506,8 @@ fun DisplayScorePreview() {
     QGenITheme(dynamicColor = false) {
         DisplayScore(
             message = "10/10",
-            onNextButtonClick = {}
+            onNextButtonClick = {},
+            {},
         )
     }
 }
