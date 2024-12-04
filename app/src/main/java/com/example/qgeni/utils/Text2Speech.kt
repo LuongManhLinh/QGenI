@@ -1,5 +1,4 @@
-package com.example.qgeni.ui.screens.utils
-
+package com.example.qgeni.utils
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
@@ -15,13 +14,15 @@ fun text2speech(context: Context, text: String) {
     if (isSpeaking || isInitializing) {
         return
     }
+
     isInitializing = true
     textToSpeech = TextToSpeech(context) { status ->
         isInitializing = false
         if (status == TextToSpeech.SUCCESS) {
             textToSpeech?.let { txtToSpeech ->
-                txtToSpeech.language = Locale.US
-                txtToSpeech.setSpeechRate(1.0f)
+                txtToSpeech.setLanguage(Locale.US)
+                txtToSpeech.setSpeechRate(0.75f)
+                txtToSpeech.setPitch(0.75f)
 
                 txtToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(utteranceId: String?) {
@@ -42,8 +43,9 @@ fun text2speech(context: Context, text: String) {
                     text,
                     TextToSpeech.QUEUE_FLUSH,
                     null,
-                    "TTS_ID"
+                    null
                 )
+
             }
         } else {
             Log.e("TTS", "Initialization failed")

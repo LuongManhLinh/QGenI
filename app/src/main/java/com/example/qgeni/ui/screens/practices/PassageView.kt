@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomSolidButton
-import com.example.qgeni.ui.screens.utils.formatTime
+import com.example.qgeni.utils.formatTime
 import com.example.qgeni.ui.theme.Nunito
 import com.example.qgeni.ui.theme.QGenITheme
 import kotlinx.coroutines.delay

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.chaquo.python")
+
 }
 
 android {
@@ -17,6 +19,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
         }
     }
 
@@ -47,7 +53,25 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
 }
+
+chaquopy {
+    defaultConfig {
+        pip {
+            install("gTTS")
+        }
+    }
+
+    sourceSets {
+        getByName("main") {
+            srcDir("src/main/python")
+        }
+    }
+
+}
+
 
 dependencies {
     implementation ("androidx.datastore:datastore-preferences:1.0.0")

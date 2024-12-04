@@ -1,4 +1,4 @@
-package com.example.qgeni.ui.screens.utils
+package com.example.qgeni.utils
 
 import java.text.SimpleDateFormat
 import java.util.Date

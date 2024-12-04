@@ -1,11 +1,9 @@
 package com.example.qgeni.ui.screens.practices
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,26 +36,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomSolidButton
-import com.example.qgeni.ui.screens.utils.formatTime
+import com.example.qgeni.utils.formatTime
 import com.example.qgeni.ui.theme.QGenITheme
-
 
 
 @Composable
 fun ImageQuestionView(
+    modifier: Modifier = Modifier,
     currentQuestion: Int,
     timeString: String,
     imageList: List<Bitmap>,
     imageLabelList: List<String>,
-    modifier: Modifier = Modifier,
-    onPlayClick: () -> Unit,
     onSubmitClick: () -> Unit,
+    onPlayClick: () -> Unit,
+    playbackState: PlaybackState,
+    sliderPosition: Float,
+    duration: Float,
+    onSliderPositionChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -117,47 +117,55 @@ fun ImageQuestionView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier.clickable(
-                onClick = onPlayClick
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    .padding(
-                        end = 16.dp
-                    )
-                ,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        Icons.Outlined.PlayArrow,
-                        contentDescription = "Play",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Text(
-                    text = "Play",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            Spacer(
-                modifier = Modifier.weight(1f)
-            )
-        }
+//        Row(
+//            modifier = Modifier.clickable(
+//                onClick = onPlayClick
+//            )
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .border(
+//                        width = 1.dp,
+//                        color = MaterialTheme.colorScheme.primary,
+//                        shape = RoundedCornerShape(10.dp),
+//                    )
+//                    .padding(
+//                        end = 16.dp
+//                    )
+//                ,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                IconButton(onClick = {}) {
+//                    Icon(
+//                        Icons.Outlined.PlayArrow,
+//                        contentDescription = "Play",
+//                        tint = MaterialTheme.colorScheme.primary
+//                    )
+//                }
+//                Text(
+//                    text = "Play",
+//                    style = MaterialTheme.typography.labelMedium,
+//                    color = MaterialTheme.colorScheme.primary
+//                )
+//            }
+//            Spacer(
+//                modifier = Modifier.weight(1f)
+//            )
+//        }
+        AudioPlayer(
+            playbackState = playbackState,
+            sliderPosition = sliderPosition,
+            duration = duration,
+            onSliderPositionChange = onSliderPositionChange,
+            onPlayClick = onPlayClick,
+            onValueChangeFinished = onValueChangeFinished
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
+        if (imageList.isEmpty()) {
+            Box(
+                Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .border(
@@ -166,15 +174,28 @@ fun ImageQuestionView(
                     shape = RoundedCornerShape(10.dp)
                 )
                 .padding(16.dp)
-            ,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(imageList.size) { index ->
-                ImageBox(
-                    image = imageList[index],
-                    label = imageLabelList[index],
-                )
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(imageList.size) { index ->
+                    ImageBox(
+                        image = imageList[index],
+                        label = imageLabelList[index],
+                    )
+                }
             }
         }
     }
@@ -227,12 +248,6 @@ fun ImageBox(
     và thời gian cho ListeningPracticeScren
  */
 
-sealed class PlaybackState {
-    data object Paused : PlaybackState()
-    data object Playing : PlaybackState()
-    data object Finished : PlaybackState()
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioPlayer(
@@ -259,9 +274,9 @@ fun AudioPlayer(
         ) {
             Icon(
                 imageVector = when (playbackState) {
-                    is PlaybackState.Paused -> Icons.Outlined.PlayArrow
-                    is PlaybackState.Playing -> Icons.Outlined.Pause
-                    is PlaybackState.Finished -> Icons.Outlined.Replay
+                    PlaybackState.PAUSED -> Icons.Outlined.PlayArrow
+                    PlaybackState.PLAYING -> Icons.Outlined.Pause
+                    PlaybackState.FINISHED -> Icons.Outlined.Replay
                 },
                 contentDescription = "Play/Pause",
                 tint = MaterialTheme.colorScheme.primary
@@ -316,16 +331,18 @@ fun AudioPlayer(
 @Composable
 fun ImageQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
-        val context = LocalContext.current
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.avatar)
-        val bitmapList = listOf(bitmap, bitmap, bitmap)
         ImageQuestionView(
             currentQuestion = 0,
             timeString = "00:00",
-            imageList = bitmapList,
+            imageList = emptyList(),
             imageLabelList = listOf("Pic. A", "Pic. B", "Pic. C"),
             onPlayClick = {},
-            onSubmitClick = {}
+            onSubmitClick = {},
+            playbackState = PlaybackState.PAUSED,
+            sliderPosition = 0f,
+            duration = 100f,
+            onSliderPositionChange = {},
+            onValueChangeFinished = {}
         )
     }
 }
@@ -334,17 +351,20 @@ fun ImageQuestionLightViewPreview() {
 @Composable
 fun ImageQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        val context = LocalContext.current
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.avatar)
-        val bitmapList = listOf(bitmap, bitmap, bitmap)
         ImageQuestionView(
             currentQuestion = 0,
             timeString = "00:00",
-            imageList = bitmapList,
+            imageList = emptyList(),
             imageLabelList = listOf("Pic. A", "Pic. B", "Pic. C"),
             onPlayClick = {},
-            onSubmitClick = {}
+            onSubmitClick = {},
+            playbackState = PlaybackState.PAUSED,
+            sliderPosition = 0f,
+            duration = 100f,
+            onSliderPositionChange = {},
+            onValueChangeFinished = {}
         )
+
     }
 }
 

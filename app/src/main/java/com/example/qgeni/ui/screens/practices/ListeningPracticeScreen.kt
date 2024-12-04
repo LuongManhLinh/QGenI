@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,7 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.data.model.McqQuestion
-import com.example.qgeni.ui.screens.utils.formatTime
+import com.example.qgeni.ui.screens.uploads.LoadingScreen
+import com.example.qgeni.utils.formatTime
 
 /*
     Màn hình thực hiện đề nghe, gồm ImageQuestionView và McQuestionView
@@ -31,8 +33,6 @@ fun ListeningPracticeScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
-
-    val context = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -83,7 +83,6 @@ fun ListeningPracticeScreen(
             emptyList()
         }
 
-
         ImageQuestionView(
             currentQuestion = uiState.currentQuestionIndex,
             timeString = formatTime(uiState.time),
@@ -93,10 +92,19 @@ fun ListeningPracticeScreen(
             },
             modifier = Modifier.weight(1f),
             onPlayClick = {
-                viewModel.play(context)
+                viewModel.play()
             },
             onSubmitClick = {
+//                viewModel.showLoadingDialog(true)
+                Log.d("ListeningPracticeScreen", "onSubmitClick: ")
                 viewModel.toggleSubmitConfirmDialog(true)
+            },
+            playbackState = uiState.playbackState,
+            sliderPosition = uiState.audioSliderPos,
+            duration = uiState.audioDuration,
+            onSliderPositionChange = viewModel::updateAudioSliderPos,
+            onValueChangeFinished = {
+                viewModel.seekTo()
             }
         )
 
@@ -113,38 +121,35 @@ fun ListeningPracticeScreen(
                 )
                 .clip(RoundedCornerShape(10.dp))
             )
-
-            return
+        } else {
+            McqQuestionView(
+                modifier = Modifier.weight(0.6f)
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp
+                    ),
+                questions = questionList.map {
+                    McqQuestion(
+                        question = "Choose the correct picture",
+                        answerList = List(it.imageList.size) { index ->
+                            ('A' + index).toString()
+                        },
+                        correctAnswer = ('A' + it.answerIndex).toString()
+                    )
+                },
+                currentQuestionIdx = uiState.currentQuestionIndex,
+                answeredQuestions = uiState.answeredQuestions,
+                onQuestionChange = { index ->
+                    viewModel.updateCurrentQuestionIndex(index)
+                },
+                onAnswerSelected = { answer ->
+                    viewModel.updateAnsweredQuestions(uiState.currentQuestionIndex, answer)
+                },
+            )
         }
-
-        McqQuestionView(
-            modifier = Modifier.weight(0.6f)
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                ),
-            questions = questionList.map {
-                McqQuestion(
-                    question = "Choose the correct picture",
-                    answerList = List(it.imageList.size) { index ->
-                        ('A' + index).toString()
-                    },
-                    correctAnswer = ('A' + it.answerIndex).toString()
-                )
-            },
-            currentQuestionIdx = uiState.currentQuestionIndex,
-            answeredQuestions = uiState.answeredQuestions,
-            onQuestionChange = { index ->
-                viewModel.updateCurrentQuestionIndex(index)
-            },
-            onAnswerSelected = { answer ->
-                viewModel.updateAnsweredQuestions(uiState.currentQuestionIndex, answer)
-            },
-
-
-        )
     }
+
     if (uiState.showSubmitConfirmDialog) {
         SubmitConfirm(
             onDismissRequest = {
@@ -156,6 +161,7 @@ fun ListeningPracticeScreen(
             imageResourceId = R.drawable.listening_submit_confirm
         )
     }
+
     if (uiState.showScoreDialog) {
         DisplayScore(
             message = "10/10", //Score
@@ -166,6 +172,12 @@ fun ListeningPracticeScreen(
                 viewModel.toggleScoreDialog(false)
             },
             imageResourceId = R.drawable.listening_open_delete_confirm
+        )
+    }
+
+    if (uiState.showLoadingDialog) {
+        LoadingScreen(
+            message = "Đang tải đề, bạn đợi chút nhé..."
         )
     }
 

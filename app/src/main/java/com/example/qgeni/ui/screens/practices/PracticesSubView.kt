@@ -46,7 +46,7 @@ import com.example.qgeni.R
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.PracticeItem
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
-import com.example.qgeni.ui.screens.utils.formatDate
+import com.example.qgeni.utils.formatDate
 import com.example.qgeni.ui.theme.QGenITheme
 import org.bson.types.ObjectId
 import java.util.Date

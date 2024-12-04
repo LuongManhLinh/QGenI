@@ -14,10 +14,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import com.example.qgeni.data.preferences.ThemeMode
 import com.example.qgeni.data.preferences.ThemePreferenceManager
 import com.example.qgeni.ui.screens.navigation.QGNavHost
 import com.example.qgeni.ui.theme.QGenITheme
+import com.example.qgeni.utils.AudioGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +40,9 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.valueOf(themeMode.value)
             }
 
+            Python.start(AndroidPlatform(this))
+            AudioGenerator.init(this)
+
             val isDarkTheme = when (currentTheme) {
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
@@ -45,8 +51,7 @@ class MainActivity : ComponentActivity() {
 
             QGenITheme(dynamicColor = false, darkTheme = isDarkTheme) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                   DemoImages(modifier = Modifier.padding(innerPadding))
-//                    ExampleIdsUI(Modifier.padding(innerPadding))
+
                     val navController = rememberNavController()
                     QGNavHost(
                         modifier = Modifier.padding(innerPadding),
@@ -63,7 +68,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 
 
