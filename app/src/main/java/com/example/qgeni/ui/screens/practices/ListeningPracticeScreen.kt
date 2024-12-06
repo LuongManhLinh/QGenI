@@ -177,7 +177,8 @@ fun ListeningPracticeScreen(
 
     if (uiState.showLoadingDialog) {
         LoadingScreen(
-            message = "Đang tải đề, bạn đợi chút nhé..."
+            message = "Đang tải đề, bạn đợi chút nhé...",
+            onButtonClick = {}
         )
     }
 

@@ -220,7 +220,10 @@ fun ListeningPracticeGeneratorScreen(
         is GeneratorState.Loading -> {
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
-                message = "Thần đèn đang đi tìm nguyên liệu"
+                message = "Thần đèn đang đi tìm nguyên liệu",
+                onButtonClick = {
+                    //
+                }
             )
         }
 
@@ -237,7 +240,10 @@ fun ListeningPracticeGeneratorScreen(
         is GeneratorState.Saving -> {
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
-                message = "Thần đèn đang lưu đề"
+                message = "Thần đèn đang lưu đề",
+                onButtonClick = {
+                    //
+                }
             )
         }
 

@@ -49,6 +49,7 @@ fun LoadingScreen(
     @RawRes
     lottieResourceId: Int = R.raw.fairy,
     message: String,
+    onButtonClick: () -> Unit
 ) {
     Dialog(onDismissRequest = {}) { // Loading không để dismiss
         Box(
@@ -87,6 +88,29 @@ fun LoadingScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = onButtonClick,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        ),
+                        modifier = Modifier
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                    ) {
+                        Text(
+                            text = "HỦY",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             }
         }
     }
@@ -334,7 +358,6 @@ fun SaveScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Row {
-
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = onNextButtonClick,
@@ -518,7 +541,8 @@ fun ErrorDarkScreenPreview() {
 fun LoadingLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         LoadingScreen(
-            message = "Tiên nữ đang đi tìm nguyên liệu"
+            message = "Tiên nữ đang đi tìm nguyên liệu",
+            onButtonClick = {}
         )
     }
 }
@@ -528,7 +552,8 @@ fun LoadingLightScreenPreview() {
 fun LoadingDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         LoadingScreen(
-            message = "Tiên nữ đang đi tìm nguyên liệu"
+            message = "Tiên nữ đang đi tìm nguyên liệu",
+            onButtonClick = {}
         )
     }
 }
