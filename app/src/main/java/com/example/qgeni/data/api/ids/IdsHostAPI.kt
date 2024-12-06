@@ -22,6 +22,7 @@ object IdsHostAPI : IFullIdsAPI {
     ): ObjectId? {
         try {
             val socket = Socket(host, port)
+            Log.d(LOG_TAG, "$host:$port")
 
             sendRequest(RequestType.IMG_FIND_SIMILAR_ONLY, socket, topicImageList)
 
