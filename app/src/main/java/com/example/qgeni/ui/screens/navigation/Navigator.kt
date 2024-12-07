@@ -232,7 +232,7 @@ fun QGNavHost(
         composable(Screen.ChangeInfo.route) {
             ChangeInformationScreen(
                 onBackClick = { navController.navigateUp() },
-                onNextButtonClick = {}
+                onNextButtonClick = { navController.navigate(Screen.Profile.route)}
             )
         }
     }
