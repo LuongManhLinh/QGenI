@@ -103,32 +103,38 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     }
 
     fun createReadingPractice() {
-        _readingUIState.update {
-            it.copy(
-                currentState = GeneratorState.Loading
-            )
-        }
+            _readingUIState.update {
+                it.copy(
+                    currentState = GeneratorState.Loading
+                )
+            }
+        if(isFullInfo() == "") {
+            viewModelScope.launch {
+                var input: String
+                if(_readingUIState.value.isUploadMode)
+                    input = _readingUIState.value.fileContent
+                else
+                    input = _readingUIState.value.inputParagraph
+                val practiceItem = QgsApplication.getReadingPracticeItem(
+                    input,
+                    _readingUIState.value.inputNumStatement.toInt()
+                )
+                Log.i("Item practice", practiceItem.toString())
+                if (practiceItem != null) {
+                    _readingUIState.update {
+                        it.copy(
+                            currentState = GeneratorState.Titling,
+                        )
+                    }
 
-        viewModelScope.launch {
-            val practiceItem = QgsApplication.getReadingPracticeItem(
-                _readingUIState.value.inputParagraph,
-                _readingUIState.value.inputNumStatement.toInt()
-            )
-            Log.i("Item practice", practiceItem.toString())
-            if (practiceItem != null) {
-                _readingUIState.update {
-                    it.copy(
-                        currentState = GeneratorState.Titling,
-                    )
-                }
+                    readingPracticeItem = practiceItem
 
-                readingPracticeItem = practiceItem
-
-            } else {
-                _readingUIState.update {
-                    it.copy(
-                        currentState = GeneratorState.Error
-                    )
+                } else {
+                    _readingUIState.update {
+                        it.copy(
+                            currentState = GeneratorState.Error
+                        )
+                    }
                 }
             }
         }
@@ -142,10 +148,18 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun isFullInfo(): Boolean {
-        return !(_readingUIState.value.inputParagraph == ""
-                || _readingUIState.value.inputNumStatement == ""
-                || _readingUIState.value.textUri == Uri.EMPTY)
+    fun isFullInfo(): String {
+        if(_readingUIState.value.isUploadMode) {
+            if(_readingUIState.value.fileContent == "")
+                return "Vui lòng upload file"
+        }
+        else {
+            if(_readingUIState.value.inputParagraph == "")
+                return "Vui lòng dán đoạn văn"
+        }
+        if(_readingUIState.value.inputNumStatement == "")
+            return "Vui lòng nhập số câu hỏi"
+        return ""
     }
 
     fun updateTextUri(context: Context, uri: Uri) {
@@ -166,7 +180,6 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                 fileContent = fileContent
             )
         }
-        updateReadingInputParagraph(fileContent)
     }
 }
 
@@ -203,5 +216,6 @@ data class ReadingPracticeGeneratorUIState(
     val isGenerateSuccess: Boolean = false,
     val textUri: Uri = Uri.EMPTY,
     val fileName: String = "",
-    val fileContent: String = ""
+    val fileContent: String = "",
+    val isFullInfo: Boolean = false
 )
