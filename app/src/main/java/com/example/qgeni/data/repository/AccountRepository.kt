@@ -16,6 +16,15 @@ interface AccountRepository {
         email: String? = null,
         password: String
     )
+
+    suspend fun getUserInfo(userId: ObjectId): Document?
+
+    suspend fun updateUserInfo(
+        userId: ObjectId,
+        username: String? = null,
+        phoneNumber: String? = null,
+        email: String? = null
+    ): Boolean
 }
 
 
@@ -76,4 +85,35 @@ object DefaultAccountRepository : AccountRepository {
 
     }
 
+    override suspend fun getUserInfo(userId: ObjectId): Document? {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+
+        val query = Document(Names.ID, userId)
+        return collection.find(query).firstOrNull()
+    }
+
+    override suspend fun updateUserInfo(
+        userId: ObjectId,
+        username: String?,
+        phoneNumber: String?,
+        email: String?
+    ): Boolean {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+
+        val updateFields = mutableMapOf<String, Any>()
+        username?.let { updateFields[Names.USERNAME] = it }
+        phoneNumber?.let { updateFields[Names.PHONE_NUMBER] = it }
+        email?.let { updateFields[Names.EMAIL] = it }
+
+        if (updateFields.isEmpty()) return false
+
+        val updateDoc = Document("\$set", updateFields)
+
+        val result = collection.updateOne(
+            Document(Names.ID, userId),
+            updateDoc
+        )
+
+        return result.modifiedCount > 0
+    }
 }
