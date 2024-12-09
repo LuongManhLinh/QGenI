@@ -98,8 +98,6 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                 )
             }
         }
-
-
     }
 
     fun createReadingPractice() {
@@ -110,16 +108,14 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             }
         if(isFullInfo() == "") {
             viewModelScope.launch {
-                var input: String
-                if(_readingUIState.value.isUploadMode)
-                    input = _readingUIState.value.fileContent
+                val input: String = if(_readingUIState.value.isUploadMode)
+                    _readingUIState.value.fileContent
                 else
-                    input = _readingUIState.value.inputParagraph
+                    _readingUIState.value.inputParagraph
                 val practiceItem = QgsApplication.getReadingPracticeItem(
                     input,
                     _readingUIState.value.inputNumStatement.toInt()
                 )
-                Log.i("Item practice", practiceItem.toString())
                 if (practiceItem != null) {
                     _readingUIState.update {
                         it.copy(
@@ -140,10 +136,10 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun updateGenerateSuccess(isSuccess: Boolean) {
+    fun updateFileContent(fileContent: String) {
         _readingUIState.update {
             it.copy(
-                isGenerateSuccess = isSuccess
+                fileContent = fileContent
             )
         }
     }
@@ -165,7 +161,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     fun updateTextUri(context: Context, uri: Uri) {
         val fileName: String
         val fileContent: String
-        if(uri != Uri.EMPTY) {
+        if(uri != Uri.parse("") || uri != Uri.EMPTY) {
             fileName = getFileName(context, uri)
             fileContent = readFileContent(context, uri)
         }
@@ -181,27 +177,28 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             )
         }
     }
-}
-
-private fun getFileName(context: Context, uri: Uri): String {
-    var fileName = ""
-    val cursor = context.contentResolver.query(uri, null, null, null, null)
-    cursor?.use {
-        if (it.moveToFirst()) {
-            val columnIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (columnIndex != -1) {
-                fileName = it.getString(columnIndex)
+    private fun getFileName(context: Context, uri: Uri): String {
+        var fileName = ""
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (columnIndex != -1) {
+                    fileName = it.getString(columnIndex)
+                }
             }
         }
+        return fileName
     }
-    return fileName
+
+    private fun readFileContent(context: Context, uri: Uri): String {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        return reader.readText()
+    }
 }
 
-private fun readFileContent(context: Context, uri: Uri): String {
-    val inputStream = context.contentResolver.openInputStream(uri)
-    val reader = BufferedReader(InputStreamReader(inputStream))
-    return reader.readText()
-}
+
 
 
 data class ReadingPracticeGeneratorUIState(
@@ -214,7 +211,7 @@ data class ReadingPracticeGeneratorUIState(
     val inputNumStatement: String = "1",
     val listReadingQuestion: List<McqQuestion> = emptyList(),
     val isGenerateSuccess: Boolean = false,
-    val textUri: Uri = Uri.EMPTY,
+    val textUri: Uri = Uri.parse(""),
     val fileName: String = "",
     val fileContent: String = "",
     val isFullInfo: Boolean = false

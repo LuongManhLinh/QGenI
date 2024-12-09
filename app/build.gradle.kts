@@ -111,4 +111,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation ("org.robolectric:robolectric:4.10.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }

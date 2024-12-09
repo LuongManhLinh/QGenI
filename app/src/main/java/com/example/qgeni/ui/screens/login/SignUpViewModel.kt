@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.data.repository.DefaultAccountRepository
@@ -81,7 +82,6 @@ class SignUpViewModel : ViewModel() {
                     null
                 }
             )
-
             _uiState.update {
                 it.copy(
                     showSuccessDialog = true
@@ -90,6 +90,7 @@ class SignUpViewModel : ViewModel() {
         }
 
     }
+
 }
 
 data class SignUpUIState(
