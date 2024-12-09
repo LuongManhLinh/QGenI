@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.login
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -115,7 +117,8 @@ fun SignUpScreen(
                 onPrimary = false,
                 onClick = {
                     signUpViewModel.signUp()
-                }
+//                    signUpViewModel.showSuccessDialog(true)
+                },
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
@@ -157,7 +160,6 @@ fun SignUpPage(
     onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-//    var passwordVisible by remember { mutableStateOf(false)}
 
     Column(
         modifier = modifier
@@ -313,7 +315,7 @@ fun SignUpPage(
                     unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                     cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().testTag("password_field")
         )
         Spacer(modifier = Modifier.height(32.dp))
         Row(
@@ -329,6 +331,7 @@ fun SignUpPage(
                     uncheckedColor = MaterialTheme.colorScheme.primary,
                     checkmarkColor = MaterialTheme.colorScheme.primary
                 ),
+                modifier = Modifier.testTag("terms_checkbox")
             )
             Text(
                 text = "Đồng ý với",
@@ -412,6 +415,7 @@ fun SignUpSuccess(
                 ) {
                     Text(
                         text = text,
+                        modifier = Modifier.testTag("Success"),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
