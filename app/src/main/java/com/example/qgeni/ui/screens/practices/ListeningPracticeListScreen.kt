@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
@@ -47,7 +49,6 @@ fun ListeningPracticeListScreen(
 ) {
 
     val uiState by viewModel.practiceListUIState.collectAsState()
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -126,10 +127,11 @@ fun ListeningPracticeListScreen(
                         modifier = Modifier
                             .clickable(
                                 onClick = {
+                                    Log.i("check click", "aa")
                                     viewModel.selectItem(item.id)
                                     viewModel.toggleOpenDialog(true)
                                 }
-                            )
+                            ).testTag("open dialog")
                     )
                 }
             }

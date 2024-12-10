@@ -4,11 +4,15 @@ import com.example.qgeni.data.model.PracticeItem
 import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.data.repository.DefaultListeningRepository
 
-class ListeningPracticeListViewModel : PracticeListViewModel() {
+open class ListeningPracticeListViewModel : PracticeListViewModel() {
+//    override suspend fun getPracticeItemList(): List<PracticeItem> {
+//        return DefaultListeningRepository
+//            .getAllPracticeItem(
+//                UserPreferenceManager.getUserId()!!
+//            )
+//    }
     override suspend fun getPracticeItemList(): List<PracticeItem> {
-        return DefaultListeningRepository
-            .getAllPracticeItem(
-                UserPreferenceManager.getUserId()!!
-            )
+        val userId = UserPreferenceManager.getUserId() ?: return emptyList()
+        return DefaultListeningRepository.getAllPracticeItem(userId)
     }
 }

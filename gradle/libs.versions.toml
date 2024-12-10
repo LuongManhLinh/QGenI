@@ -19,6 +19,8 @@ composeBom = "2024.04.01"
 mongodbDriverSync = "4.4.3"
 mongodbDriverSyncVersion = "4.10.2"
 mongodbMongodbDriverSync = "4.4.3"
+coreKtxVersion = "1.6.1"
+navigationTesting = "2.8.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +53,8 @@ mongodb-driver-sync-v443 = { module = "org.mongodb:mongodb-driver-sync", version
 mongodb-mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodbDriverSyncVersion" }
 org-mongo-java-driver = { module = "org.mongo:java.driver" }
 org-mongo-java-driver2 = { module = "org.mongo:java-driver" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigationTesting" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

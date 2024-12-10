@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.data.model.PracticeItem
@@ -13,7 +14,7 @@ import org.bson.types.ObjectId
 
 abstract class PracticeListViewModel : ViewModel() {
     private val _practiceListUIState = MutableStateFlow(PracticeListUIState())
-    val practiceListUIState = _practiceListUIState.asStateFlow()
+    open val practiceListUIState = _practiceListUIState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

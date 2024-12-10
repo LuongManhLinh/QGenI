@@ -23,7 +23,7 @@ import java.io.InputStreamReader
 open class ReadingPracticeGeneratorViewModel : ViewModel() {
 
     private val _readingUIState = MutableStateFlow(ReadingPracticeGeneratorUIState())
-    val readingUIState = _readingUIState.asStateFlow()
+    open val readingUIState = _readingUIState.asStateFlow()
 
     private var readingPracticeItem: ReadingPracticeItem? = null
 
@@ -70,7 +70,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun saveReadingPractice() {
+    open fun saveReadingPractice() {
         if (readingPracticeItem == null) {
             _readingUIState.update {
                 it.copy(
@@ -205,7 +205,7 @@ data class ReadingPracticeGeneratorUIState(
     val showUploadFileDialog: Boolean = false,
     val selectedOption: String = "Chọn model",
     val currentState: GeneratorState = GeneratorState.Idle,
-    val isUploadMode: Boolean = true,
+    val isUploadMode: Boolean = false,
     val title: String = "",
     val inputParagraph: String = "",
     val inputNumStatement: String = "1",

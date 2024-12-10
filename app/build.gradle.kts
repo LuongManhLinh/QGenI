@@ -102,6 +102,8 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.navigation.testing)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
