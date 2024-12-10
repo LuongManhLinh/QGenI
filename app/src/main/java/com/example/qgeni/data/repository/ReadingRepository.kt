@@ -20,6 +20,10 @@ interface ReadingRepository {
         id: ObjectId
     ): ReadingPracticeItem
 
+    suspend fun changeTitle(
+        id: ObjectId,
+        title: String
+    )
 }
 
 
@@ -32,8 +36,8 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
         const val CREATION_DATE = "creationDate"
         const val PASSAGE = "passage"
         const val QUESTIONS = "questions"
-        const val Q_STATEMENTS = "statement"
-        const val Q_ANSWERS = "answer"
+        const val Q_STATEMENT = "statement"
+        const val Q_ANSWER = "answer"
         const val IS_NEW = "isNew"
     }
 
@@ -54,9 +58,9 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
         ).append(
             Names.QUESTIONS, item.questionList.map {
                 Document(
-                    Names.Q_STATEMENTS, it.statement
+                    Names.Q_STATEMENT, it.statement
                 ).append(
-                    Names.Q_ANSWERS, answerToInt(it.answer)
+                    Names.Q_ANSWER, it.answer.toInt()
                 )
             }
         ).append(
@@ -85,15 +89,26 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
             passage = document[Names.PASSAGE] as String,
             questionList = (document[Names.QUESTIONS] as List<Document>).map {
                 ReadingQuestion(
-                    statement = it[Names.Q_STATEMENTS] as String,
-                    answer = when (it[Names.Q_ANSWERS] as Int) {
-                        1 -> ReadingAnswer.TRUE
-                        -1 -> ReadingAnswer.FALSE
-                        else -> ReadingAnswer.NOT_GIVEN
-                    }
+                    statement = it[Names.Q_STATEMENT] as String,
+                    answer = ReadingAnswer.fromInt(
+                        when (it[Names.Q_ANSWER]) {
+                            is Int -> it[Names.Q_ANSWER] as Int
+                            is Long -> (it[Names.Q_ANSWER] as Long).toInt()
+                            else -> throw IllegalArgumentException("Invalid answer type")
+                        }
+                    )
                 )
             },
             isNew = document[Names.IS_NEW] as Boolean
+        )
+    }
+
+
+    override suspend fun changeTitle(id: ObjectId, title: String) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.updateOne(
+            Document(Names.ID, id),
+            Document("\$set", Document(Names.TITLE, title))
         )
     }
 
@@ -121,15 +136,6 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
             )
         }
     }
-
-
 }
 
-private fun answerToInt(answer: ReadingAnswer): Int {
-    return when (answer) {
-        ReadingAnswer.TRUE -> 1
-        ReadingAnswer.FALSE -> -1
-        ReadingAnswer.NOT_GIVEN -> 0
-    }
-}
 

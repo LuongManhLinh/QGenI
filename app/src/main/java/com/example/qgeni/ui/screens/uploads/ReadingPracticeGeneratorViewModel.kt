@@ -1,22 +1,19 @@
+package com.example.qgeni.ui.screens.uploads
 
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.qgeni.data.api.qgs.QgsGeminiAPI
 import com.example.qgeni.application.QgsApplication
 import com.example.qgeni.data.model.McqQuestion
-import com.example.qgeni.data.model.ReadingPracticeItem
-import com.example.qgeni.data.repository.DefaultListeningRepository
 import com.example.qgeni.data.repository.DefaultReadingRepository
-import com.example.qgeni.ui.screens.uploads.GeneratorState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.bson.types.ObjectId
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -25,14 +22,10 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     private val _readingUIState = MutableStateFlow(ReadingPracticeGeneratorUIState())
     val readingUIState = _readingUIState.asStateFlow()
 
-    private var readingPracticeItem: ReadingPracticeItem? = null
+    private var itemId: ObjectId? = null
 
     fun updateReadingUploadFileDialog(show: Boolean) {
         _readingUIState.update { it.copy(showUploadFileDialog = show) }
-    }
-
-    fun selectReadingOption(option: String) {
-        _readingUIState.update { it.copy(selectedOption = option) }
     }
 
     fun updateReadingGeneratorState(state: GeneratorState) {
@@ -71,7 +64,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     }
 
     fun saveReadingPractice() {
-        if (readingPracticeItem == null) {
+        if (itemId == null) {
             _readingUIState.update {
                 it.copy(
                     currentState = GeneratorState.Error
@@ -86,10 +79,9 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            DefaultReadingRepository.insert(
-                readingPracticeItem!!.copy(
-                    title = _readingUIState.value.title
-                )
+            DefaultReadingRepository.changeTitle(
+                itemId!!,
+                _readingUIState.value.title
             )
 
             _readingUIState.update {
@@ -109,20 +101,21 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             )
         }
 
-        viewModelScope.launch {
-            val practiceItem = QgsApplication.getReadingPracticeItem(
+        viewModelScope.launch(Dispatchers.IO) {
+            val id = QgsApplication.getReadingPracticeItem(
                 _readingUIState.value.inputParagraph,
                 _readingUIState.value.inputNumStatement.toInt()
             )
-            Log.i("Item practice", practiceItem.toString())
-            if (practiceItem != null) {
+
+            if (id != null) {
+
                 _readingUIState.update {
                     it.copy(
                         currentState = GeneratorState.Titling,
                     )
                 }
 
-                readingPracticeItem = practiceItem
+                itemId = id
 
             } else {
                 _readingUIState.update {
@@ -134,19 +127,6 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun updateGenerateSuccess(isSuccess: Boolean) {
-        _readingUIState.update {
-            it.copy(
-                isGenerateSuccess = isSuccess
-            )
-        }
-    }
-
-    fun isFullInfo(): Boolean {
-        return !(_readingUIState.value.inputParagraph == ""
-                || _readingUIState.value.inputNumStatement == ""
-                || _readingUIState.value.textUri == Uri.EMPTY)
-    }
 
     fun updateTextUri(context: Context, uri: Uri) {
         val fileName: String

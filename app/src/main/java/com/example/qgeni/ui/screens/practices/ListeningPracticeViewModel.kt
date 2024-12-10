@@ -66,7 +66,7 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
         if (mp3FileList.isEmpty()) {
             return
         }
-        currentAudioPlayer.release()
+
         currentAudioPlayer = AudioPlayer(
             mp3File = mp3FileList[_uiState.value.currentQuestionIndex],
             onCompletion = {
@@ -77,6 +77,7 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
                 }
             }
         )
+
         _uiState.update {
             it.copy(
                 audioDuration = currentAudioPlayer.getDurationSecond()
