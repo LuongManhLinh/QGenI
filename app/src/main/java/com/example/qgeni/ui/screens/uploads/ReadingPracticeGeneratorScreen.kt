@@ -298,6 +298,7 @@ fun ReadingPracticeGeneratorScreen(
             )
         }
     }
+
     when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
             if (viewModel.isFullInfo() != "") {

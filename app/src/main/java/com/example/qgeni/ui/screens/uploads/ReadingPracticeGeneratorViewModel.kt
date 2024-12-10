@@ -148,6 +148,20 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
         updateReadingInputParagraph(fileContent)
     }
+
+    fun isFullInfo(): String {
+        if(_readingUIState.value.isUploadMode) {
+            if(_readingUIState.value.fileContent == "")
+                return "Vui lòng upload file"
+        }
+        else {
+            if(_readingUIState.value.inputParagraph == "")
+                return "Vui lòng dán đoạn văn"
+        }
+        if(_readingUIState.value.inputNumStatement == "")
+            return "Vui lòng nhập số câu hỏi"
+        return ""
+    }
 }
 
 private fun getFileName(context: Context, uri: Uri): String {
