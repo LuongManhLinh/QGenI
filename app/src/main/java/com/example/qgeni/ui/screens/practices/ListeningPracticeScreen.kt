@@ -71,23 +71,11 @@ fun ListeningPracticeScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        val imageList = if (uiState.listeningPracticeItem != null) {
-            uiState.listeningPracticeItem!!.questionList[uiState.currentQuestionIndex].imageList
-        } else {
-            emptyList()
-        }
-
-        val questionList = if (uiState.listeningPracticeItem != null) {
-            uiState.listeningPracticeItem!!.questionList
-        } else {
-            emptyList()
-        }
-
         ImageQuestionView(
             currentQuestion = uiState.currentQuestionIndex,
             timeString = formatTime(uiState.time),
-            imageList = imageList,
-            imageLabelList = List(imageList.size) { index ->
+            imageList = uiState.imageList,
+            imageLabelList = List(uiState.imageList.size) { index ->
                 "Pic. " + ('A' + index)
             },
             modifier = Modifier.weight(1f),
@@ -107,7 +95,7 @@ fun ListeningPracticeScreen(
             }
         )
 
-        if (questionList.isEmpty()) {
+        if (uiState.questionList.isEmpty()) {
             Box( modifier = Modifier
                 .padding(16.dp)
                 .background(color = Color.Transparent)
@@ -128,15 +116,7 @@ fun ListeningPracticeScreen(
                         end = 16.dp,
                         bottom = 16.dp
                     ),
-                questions = questionList.map {
-                    McqQuestion(
-                        question = "Choose the correct picture",
-                        answerList = List(it.imageList.size) { index ->
-                            ('A' + index).toString()
-                        },
-                        correctAnswer = ('A' + it.answerIndex).toString()
-                    )
-                },
+                questions = uiState.questionList,
                 currentQuestionIdx = uiState.currentQuestionIndex,
                 answeredQuestions = uiState.answeredQuestions,
                 onQuestionChange = { index ->
@@ -163,7 +143,7 @@ fun ListeningPracticeScreen(
 
     if (uiState.showScoreDialog) {
         DisplayScore(
-            message = "10/10", //Score
+            message = "???", //Score
             onNextButtonClick = {
                 //
             },
@@ -176,7 +156,7 @@ fun ListeningPracticeScreen(
 
     if (uiState.showLoadingDialog) {
         LoadingScreen(
-            message = "Đang tải đề, bạn đợi chút nhé...",
+            message = "Đang tải đề...",
             onButtonClick = {}
         )
     }

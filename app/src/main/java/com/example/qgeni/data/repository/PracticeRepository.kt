@@ -7,4 +7,14 @@ interface PracticeRepository {
     suspend fun getAllPracticeItem(
         userId: ObjectId
     ) : List<PracticeItem>
+
+    suspend fun changeTitle(
+        id: ObjectId,
+        title: String
+    )
+
+    suspend fun deleteItem(
+        id: ObjectId
+    )
+
 }

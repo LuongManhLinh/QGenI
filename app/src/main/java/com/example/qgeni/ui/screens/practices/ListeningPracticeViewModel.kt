@@ -1,54 +1,46 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.util.Log
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.qgeni.data.model.ListeningPracticeItem
+import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.repository.DefaultListeningRepository
-import com.example.qgeni.utils.AudioGenerator
 import com.example.qgeni.utils.AudioPlayer
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.bson.types.ObjectId
-import java.io.File
 
 class ListeningPracticeViewModel(idHexString: String): ViewModel() {
     private val _uiState = MutableStateFlow(ListeningPracticeUIState())
     val uiState = _uiState.asStateFlow()
 
-    private val mp3FileList = mutableListOf<File>()
-
     private lateinit var currentAudioPlayer: AudioPlayer
+    private lateinit var practiceItem: ListeningPracticeItem
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val listeningPracticeItem = DefaultListeningRepository.getItem(ObjectId(idHexString))
-
-            val results = listeningPracticeItem.questionList.mapIndexed { index, question ->
-                async {
-                    AudioGenerator.generate(
-                        question.description,
-                        "$idHexString desc_$index.mp3"
-                    )
-                }
-            }.awaitAll()
-
-            Log.d("ListeningPracticeViewModel", "Generated all mp3 files")
-            mp3FileList.addAll(results)
+            practiceItem = DefaultListeningRepository.getItem(ObjectId(idHexString))
 
             _uiState.update {
                 it.copy(
                     showLoadingDialog = false,
-                    listeningPracticeItem = listeningPracticeItem
+                    imageList = practiceItem.questionList[0].imageList,
+                    questionList = practiceItem.questionList.map { question ->
+                        McqQuestion(
+                            question = "Choose the correct picture",
+                            answerList = List(question.imageList.size) { index ->
+                                ('A' + index).toString()
+                            }
+                        )
+                    }
                 )
             }
 
@@ -64,16 +56,12 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 
 
     private fun updateAudioPlayer(index: Int) {
-        if (mp3FileList.isEmpty()) {
-            return
-        }
-
         if (::currentAudioPlayer.isInitialized) {
             currentAudioPlayer.release()
         }
 
         currentAudioPlayer = AudioPlayer(
-            mp3File = mp3FileList[index],
+            mp3File = practiceItem.questionList[index].mp3File,
             onCompletion = {
                 _uiState.update {
                     it.copy(
@@ -95,6 +83,7 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
         _uiState.update {
             it.copy(
                 currentQuestionIndex = index,
+                imageList = practiceItem.questionList[index].imageList,
                 playbackState = PlaybackState.PAUSED,
                 audioSliderPos = 0f,
                 audioDuration = currentAudioPlayer.getDurationSecond()
@@ -195,8 +184,9 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        mp3FileList.forEach {
-            it.delete()
+        currentAudioPlayer.release()
+        practiceItem.questionList.forEach {
+            it.mp3File.delete()
         }
     }
 }
@@ -204,7 +194,8 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 
 data class ListeningPracticeUIState(
     val currentQuestionIndex: Int = 0,
-    val listeningPracticeItem: ListeningPracticeItem? = null,
+    val imageList: List<Bitmap> = emptyList(),
+    val questionList: List<McqQuestion> = emptyList(),
 
     val showLoadingDialog: Boolean = true,
     val showSubmitConfirmDialog: Boolean = false,
@@ -218,6 +209,7 @@ data class ListeningPracticeUIState(
     val audioSliderPos: Float = 0f,
     val audioDuration: Float = 0f,
     val playbackState: PlaybackState = PlaybackState.PAUSED,
+
 
 )
 
