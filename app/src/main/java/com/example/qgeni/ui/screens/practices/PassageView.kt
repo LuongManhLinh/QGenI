@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -95,7 +96,6 @@ fun PassageView(
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000L)
-//            time += 1000L
             viewModel.updateTime()
         }
     }
@@ -147,16 +147,12 @@ fun PassageView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             HighlightSwitch(
-//                isHighlightEnabled = isHighlightEnabled,
                 isHighlightEnabled = passageUIState.isHighlightEnabled,
-//                onIsHighlightChange = { isHighlightEnabled = it }
                 onIsHighlightChange = {viewModel.toggleHighlightEnabled()}
             )
             Spacer(modifier = Modifier.width(16.dp))
             ModeSelectionSwitch(
-//                isHighlightMode = isHighlightMode,
                 isHighlightMode = passageUIState.isHighlightMode,
-//                onIsHighlightModeChange = { isHighlightMode = it},
                 onIsHighlightModeChange = {viewModel.toggleHighlightMode()},
                 enabledIconResId = R.drawable.highlighter,
                 enabledText = "Highlighter",
@@ -266,7 +262,8 @@ fun CustomIconSwitch(
     onCheckedChange: (Boolean) -> Unit,
     useIcon: Boolean,
     enabledIconResId: Int,   // Icon khi bật (on)
-    disabledIconResId: Int   // Icon khi tắt (off)
+    disabledIconResId: Int, // Icon khi tắt (off)
+    testTag: String
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -284,6 +281,7 @@ fun CustomIconSwitch(
                 )
                 .padding(4.dp)
                 .clickable { onCheckedChange(!checked) }
+                .testTag(testTag)
         ) {
             // Vòng tròn bên trong switch
             Box(
@@ -339,7 +337,8 @@ fun HighlightSwitch(
             onCheckedChange = {onIsHighlightChange(!isHighlightEnabled)},
             useIcon = false,
             enabledIconResId = R.drawable.eraser,
-            disabledIconResId = R.drawable.highlighter
+            disabledIconResId = R.drawable.highlighter,
+            testTag = "test highlight"
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -378,7 +377,8 @@ fun ModeSelectionSwitch(
             onCheckedChange = {onIsHighlightModeChange(!isHighlightMode)},
             useIcon = true,
             enabledIconResId = enabledIconResId,
-            disabledIconResId = disabledIconResId
+            disabledIconResId = disabledIconResId,
+            testTag = "highlight mode"
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -453,6 +453,7 @@ fun CustomSwitchOffPreview() {
             useIcon = true,
             enabledIconResId = R.drawable.eraser,
             disabledIconResId = R.drawable.highlighter,
+            "a"
         )
     }
 }
@@ -466,7 +467,8 @@ fun CustomSwitchOnPreview() {
             onCheckedChange = {},
             useIcon = true,
             enabledIconResId = R.drawable.eraser,
-            disabledIconResId = R.drawable.highlighter
+            disabledIconResId = R.drawable.highlighter,
+            "a"
         )
     }
 }

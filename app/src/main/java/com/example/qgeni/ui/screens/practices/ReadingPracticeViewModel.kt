@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.bson.types.ObjectId
 
-class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
+open class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
     private val _uiState = MutableStateFlow(ReadingPracticeUIState())
-    val uiState = _uiState.asStateFlow()
+    open val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -123,7 +123,7 @@ class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
         }
     }
 
-    fun checkScore(): Int {
+    open fun checkScore(): Int {
         var score = 0
         for ((index, answer) in _uiState.value.readingPracticeItem?.questionList?.withIndex()!!) {
             val correctAnswer = answer.answer.toString()

@@ -114,6 +114,7 @@ fun CustomOutlinedButton(
                 color = color,
                 shape = RoundedCornerShape(10.dp)
             )
+            .testTag("upload file")
     ) {
         Text(
             text = text,

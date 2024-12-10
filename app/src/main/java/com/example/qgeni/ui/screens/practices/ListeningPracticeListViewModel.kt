@@ -5,12 +5,16 @@ import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.data.repository.DefaultListeningRepository
 import org.bson.types.ObjectId
 
-class ListeningPracticeListViewModel : PracticeListViewModel() {
+open class ListeningPracticeListViewModel : PracticeListViewModel() {
+//    override suspend fun getPracticeItemList(): List<PracticeItem> {
+//        return DefaultListeningRepository
+//            .getAllPracticeItem(
+//                UserPreferenceManager.getUserId()!!
+//            )
+//    }
     override suspend fun getPracticeItemList(): List<PracticeItem> {
-        return DefaultListeningRepository
-            .getAllPracticeItem(
-                UserPreferenceManager.getUserId()!!
-            )
+        val userId = UserPreferenceManager.getUserId() ?: return emptyList()
+        return DefaultListeningRepository.getAllPracticeItem(userId)
     }
 
     override suspend fun deleteItem(id: ObjectId) {

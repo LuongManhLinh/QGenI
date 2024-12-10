@@ -5,7 +5,7 @@ import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.data.repository.DefaultReadingRepository
 import org.bson.types.ObjectId
 
-class ReadingPracticeListViewModel : PracticeListViewModel() {
+open class ReadingPracticeListViewModel : PracticeListViewModel() {
     override suspend fun getPracticeItemList(): List<PracticeItem> {
         return DefaultReadingRepository
             .getAllPracticeItem(

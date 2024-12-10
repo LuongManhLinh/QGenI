@@ -4,19 +4,26 @@ import android.content.Context
 import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.data.repository.DefaultAccountRepository
 import com.example.qgeni.ui.screens.login.SignInEvent
+import com.example.qgeni.ui.screens.login.SignInUIState
 import com.example.qgeni.ui.screens.login.SignInViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.bson.types.ObjectId
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -38,6 +45,8 @@ class SignInViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun signInSuccess() = runTest {
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
         coEvery {
             DefaultAccountRepository.checkExistence(
                 usernameOrEmailOrPhone = "test@example.com",
@@ -52,14 +61,29 @@ class SignInViewModelTest {
             )
         } returns Unit
 
+        val uiState = mutableListOf<SignInUIState>()
+        val job = launch {
+            viewModel.uiState.collect {
+                uiState.add(it)
+                println(uiState)
+            }
+        }
+
         viewModel.updateEmail("test@example.com")
         viewModel.updatePassword("password")
-
         viewModel.signIn(mockContext)
 
         advanceUntilIdle()
+        runCurrent()
 
-        val uiState = viewModel.uiState.first()
-        assertEquals(SignInEvent.SUCCESS, uiState.signInEvent)
+        assertEquals(SignInEvent.SUCCESS, uiState.last().signInEvent)
+        job.cancel()
+        Dispatchers.resetMain()
+    }
+
+    @After
+    fun teardown() {
+        unmockkObject(DefaultAccountRepository)
+        unmockkObject(UserPreferenceManager)
     }
 }
