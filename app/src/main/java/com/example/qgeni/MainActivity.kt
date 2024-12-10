@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         themePreferenceManager = ThemePreferenceManager(this)
         enableEdgeToEdge()
         setContent {
-            val themeMode = themePreferenceManager.themeFlow.collectAsState(initial = ThemeMode.SYSTEM.name)
+            val themeMode = themePreferenceManager.themeFlow.collectAsState(initial = ThemeMode.DARK.name)
             val currentTheme = remember(themeMode.value) {
                 ThemeMode.valueOf(themeMode.value)
             }

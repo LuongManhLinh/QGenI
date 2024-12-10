@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
+import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -43,8 +45,15 @@ import com.example.qgeni.ui.theme.QGenITheme
 fun ChangeInformationScreen(
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ChangeInfoViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val userId = UserPreferenceManager.getUserId()
+
+    userId?.let { viewModel.loadUserInfo(it) }
+
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,13 +92,24 @@ fun ChangeInformationScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         ChangeInformationPage(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            username = uiState.username,
+            phoneNumber = uiState.phoneNumber,
+            email = uiState.email,
+            gender = uiState.gender,
+            onChangeUsername = {viewModel.updateUsername(it)},
+            onChangePhoneNumber = {viewModel.updatePhoneNumber(it)},
+            onChangeEmail = {viewModel.updateGender(it)},
+            onChangeGender = {viewModel.updateGender(it)}
         )
         Row {
             Spacer(modifier = Modifier.weight(2f))
             NextButton(
                 onPrimary = false,
-                onClick = onNextButtonClick
+                onClick = {
+                    userId?.let { viewModel.updateUserInfo(it, uiState.username, uiState.phoneNumber, uiState.email) }
+                    onNextButtonClick()
+                }
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
@@ -100,14 +120,15 @@ fun ChangeInformationScreen(
 @Composable
 fun ChangeInformationPage(
     modifier: Modifier = Modifier,
-    changeInfoViewModel: ChangeInfoViewModel = viewModel()
+    username: String,
+    phoneNumber: String,
+    email: String,
+    gender: String,
+    onChangeUsername: (String) -> Unit,
+    onChangePhoneNumber: (String) -> Unit,
+    onChangeEmail: (String) -> Unit,
+    onChangeGender: (String) -> Unit
 ) {
-//    var username by remember { mutableStateOf("") }
-//    var phoneNumber by remember { mutableStateOf("") }
-//    var email by remember { mutableStateOf("") }
-//    var gender by remember { mutableStateOf("") }
-
-    val infoUIState by changeInfoViewModel.changeInfoUIState.collectAsState()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -119,8 +140,8 @@ fun ChangeInformationPage(
             )
     ) {
         OutlinedTextField(
-            value = infoUIState.username,
-            onValueChange = {changeInfoViewModel.updateUsername(it)},
+            value = username,
+            onValueChange = {onChangeUsername(it)},
             label = {
                 Text(
                     text = "Tên tài khoản",
@@ -147,8 +168,8 @@ fun ChangeInformationPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = infoUIState.phoneNumber,
-            onValueChange = { changeInfoViewModel.updatePhoneNumber(it) },
+            value = phoneNumber,
+            onValueChange = { onChangePhoneNumber(it) },
             label = {
                 Text(
                     text = "Số điện thoại",
@@ -175,8 +196,8 @@ fun ChangeInformationPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = infoUIState.email,
-            onValueChange = { changeInfoViewModel.updateEmail(it) },
+            value = email,
+            onValueChange = { onChangeEmail(it) },
             label = {
                 Text(
                     text = "Địa chỉ email",
@@ -203,8 +224,8 @@ fun ChangeInformationPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = infoUIState.gender,
-            onValueChange = {changeInfoViewModel.updateGender(it)},
+            value = gender,
+            onValueChange = {onChangeGender(it)},
             label = {
                 Text(
                     text = "Giới tính",
@@ -258,6 +279,16 @@ fun ChangeInformationDarkScreenPreview() {
 @Composable
 fun ChangeInformationPagePreview() {
     QGenITheme(dynamicColor = false) {
-        ChangeInformationPage()
+        ChangeInformationPage(
+            modifier = Modifier,
+            "",
+            "",
+            "",
+            "",
+            {},
+            {},
+            {},
+            {}
+        )
     }
 }

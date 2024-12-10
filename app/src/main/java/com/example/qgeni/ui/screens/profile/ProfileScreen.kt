@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.profile
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +21,9 @@ import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,11 +35,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.data.preferences.ThemeMode
+import com.example.qgeni.data.preferences.UserPreferenceManager
+import com.example.qgeni.data.repository.DefaultAccountRepository
 import com.example.qgeni.ui.screens.components.CurvedBackground
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
+import org.bson.Document
+import org.bson.types.ObjectId
 
 /*
     Màn hình hiển thị thông tin cá nhân.
@@ -48,8 +57,15 @@ fun ProfileScreen(
     onChangeInfoClick: () -> Unit,
     onLogOutClick: () -> Unit,
     currentTheme: ThemeMode,
-    onThemeChange: (ThemeMode) -> Unit
+    onThemeChange: (ThemeMode) -> Unit,
+    viewModel: ProfileViewModel = viewModel()
 ) {
+
+    val userId = UserPreferenceManager.getUserId()
+    val userInfo by viewModel.userInfo.collectAsState()
+    userId?.let { viewModel.loadUserInfo(it) }
+    Log.i("userinfo", userInfo.toString())
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -96,8 +112,9 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.weight(1f))
             }
             HeaderSection(
-                email = "",
-                phoneNumber = ""
+                username = userInfo?.getString(DefaultAccountRepository.Names.USERNAME) ?: "",
+                email = userInfo?.getString(DefaultAccountRepository.Names.EMAIL) ?: "",
+                phoneNumber = userInfo?.getString(DefaultAccountRepository.Names.PHONE_NUMBER) ?: ""
             )
             Spacer(modifier = Modifier.height(16.dp))
             PersonalInfoSection(
@@ -143,6 +160,7 @@ fun ProfileScreen(
 
 @Composable
 fun HeaderSection(
+    username: String,
     email: String,
     phoneNumber: String
 ) {
@@ -210,7 +228,7 @@ fun HeaderSection(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "To Phan Tu",
+                text = username,
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -530,6 +548,7 @@ fun PreviewProfileScreen() {
 fun PreviewHeaderSection() {
     QGenITheme(dynamicColor = false) {
         HeaderSection(
+            username = "",
             email = "fantus@domain.com",
             phoneNumber = "+01 234 567 89"
         )

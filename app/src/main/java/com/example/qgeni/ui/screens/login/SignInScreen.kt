@@ -203,7 +203,7 @@ fun SignInPage(
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = "passwordVisible",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

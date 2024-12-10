@@ -271,13 +271,8 @@ fun ReadingPracticeGeneratorScreen(
                 NextButton(
                     onPrimary = false,
                     onClick = {
-                        // nếu đủ thì mới cho nhập
-                        // k thì hiện MissingFielialog
-//                        viewModel.updateReadingGeneratorState(GeneratorState.Loading)
-//                        if(viewModel.isFullInfo()) {
-                            viewModel.createReadingPractice()
-                            onNextButtonClick()
-//                        }
+                        viewModel.createReadingPractice()
+                        onNextButtonClick()
                     }
                 )
                 Spacer(modifier = Modifier.weight(0.25f))
@@ -303,43 +298,29 @@ fun ReadingPracticeGeneratorScreen(
             )
         }
     }
-    // Nếu thiếu file thì hiện j
-    // chưa điền só câu hỏi hiện message j
-    // chưa có văn bản thì hiện message j
-    // ví dụ "Vui lòng upload file"
-    //"Vui lòng nhập số câu hỏi"
-//    if(!viewModel.isFullInfo()) {
-//        if (rpgUIState.textUri == Uri.EMPTY) {
-//            MissingFieldDialog(
-//                message = "Vui lòng tải file",
-//                onNextButtonClick = {},
-//                imageResourceId = R.drawable.avatar_3,
-//            )
-//        }
-//        if (rpgUIState.inputNumStatement == "") {
-//            MissingFieldDialog(
-//                message = "Vui lòng nhập số câu hỏi",
-//                onNextButtonClick = {},
-//                imageResourceId = R.drawable.avatar_3,
-//            )
-//        }
-//        if(rpgUIState.inputParagraph == "") {
-//            MissingFieldDialog(
-//                message = "Vui lòng dán đoạn văn",
-//                onNextButtonClick = {},
-//                imageResourceId = R.drawable.avatar_3,
-//            )
-//        }
-//    }
     when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
-            LoadingScreen(
-                lottieResourceId = R.raw.fairy,
-                message = "Tiên nữ đang đi tìm nguyên liệu",
-                onButtonClick = {
-                    //
-                }
-            )
+            if (viewModel.isFullInfo() != "") {
+                MissingFieldDialog(
+                    message = viewModel.isFullInfo(),
+                    onNextButtonClick = {
+                        viewModel.updateReadingGeneratorState(
+                            GeneratorState.Idle
+                        )
+                    },
+                    imageResourceId = R.drawable.avatar_3,
+                )
+
+            } else {
+                LoadingScreen(
+                    lottieResourceId = R.raw.fairy,
+                    message = "Tiên nữ đang đi tìm nguyên liệu",
+                    onButtonClick = {
+                        //
+                    }
+                )
+            }
+
         }
 
         is GeneratorState.Titling -> {

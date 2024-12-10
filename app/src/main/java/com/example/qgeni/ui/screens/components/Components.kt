@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.qgeni.ui.theme.QGenITheme
@@ -56,6 +57,7 @@ fun NextButton(
         modifier = Modifier
             .size(60.dp)
             .clip(shape = RoundedCornerShape(size = 100.dp))
+            .testTag("next_button")
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
