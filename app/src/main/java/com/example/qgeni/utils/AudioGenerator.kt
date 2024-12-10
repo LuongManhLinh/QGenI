@@ -20,4 +20,5 @@ object AudioGenerator {
         pyObject.callAttr("text_to_mp3", text, mp3File.absolutePath)
         return mp3File
     }
+
 }

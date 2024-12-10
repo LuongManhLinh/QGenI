@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.valueOf(themeMode.value)
             }
 
-            Python.start(AndroidPlatform(this))
+            if (!Python.isStarted()) Python.start(AndroidPlatform(this))
             AudioGenerator.init(this)
 
             val isDarkTheme = when (currentTheme) {

@@ -90,8 +90,6 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                 )
             }
         }
-
-
     }
 
     fun createReadingPractice() {

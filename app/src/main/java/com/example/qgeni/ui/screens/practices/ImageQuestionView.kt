@@ -117,41 +117,6 @@ fun ImageQuestionView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-//        Row(
-//            modifier = Modifier.clickable(
-//                onClick = onPlayClick
-//            )
-//        ) {
-//            Row(
-//                modifier = Modifier
-//                    .border(
-//                        width = 1.dp,
-//                        color = MaterialTheme.colorScheme.primary,
-//                        shape = RoundedCornerShape(10.dp),
-//                    )
-//                    .padding(
-//                        end = 16.dp
-//                    )
-//                ,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                IconButton(onClick = {}) {
-//                    Icon(
-//                        Icons.Outlined.PlayArrow,
-//                        contentDescription = "Play",
-//                        tint = MaterialTheme.colorScheme.primary
-//                    )
-//                }
-//                Text(
-//                    text = "Play",
-//                    style = MaterialTheme.typography.labelMedium,
-//                    color = MaterialTheme.colorScheme.primary
-//                )
-//            }
-//            Spacer(
-//                modifier = Modifier.weight(1f)
-//            )
-//        }
         AudioPlayer(
             playbackState = playbackState,
             sliderPosition = sliderPosition,

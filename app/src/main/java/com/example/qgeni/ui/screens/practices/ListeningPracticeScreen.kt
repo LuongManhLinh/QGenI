@@ -95,7 +95,6 @@ fun ListeningPracticeScreen(
                 viewModel.play()
             },
             onSubmitClick = {
-//                viewModel.showLoadingDialog(true)
                 Log.d("ListeningPracticeScreen", "onSubmitClick: ")
                 viewModel.toggleSubmitConfirmDialog(true)
             },

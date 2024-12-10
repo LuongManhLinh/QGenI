@@ -1,6 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.app.Dialog
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -42,6 +42,7 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
                 }
             }.awaitAll()
 
+            Log.d("ListeningPracticeViewModel", "Generated all mp3 files")
             mp3FileList.addAll(results)
 
             _uiState.update {
@@ -51,7 +52,7 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
                 )
             }
 
-            updateAudioPlayer()
+            updateAudioPlayer(0)
 
             while (true) {
                 delay(1000)
@@ -62,13 +63,17 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
 
 
 
-    private fun updateAudioPlayer() {
+    private fun updateAudioPlayer(index: Int) {
         if (mp3FileList.isEmpty()) {
             return
         }
 
+        if (::currentAudioPlayer.isInitialized) {
+            currentAudioPlayer.release()
+        }
+
         currentAudioPlayer = AudioPlayer(
-            mp3File = mp3FileList[_uiState.value.currentQuestionIndex],
+            mp3File = mp3FileList[index],
             onCompletion = {
                 _uiState.update {
                     it.copy(
@@ -86,12 +91,16 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
     }
 
     fun updateCurrentQuestionIndex(index: Int) {
+        updateAudioPlayer(index)
         _uiState.update {
             it.copy(
-                currentQuestionIndex = index
+                currentQuestionIndex = index,
+                playbackState = PlaybackState.PAUSED,
+                audioSliderPos = 0f,
+                audioDuration = currentAudioPlayer.getDurationSecond()
             )
         }
-        updateAudioPlayer()
+
     }
 
     fun updateAnsweredQuestions(questionIndex: Int, answer: Int) {

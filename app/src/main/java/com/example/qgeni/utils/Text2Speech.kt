@@ -45,7 +45,6 @@ fun text2speech(context: Context, text: String) {
                     null,
                     null
                 )
-
             }
         } else {
             Log.e("TTS", "Initialization failed")
