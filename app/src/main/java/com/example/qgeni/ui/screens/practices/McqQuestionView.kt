@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.qgeni.data.model.McqMockData
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -192,7 +191,16 @@ fun McqQuestionView(
 fun MsqQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
         McqQuestionView(
-            questions = McqMockData.questions,
+            questions = listOf(
+                McqQuestion(
+                    question = "What is the capital of France?",
+                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
+                ),
+                McqQuestion(
+                    question = "What is the capital of Germany?",
+                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
+                ),
+            ),
             currentQuestionIdx = 0,
             onQuestionChange = {},
             onAnswerSelected = {},
@@ -208,7 +216,16 @@ fun MsqQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
 
         McqQuestionView(
-            questions = McqMockData.questions,
+            questions = listOf(
+                McqQuestion(
+                    question = "What is the capital of France?",
+                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
+                ),
+                McqQuestion(
+                    question = "What is the capital of Germany?",
+                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
+                ),
+            ),
             currentQuestionIdx = 0,
             onQuestionChange = {},
             onAnswerSelected = {},

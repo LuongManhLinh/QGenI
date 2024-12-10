@@ -11,15 +11,9 @@ import java.util.Date
 
 
 interface ReadingRepository {
-
-    suspend fun insert(
-        item: ReadingPracticeItem
-    )
-
     suspend fun getItem(
         id: ObjectId
     ): ReadingPracticeItem
-
 }
 
 
@@ -32,42 +26,10 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
         const val CREATION_DATE = "creationDate"
         const val PASSAGE = "passage"
         const val QUESTIONS = "questions"
-        const val Q_STATEMENTS = "statement"
-        const val Q_ANSWERS = "answer"
+        const val Q_STATEMENT = "statement"
+        const val Q_ANSWER = "answer"
         const val IS_NEW = "isNew"
     }
-
-
-    override suspend fun insert(
-        item: ReadingPracticeItem
-    ) {
-        val userId = UserPreferenceManager.getUserId()
-
-        val document = Document(
-            Names.USER_ID, userId
-        ).append(
-            Names.TITLE, item.title
-        ).append(
-            Names.CREATION_DATE, item.creationDate
-        ).append(
-            Names.PASSAGE, item.passage
-        ).append(
-            Names.QUESTIONS, item.questionList.map {
-                Document(
-                    Names.Q_STATEMENTS, it.statement
-                ).append(
-                    Names.Q_ANSWERS, answerToInt(it.answer)
-                )
-            }
-        ).append(
-            Names.IS_NEW, item.isNew
-        )
-
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
-
-        collection.insertOne(document)
-    }
-
 
 
     override suspend fun getItem(
@@ -85,16 +47,32 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
             passage = document[Names.PASSAGE] as String,
             questionList = (document[Names.QUESTIONS] as List<Document>).map {
                 ReadingQuestion(
-                    statement = it[Names.Q_STATEMENTS] as String,
-                    answer = when (it[Names.Q_ANSWERS] as Int) {
-                        1 -> ReadingAnswer.TRUE
-                        -1 -> ReadingAnswer.FALSE
-                        else -> ReadingAnswer.NOT_GIVEN
-                    }
+                    statement = it[Names.Q_STATEMENT] as String,
+                    answer = ReadingAnswer.fromInt(
+                        when (it[Names.Q_ANSWER]) {
+                            is Int -> it[Names.Q_ANSWER] as Int
+                            is Long -> (it[Names.Q_ANSWER] as Long).toInt()
+                            else -> throw IllegalArgumentException("Invalid answer type")
+                        }
+                    )
                 )
             },
             isNew = document[Names.IS_NEW] as Boolean
         )
+    }
+
+
+    override suspend fun changeTitle(id: ObjectId, title: String) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.updateOne(
+            Document(Names.ID, id),
+            Document("\$set", Document(Names.TITLE, title))
+        )
+    }
+
+    override suspend fun deleteItem(id: ObjectId) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.deleteOne(Document(Names.ID, id))
     }
 
 
@@ -121,15 +99,6 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
             )
         }
     }
-
-
 }
 
-private fun answerToInt(answer: ReadingAnswer): Int {
-    return when (answer) {
-        ReadingAnswer.TRUE -> 1
-        ReadingAnswer.FALSE -> -1
-        ReadingAnswer.NOT_GIVEN -> 0
-    }
-}
 

@@ -21,6 +21,7 @@ import com.example.qgeni.data.preferences.ThemePreferenceManager
 import com.example.qgeni.ui.screens.navigation.QGNavHost
 import com.example.qgeni.ui.theme.QGenITheme
 import com.example.qgeni.utils.AudioGenerator
+import com.example.qgeni.utils.ContextConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,8 +41,9 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.valueOf(themeMode.value)
             }
 
-            Python.start(AndroidPlatform(this))
+            if (!Python.isStarted()) Python.start(AndroidPlatform(this))
             AudioGenerator.init(this)
+            ContextConstants.init(this)
 
             val isDarkTheme = when (currentTheme) {
                 ThemeMode.LIGHT -> false

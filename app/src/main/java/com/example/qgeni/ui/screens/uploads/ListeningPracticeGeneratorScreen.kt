@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.CustomOutlinedButton
 import com.example.qgeni.ui.screens.components.NextButton
+import com.example.qgeni.ui.screens.practices.DeleteBox
 import com.example.qgeni.ui.theme.QGenITheme
 
 /*
@@ -128,22 +130,24 @@ fun ListeningPracticeGeneratorScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     ),
             ) {
-                if (uiState.imageList.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CustomOutlinedButton(
-                            onClick = {
-                                viewModel.updateUploadFileDialogVisibility(true)
-                            },
-                            text = "TẢI TỆP",
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                } else {
-                    LazyRow {
-                        items(uiState.imageList) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CustomOutlinedButton(
+                        onClick = {
+                            viewModel.updateUploadFileDialogVisibility(true)
+                        },
+                        text = "TẢI TỆP",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyRow {
+                    items(uiState.imageList) {
+                        DeleteBox(
+                            onDeleteClick = {}
+                        ) {
                             Image(
                                 bitmap = it.asImageBitmap(),
                                 contentDescription = null,
@@ -157,34 +161,12 @@ fun ListeningPracticeGeneratorScreen(
                                         color = MaterialTheme.colorScheme.primary,
                                         shape = RoundedCornerShape(10.dp),
                                     ),
-
-                                )
+                            )
                         }
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
-
                 }
-
                 Spacer(Modifier.padding(vertical = 16.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .background(color = MaterialTheme.colorScheme.primary)
-                        .padding(
-                            top = 4.dp,
-                            bottom = 4.dp,
-                            start = 6.dp,
-                            end = 6.dp
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Số câu hỏi",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
             }
             Row {
                 Spacer(modifier = Modifier.weight(2f))

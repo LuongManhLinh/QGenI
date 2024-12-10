@@ -1,6 +1,5 @@
 package com.example.qgeni.ui.screens.uploads
 
-import ReadingPracticeGeneratorViewModel
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -300,6 +299,7 @@ fun ReadingPracticeGeneratorScreen(
             )
         }
     }
+
     when (rpgUIState.currentState) {
         is GeneratorState.Loading -> {
             if (viewModel.isFullInfo() != "") {

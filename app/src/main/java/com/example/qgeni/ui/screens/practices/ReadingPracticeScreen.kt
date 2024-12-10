@@ -118,7 +118,6 @@ fun ReadingPracticeScreen(
                         ReadingAnswer.TRUE.toString(),
                         ReadingAnswer.FALSE.toString(),
                         ReadingAnswer.NOT_GIVEN.toString()),
-                    correctAnswer = it.answer.toString()
                 )
             },
             modifier = Modifier.weight(0.7f)

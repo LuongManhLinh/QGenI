@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
@@ -106,33 +107,42 @@ fun ListeningPracticeListScreen(
                     )
             ) {
                 Image(
-                    painter = painterResource(R.drawable.backpack2),
+                    painter = painterResource(R.drawable.backpack1),
                     contentDescription = "backpack1"
                 )
             }
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp)
-                    .background(color = MaterialTheme.colorScheme.onPrimary),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(items =uiState.practiceItemList, key = { item -> item.id}) { item ->
-                    PracticeItemCard(
-                        practiceItem = item,
-                        onDeleteClick = {
-                            viewModel.selectItem(item.id)
-                            viewModel.toggleDeleteDialog(true)
-                        },
-                        modifier = Modifier
-                            .clickable(
-                                onClick = {
-                                    Log.i("check click", "aa")
-                                    viewModel.selectItem(item.id)
-                                    viewModel.toggleOpenDialog(true)
-                                }
-                            ).testTag("open dialog")
-                    )
+
+            if (uiState.practiceItemList.isEmpty()) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                        .background(color = MaterialTheme.colorScheme.onPrimary)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                        .background(color = MaterialTheme.colorScheme.onPrimary),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(items = uiState.practiceItemList, key = { item -> item.id }) { item ->
+                        PracticeItemCard(
+                            practiceItem = item,
+                            onDeleteClick = {
+                                viewModel.selectItem(item.id)
+                                viewModel.toggleDeleteDialog(true)
+                            },
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = {
+                                        viewModel.selectItem(item.id)
+                                        viewModel.toggleOpenDialog(true)
+                                    }
+                                ).testTag("open dialog")
+                        )
+                    }
                 }
             }
         }
@@ -140,8 +150,10 @@ fun ListeningPracticeListScreen(
 
     if(uiState.showDeleteDialog) {
         DeleteConfirmDialog(
-            onDismissRequest = {viewModel.toggleDeleteDialog(false)},
-            onDeleteClick = {viewModel.toggleDeleteDialog(false)},
+            onDismissRequest = { viewModel.toggleDeleteDialog(false) },
+            onDeleteClick = {
+                viewModel.deleteItem()
+            },
             imageResourceId = R.drawable.listening_open_delete_confirm
         )
     }

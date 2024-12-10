@@ -1,12 +1,10 @@
 package com.example.qgeni.data.repository
 
-
 import android.util.Log
 import com.example.qgeni.data.api.CommunicationUtils
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.ListeningQuestion
 import com.example.qgeni.data.model.PracticeItem
-import com.example.qgeni.data.preferences.UserPreferenceManager
 import org.bson.Document
 import org.bson.types.Binary
 import org.bson.types.ObjectId
@@ -15,18 +13,9 @@ import java.util.Date
 
 
 interface ListeningRepository {
-    suspend fun insert(
-        item: ListeningPracticeItem
-    )
-
     suspend fun getItem(
         id: ObjectId
     ): ListeningPracticeItem
-
-    suspend fun changeTitle(
-        id: ObjectId,
-        title: String
-    )
 }
 
 object DefaultListeningRepository : ListeningRepository, PracticeRepository {
@@ -40,40 +29,9 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
         const val Q_IMAGE_BYTE_ARRAYS = "imageByteArrays"
         const val Q_DESCRIPTION = "description"
         const val Q_ANSWER_INDEX = "answerIndex"
+        const val Q_MP3_BYTE_ARRAY = "mp3ByteArray"
         const val IS_NEW = "isNew"
     }
-
-
-    override suspend fun insert(
-        item: ListeningPracticeItem
-    ) {
-        val userId = UserPreferenceManager.getUserId()
-        val document = Document(
-            Names.USER_ID, userId
-        ).append(
-            Names.TITLE, item.title
-        ).append(
-            Names.CREATION_DATE, item.creationDate
-        ).append(
-            Names.QUESTIONS, item.questionList.map {
-                Document(
-                    Names.Q_IMAGE_BYTE_ARRAYS, it.imageList.map { img ->
-                        CommunicationUtils.encodeImage(img)
-                    }
-                ).append(
-                    Names.Q_DESCRIPTION, it.description
-                ).append(
-                    Names.Q_ANSWER_INDEX, it.answerIndex
-                )
-            }
-        ).append(
-            Names.IS_NEW, item.isNew
-        )
-
-        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
-        collection.insertOne(document)
-    }
-
 
     override suspend fun getItem(
         id: ObjectId
@@ -86,13 +44,17 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
                 title = document[Names.TITLE] as String,
                 creationDate = document.getDate(Names.CREATION_DATE) as Date,
                 isNew = document.getBoolean(Names.IS_NEW) as Boolean,
-                questionList = document.getList(Names.QUESTIONS, Document::class.java).map { q ->
+                questionList = document.getList(Names.QUESTIONS, Document::class.java).mapIndexed{ idx, q ->
                     ListeningQuestion(
                         imageList = q.getList(Names.Q_IMAGE_BYTE_ARRAYS, Binary::class.java).map { img ->
                             CommunicationUtils.decodeImage(img.data) ?: throw Exception("Cannot decode image")
                         },
                         description = q.getString(Names.Q_DESCRIPTION),
-                        answerIndex = q.getInteger(Names.Q_ANSWER_INDEX)
+                        answerIndex = q.getInteger(Names.Q_ANSWER_INDEX),
+                        mp3File = CommunicationUtils.decodeMp3(
+                            mp3Bytes = (q[Names.Q_MP3_BYTE_ARRAY] as Binary).data,
+                            saveName = "${id.toHexString()}_desc_$idx.mp3"
+                        )
                     )
                 }
             )
@@ -104,6 +66,11 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
             Document(Names.ID, id),
             Document("\$set", Document(Names.TITLE, title))
         )
+    }
+
+    override suspend fun deleteItem(id: ObjectId) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.deleteOne(Document(Names.ID, id))
     }
 
 

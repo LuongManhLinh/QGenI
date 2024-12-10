@@ -2,7 +2,9 @@ package com.example.qgeni.data.api
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.example.qgeni.utils.ContextConstants
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -45,6 +47,12 @@ object CommunicationUtils {
 
     fun encodeText(text: String): ByteArray {
         return text.toByteArray()
+    }
+
+    fun decodeMp3(mp3Bytes: ByteArray, saveName: String): File {
+        val file = File(ContextConstants.cacheDir, saveName)
+        file.writeBytes(mp3Bytes)
+        return file
     }
 
 }

@@ -40,6 +40,25 @@ enum class ReadingAnswer {
         override fun toString(): String {
             return "NOT GIVEN"
         }
+    };
+
+    fun toInt(): Int {
+        return when (this) {
+            TRUE -> 1
+            FALSE -> -1
+            NOT_GIVEN -> 0
+        }
+    }
+
+    companion object {
+        fun fromInt(value: Int): ReadingAnswer {
+            return when (value) {
+                1 -> TRUE
+                -1 -> FALSE
+                0 -> NOT_GIVEN
+                else -> throw IllegalArgumentException("Invalid value: $value")
+            }
+        }
     }
 }
 

@@ -22,7 +22,28 @@ abstract class PracticeListViewModel : ViewModel() {
         }
     }
 
-    abstract suspend fun getPracticeItemList(): List<PracticeItem>
+    protected abstract suspend fun getPracticeItemList(): List<PracticeItem>
+    protected abstract suspend fun deleteItem(id: ObjectId)
+
+    fun deleteItem() {
+        val id = _practiceListUIState.value.selectedItemId
+
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteItem(id!!)
+        }
+
+        val newItemList = _practiceListUIState.value.practiceItemList.filterNot {
+            it.id == id
+        }
+
+        _practiceListUIState.update {
+            it.copy(
+                practiceItemList = newItemList,
+                showDeleteDialog = false,
+                selectedItemId = null
+            )
+        }
+    }
 
     fun toggleDeleteDialog(show: Boolean) {
         _practiceListUIState.update { it.copy(showDeleteDialog = show) }
@@ -33,8 +54,10 @@ abstract class PracticeListViewModel : ViewModel() {
     }
 
     fun selectItem(id: ObjectId) {
+        Log.d("PracticeListViewModel", "selectItem: $id")
         _practiceListUIState.update { it.copy(selectedItemId = id) }
     }
+
 }
 
 

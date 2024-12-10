@@ -1,7 +1,7 @@
 package com.example.qgeni.data.api
 
 object RequestType {
-    const val TFN = 1
+    const val TFN_CHECK = 1
     const val IMG_DESC_ONLY = 2
     const val IMG_FIND_SIMILAR_ONLY = 3
     const val IMG_FIND_AND_DESC = 4
