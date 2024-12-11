@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
@@ -45,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
+import com.example.qgeni.utils.ErrorMessages
 
 
 @Composable
@@ -109,6 +111,11 @@ fun SignUpScreen(
             onPasswordVisibleClick = { signUpViewModel.togglePasswordVisible() },
             onTermsAcceptedChange = { signUpViewModel.toggleTermsAccepted() },
             onSignInClick = onSignInClick,
+            isAccountError = uiState.isAccountError,
+            isEmailError = uiState.isEmailError,
+            isPasswordError = uiState.isPasswordError,
+            isPhoneNumberError = uiState.isPhoneNumberError,
+            onKeyBoardActions = { signUpViewModel.reset() },
             modifier = Modifier.weight(1f)
         )
         Row {
@@ -116,7 +123,10 @@ fun SignUpScreen(
             NextButton(
                 onPrimary = false,
                 onClick = {
-                    signUpViewModel.signUp()
+                    signUpViewModel.updateConstraint()
+                    if (signUpViewModel.checkEmpty()) {
+                        signUpViewModel.signUp()
+                    }
 //                    signUpViewModel.showSuccessDialog(true)
                 },
             )
@@ -158,6 +168,11 @@ fun SignUpPage(
     onPasswordVisibleClick: () -> Unit,
     onTermsAcceptedChange: (Boolean) -> Unit,
     onSignInClick: () -> Unit,
+    isAccountError: Boolean,
+    isPasswordError: Boolean,
+    isEmailError: Boolean,
+    isPhoneNumberError: Boolean,
+    onKeyBoardActions: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -185,11 +200,13 @@ fun SignUpPage(
         Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
             value = username,
-            onValueChange = onUsernameChange,
+            onValueChange = {
+                onUsernameChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
                     text = "Tên tài khoản",
-                    color = MaterialTheme.colorScheme.tertiary
                 )
             },
             leadingIcon = {
@@ -198,6 +215,20 @@ fun SignUpPage(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
+            },
+            isError = isAccountError,
+            trailingIcon = {
+                if (isAccountError)
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+            },
+            supportingText = {
+                if (isAccountError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             },
             shape = RoundedCornerShape(size = 10.dp),
             colors = OutlinedTextFieldDefaults
@@ -215,7 +246,10 @@ fun SignUpPage(
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = phoneNumber,
-            onValueChange = onPhoneNumberChange,
+            onValueChange = {
+                onPhoneNumberChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
                     text = "Số điện thoại",
@@ -227,6 +261,20 @@ fun SignUpPage(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
+            },
+            isError = isPhoneNumberError,
+            trailingIcon = {
+                if (isPhoneNumberError)
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+            },
+            supportingText = {
+                if (isPhoneNumberError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             },
             shape = RoundedCornerShape(size = 10.dp),
             colors = OutlinedTextFieldDefaults
@@ -244,7 +292,10 @@ fun SignUpPage(
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = email,
-            onValueChange = onEmailChange,
+            onValueChange = {
+                onEmailChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
                     text = "Địa chỉ email",
@@ -256,6 +307,20 @@ fun SignUpPage(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
+            },
+            isError = isEmailError,
+            trailingIcon = {
+                if (isEmailError)
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+            },
+            supportingText = {
+                if (isEmailError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             },
             shape = RoundedCornerShape(size = 10.dp),
             colors = OutlinedTextFieldDefaults
@@ -273,7 +338,10 @@ fun SignUpPage(
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = onPasswordChange,
+            onValueChange = {
+                onPasswordChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
                     text = "Mật khẩu",
@@ -286,17 +354,32 @@ fun SignUpPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
+            isError = isPasswordError,
+            supportingText = {
+                if (isPasswordError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
             trailingIcon = {
                 val icon =
                     if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff
-                IconButton(
-                    onClick = onPasswordVisibleClick
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+
+                if (isPasswordError) {
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+                } else {
+                    IconButton(
+                        onClick = onPasswordVisibleClick
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = "passwordVisible",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             },
             shape = RoundedCornerShape(size = 10.dp),
@@ -315,7 +398,9 @@ fun SignUpPage(
                     unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                     cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
-            modifier = Modifier.fillMaxWidth().testTag("password_field")
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("password_field")
         )
         Spacer(modifier = Modifier.height(32.dp))
         Row(
@@ -521,6 +606,11 @@ fun SignUpPagePreview() {
             onPasswordVisibleClick = {},
             onTermsAcceptedChange = { termsAccepted = it },
             onSignInClick = { },
+            false,
+            false,
+            false,
+            false,
+            {}
         )
     }
 }

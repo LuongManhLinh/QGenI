@@ -110,12 +110,12 @@ fun SignInScreen(
             NextButton(
                 onPrimary = false,
                 onClick = {
-                    signInViewModel.checkConstraint()
+                    signInViewModel.updateConstraint()
                     if (signInViewModel.checkEmpty()) {
                         signInViewModel.signIn(
                             context
                         )
-                        signInViewModel.checkConstraint()
+                        signInViewModel.updateConstraint()
                     }
                 }
             )
@@ -223,7 +223,10 @@ fun SignInPage(
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = onPasswordChange,
+            onValueChange = {
+                onPasswordChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
                     text = "Mật khẩu",
@@ -317,9 +320,11 @@ fun SignInPage(
                 text = "Đăng ký",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable(
-                    onClick = onSignUpClick
-                ).testTag("signup")
+                modifier = Modifier
+                    .clickable(
+                        onClick = onSignUpClick
+                    )
+                    .testTag("signup")
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -368,10 +373,10 @@ fun SignInPagePreview() {
             {},
             {},
             {},
-            true,
-            true,
+            isAccountError = true,
+            isPasswordError = true,
             onKeyBoardActions = {},
-            false
+            isFailure = false
         )
     }
 }

@@ -82,7 +82,7 @@ class SignInViewModel : ViewModel() {
         return !_uiState.value.isAccountError and !_uiState.value.isPasswordError
     }
 
-    fun checkConstraint() {
+    fun updateConstraint() {
         _uiState.update {
             it.copy(
                 isAccountError = (it.email == ""),
