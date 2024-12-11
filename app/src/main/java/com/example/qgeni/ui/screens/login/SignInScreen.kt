@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
@@ -26,6 +29,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
+import com.example.qgeni.utils.ErrorMessages
 
 @Composable
 fun SignInScreen(
@@ -94,6 +99,10 @@ fun SignInScreen(
             onPasswordVisibleClick = {signInViewModel.togglePasswordVisible()},
             onSignUpClick = onSignUpClick,
             onForgotPasswordClick = onForgotPasswordClick,
+            isAccountError = signInUIState.isAccountError,
+            isPasswordError = signInUIState.isPasswordError,
+            onKeyBoardActions = { signInViewModel.reset() },
+            isFailure = signInUIState.isFailure,
             modifier = Modifier.weight(1f)
         )
         Row {
@@ -101,9 +110,13 @@ fun SignInScreen(
             NextButton(
                 onPrimary = false,
                 onClick = {
-                    signInViewModel.signIn(
-                        context
-                    )
+                    signInViewModel.checkConstraint()
+                    if (signInViewModel.checkEmpty()) {
+                        signInViewModel.signIn(
+                            context
+                        )
+                        signInViewModel.checkConstraint()
+                    }
                 }
             )
             Spacer(modifier = Modifier.weight(0.25f))
@@ -126,6 +139,10 @@ fun SignInPage(
     onPasswordVisibleClick: () -> Unit,
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
+    isAccountError: Boolean,
+    isPasswordError: Boolean,
+    onKeyBoardActions: () -> Unit,
+    isFailure: Boolean,
     modifier: Modifier = Modifier
 ) {
 
@@ -151,20 +168,44 @@ fun SignInPage(
             color = MaterialTheme.colorScheme.tertiary
         )
         Spacer(modifier = Modifier.height(24.dp))
+
         OutlinedTextField(
             value = email,
-            onValueChange = onEmailChange,
+            onValueChange = {
+                onEmailChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
-                    text = "Địa chỉ email",
+                    text = "Tên tài khoản",
                 )
             },
             leadingIcon = {
                 Icon(
-                    Icons.Outlined.Email,
+                    Icons.Outlined.Person,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
+            },
+            isError = isAccountError || isFailure,
+            trailingIcon = {
+                if (isAccountError)
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+            },
+            supportingText = {
+                if (isFailure && !isAccountError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.Failure.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else if (isAccountError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             },
             shape = RoundedCornerShape(size = 10.dp),
             colors = OutlinedTextFieldDefaults
@@ -195,17 +236,38 @@ fun SignInPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
+            isError = isPasswordError || isFailure,
+            supportingText = {
+                if (isFailure && !isPasswordError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.Failure.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else if (isPasswordError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
             trailingIcon = {
                 val icon =
                     if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff
-                IconButton(
-                    onClick = onPasswordVisibleClick
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = "passwordVisible",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+
+                if (isPasswordError) {
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+                } else {
+                    IconButton(
+                        onClick = onPasswordVisibleClick
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = "passwordVisible",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             },
             shape = RoundedCornerShape(size = 10.dp),
@@ -306,6 +368,10 @@ fun SignInPagePreview() {
             {},
             {},
             {},
+            true,
+            true,
+            onKeyBoardActions = {},
+            false
         )
     }
 }
