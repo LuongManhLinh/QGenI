@@ -14,4 +14,8 @@ open class ListeningPracticeListViewModel : PracticeListViewModel() {
     override suspend fun deleteItem(id: ObjectId) {
         DefaultListeningRepository.deleteItem(id)
     }
+
+    override suspend fun changeItemToOld(id: ObjectId) {
+        DefaultListeningRepository.changeToOld(id)
+    }
 }

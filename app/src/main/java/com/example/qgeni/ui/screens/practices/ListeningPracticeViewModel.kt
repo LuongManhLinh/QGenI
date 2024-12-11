@@ -1,6 +1,7 @@
 package com.example.qgeni.ui.screens.practices
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -130,14 +131,20 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
                 it.value == correctAnswerIds[it.key]
             }.size
 
+            val score = "$numCorrect/${practiceItem.questionList.size}"
             _uiState.update {
                 it.copy(
                     isCompleted = true,
                     showScoreDialog = show,
                     showSubmitConfirmDialog = false,
-                    numCorrect = numCorrect,
+                    score = score,
                     correctAnswerIds = correctAnswerIds
                 )
+            }
+
+            viewModelScope.launch(Dispatchers.IO) {
+                DefaultListeningRepository.changeHighestScore(practiceItem.id, score)
+                Log.e("ListeningPracticeViewModel", "Score changed to $score")
             }
         }
     }
@@ -228,7 +235,7 @@ data class ListeningPracticeUIState(
     val playbackState: PlaybackState = PlaybackState.PAUSED,
 
     val isCompleted: Boolean = false,
-    val numCorrect: Int = 0,
+    val score: String = "",
     val correctAnswerIds: List<Int> = emptyList()
 )
 

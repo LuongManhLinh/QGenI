@@ -4,7 +4,6 @@ import com.example.qgeni.data.model.PracticeItem
 import com.example.qgeni.data.model.ReadingAnswer
 import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.data.model.ReadingQuestion
-import com.example.qgeni.data.preferences.UserPreferenceManager
 import org.bson.Document
 import org.bson.types.ObjectId
 import java.util.Date
@@ -29,6 +28,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
         const val Q_STATEMENT = "statement"
         const val Q_ANSWER = "answer"
         const val IS_NEW = "isNew"
+        const val HIGHEST_SCORE = "highestScore"
     }
 
 
@@ -45,6 +45,8 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
             title = document[Names.TITLE] as String,
             creationDate = document[Names.CREATION_DATE] as Date,
             passage = document[Names.PASSAGE] as String,
+            isNew = document[Names.IS_NEW] as Boolean,
+            highestScore = document[Names.HIGHEST_SCORE] as String?,
             questionList = (document[Names.QUESTIONS] as List<Document>).map {
                 ReadingQuestion(
                     statement = it[Names.Q_STATEMENT] as String,
@@ -56,8 +58,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
                         }
                     )
                 )
-            },
-            isNew = document[Names.IS_NEW] as Boolean
+            }
         )
     }
 
@@ -75,6 +76,35 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
         collection.deleteOne(Document(Names.ID, id))
     }
 
+    override suspend fun changeToOld(id: ObjectId) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.updateOne(
+            Document(Names.ID, id),
+            Document("\$set", Document(Names.IS_NEW, false))
+        )
+    }
+
+    override suspend fun changeHighestScore(id: ObjectId, highestScore: String) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        val oldHighestScore = collection.find(Document(Names.ID, id))
+            .first()?.getString(Names.HIGHEST_SCORE)
+
+        val doUpdate = if (oldHighestScore == null) {
+            true
+        } else {
+            val old = oldHighestScore.split('/').first().toInt()
+            val new = highestScore.split('/').first().toInt()
+            new > old
+        }
+
+        if (doUpdate) {
+            collection.updateOne(
+                Document(Names.ID, id),
+                Document("\$set", Document(Names.HIGHEST_SCORE, highestScore))
+            )
+        }
+    }
+
 
     override suspend fun getAllPracticeItem(
         userId: ObjectId
@@ -88,6 +118,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
                     .append(Names.TITLE, 1)
                     .append(Names.CREATION_DATE, 1)
                     .append(Names.IS_NEW, 1)
+                    .append(Names.HIGHEST_SCORE, 1)
             )
 
         return cursor.toList().map { document ->
@@ -95,7 +126,8 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
                 id = document?.get(Names.ID) as ObjectId,
                 title = document[Names.TITLE] as String,
                 creationDate = document[Names.CREATION_DATE] as Date,
-                isNew = document[Names.IS_NEW] as Boolean
+                isNew = document[Names.IS_NEW] as Boolean,
+                highestScore = document[Names.HIGHEST_SCORE] as String?
             )
         }
     }

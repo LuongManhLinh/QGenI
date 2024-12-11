@@ -107,8 +107,8 @@ fun ListeningPracticeListScreen(
                     )
             ) {
                 Image(
-                    painter = painterResource(R.drawable.backpack1),
-                    contentDescription = "backpack1"
+                    painter = painterResource(R.drawable.backpack2),
+                    contentDescription = "backpack2"
                 )
             }
 
@@ -127,17 +127,17 @@ fun ListeningPracticeListScreen(
                         .background(color = MaterialTheme.colorScheme.onPrimary),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(items = uiState.practiceItemList, key = { item -> item.id }) { item ->
+                    items(uiState.practiceItemList.size) { idx ->
                         PracticeItemCard(
-                            practiceItem = item,
+                            practiceItem = uiState.practiceItemList[idx],
                             onDeleteClick = {
-                                viewModel.selectItem(item.id)
+                                viewModel.selectItem(idx)
                                 viewModel.toggleDeleteDialog(true)
                             },
                             modifier = Modifier
                                 .clickable(
                                     onClick = {
-                                        viewModel.selectItem(item.id)
+                                        viewModel.selectItem(idx)
                                         viewModel.toggleOpenDialog(true)
                                     }
                                 ).testTag("open dialog")
@@ -161,6 +161,7 @@ fun ListeningPracticeListScreen(
         OpenConfirmDialog(
             onDismissRequest = {viewModel.toggleOpenDialog(false)},
             onOpenClick = {
+                viewModel.changeItemToOld()
                 viewModel.toggleOpenDialog(false)
                 onItemClick(uiState.selectedItemId!!.toHexString())
             },

@@ -152,7 +152,7 @@ fun ListeningPracticeScreen(
 
     if (uiState.showScoreDialog) {
         DisplayScore(
-            message = "${uiState.numCorrect}/${uiState.questionList.size}",
+            message = uiState.score,
             onNextButtonClick = onNavigatingToPracticeRepo,
             onDismissRequest = {
                 viewModel.toggleScoreDialog(false)

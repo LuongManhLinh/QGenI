@@ -97,6 +97,16 @@ fun PracticeItemCard(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.tertiary
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (practiceItem.highestScore == null) {
+                        "Chưa làm"
+                    } else {
+                        "Điểm cao nhất: ${practiceItem.highestScore}"
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
             }
             IconButton(onClick = onDeleteClick) {
                 Icon(
@@ -501,6 +511,46 @@ fun OpenConfirmDialog(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview
+@Composable
+fun PracticeItemLightPreview() {
+    QGenITheme(dynamicColor = false) {
+        PracticeItemCard(
+            ListeningPracticeItem(
+                id = ObjectId(),
+                title = "Capybara",
+                creationDate = Date(),
+                isNew = true,
+                questionList = listOf(),
+                highestScore = null
+            ),
+            newIconResId = R.drawable.resource_new,
+            onDeleteClick = {}
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview
+@Composable
+fun PracticeItemDarkPreview() {
+    QGenITheme(dynamicColor = false, darkTheme = true) {
+        PracticeItemCard(
+            ListeningPracticeItem(
+                id = ObjectId(),
+                title = "Capybara",
+                creationDate = Date(),
+                isNew = true,
+                questionList = listOf(),
+                highestScore = "10/10"
+            ),
+            newIconResId = R.drawable.resource_new,
+            onDeleteClick = {}
+        )
+    }
+}
+
 @Preview
 @Composable
 fun DisplayScorePreview() {
@@ -608,41 +658,4 @@ fun DeleteConfirmDialogDarkPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-fun PracticeItemLightPreview() {
-    QGenITheme(dynamicColor = false) {
-        PracticeItemCard(
-            ListeningPracticeItem(
-                id = ObjectId(),
-                title = "Capybara",
-                creationDate = Date(),
-                isNew = true,
-                questionList = listOf()
-            ),
-            newIconResId = R.drawable.resource_new,
-            onDeleteClick = {}
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-fun PracticeItemDarkPreview() {
-    QGenITheme(dynamicColor = false, darkTheme = true) {
-        PracticeItemCard(
-            ListeningPracticeItem(
-                id = ObjectId(),
-                title = "Capybara",
-                creationDate = Date(),
-                isNew = true,
-                questionList = listOf()
-            ),
-            newIconResId = R.drawable.resource_new,
-            onDeleteClick = {}
-        )
-    }
-}
 

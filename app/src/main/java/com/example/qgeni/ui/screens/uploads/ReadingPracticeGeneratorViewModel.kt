@@ -162,6 +162,30 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             return "Vui lòng nhập số câu hỏi"
         return ""
     }
+
+    fun increaseNumStatement() {
+        val numStatement = _readingUIState.value.inputNumStatement.toInt() + 1
+        _readingUIState.update {
+            it.copy(
+                inputNumStatement = numStatement.toString()
+            )
+        }
+    }
+    
+    fun decreaseNumStatement() {
+        var numStatement = _readingUIState.value.inputNumStatement.toInt() - 1
+        if (numStatement < 0) {
+            numStatement = 0
+        }
+
+        if(numStatement > 1) {
+            _readingUIState.update {
+                it.copy(
+                    inputNumStatement = numStatement.toString()
+                )
+            }
+        }
+    }
 }
 
 private fun getFileName(context: Context, uri: Uri): String {

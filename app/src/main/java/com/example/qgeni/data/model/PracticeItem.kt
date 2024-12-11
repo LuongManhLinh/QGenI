@@ -8,5 +8,6 @@ open class PracticeItem(
     open val title: String,
     open val creationDate: Date,
     open val isNew: Boolean,
+    open val highestScore: String?
 )
 

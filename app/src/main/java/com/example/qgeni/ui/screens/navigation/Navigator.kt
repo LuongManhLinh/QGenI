@@ -144,7 +144,7 @@ fun QGNavHost(
         ) { backStackEntry ->
             ListeningPracticeScreen(
                 idHexString = backStackEntry.arguments?.getString("idHexString") ?: "",
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.ListeningPracticeList.route) },
                 onNavigatingToPracticeRepo = { navController.navigate(Screen.ListeningPracticeList.route) }
             )
         }
@@ -156,13 +156,13 @@ fun QGNavHost(
             ReadingPracticeScreen(
                 idHexString = backStackEntry.arguments?.getString("idHexString") ?: "",
                 onNextButtonClick = {navController.navigate(Screen.ReadingPracticeList.route)},
-                onBackClick = { navController.navigateUp() }
+                onBackClick = { navController.navigate(Screen.ReadingPracticeList.route) }
             )
         }
 
         composable(Screen.Selection.route) {
             SelectionScreen(
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.Home.route) },
                 onListeningListClick = { navController.navigate(Screen.ListeningPracticeList.route)},
                 onReadingListClick = { navController.navigate(Screen.ReadingPracticeList.route) }
             )
@@ -194,7 +194,7 @@ fun QGNavHost(
 
         composable(Screen.ListeningPracticeList.route) {
             ListeningPracticeListScreen(
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.Selection.route) },
                 onItemClick = {
                     navController.navigate(
                         Screen.ListeningPractice.route.replace("{idHexString}", it)
@@ -205,14 +205,14 @@ fun QGNavHost(
 
         composable(Screen.ListeningPracticeGenerator.route) {
             ListeningPracticeGeneratorScreen(
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.Home.route) },
                 onLeaveButtonClick = { navController.navigate(Screen.ListeningPracticeList.route) }
             )
         }
 
         composable(Screen.ReadingPracticeList.route) {
             ReadingPracticeListScreen(
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.Selection.route) },
                 onItemClick = {
                     navController.navigate(
                         Screen.ReadingPractice.route.replace("{idHexString}", it)
@@ -223,7 +223,7 @@ fun QGNavHost(
 
         composable(Screen.ReadingPracticeGenerator.route) {
             ReadingPracticeGeneratorScreen(
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.Home.route) },
                 onNextButtonClick = {},
                 onLeaveButtonClick = { navController.navigate(Screen.ReadingPracticeList.route) }
             )

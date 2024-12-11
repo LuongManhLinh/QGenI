@@ -11,8 +11,9 @@ data class ReadingPracticeItem(
     val passage: String,
     override val creationDate: Date,
     override val isNew: Boolean,
+    override val highestScore: String?,
     val questionList: List<ReadingQuestion>
-) : PracticeItem(id, title, creationDate, isNew)
+) : PracticeItem(id, title, creationDate, isNew, highestScore)
 
 
 

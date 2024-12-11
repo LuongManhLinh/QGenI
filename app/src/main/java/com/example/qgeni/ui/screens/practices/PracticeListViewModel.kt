@@ -24,6 +24,7 @@ abstract class PracticeListViewModel : ViewModel() {
 
     protected abstract suspend fun getPracticeItemList(): List<PracticeItem>
     protected abstract suspend fun deleteItem(id: ObjectId)
+    protected abstract suspend fun changeItemToOld(id: ObjectId)
 
     fun deleteItem() {
         val id = _practiceListUIState.value.selectedItemId
@@ -40,7 +41,7 @@ abstract class PracticeListViewModel : ViewModel() {
             it.copy(
                 practiceItemList = newItemList,
                 showDeleteDialog = false,
-                selectedItemId = null
+                selectedIdx = null
             )
         }
     }
@@ -53,9 +54,20 @@ abstract class PracticeListViewModel : ViewModel() {
         _practiceListUIState.update { it.copy(showOpenDialog = show) }
     }
 
-    fun selectItem(id: ObjectId) {
-        Log.d("PracticeListViewModel", "selectItem: $id")
-        _practiceListUIState.update { it.copy(selectedItemId = id) }
+    fun selectItem(index: Int) {
+        _practiceListUIState.update { it.copy(selectedIdx = index) }
+    }
+
+    fun changeItemToOld() {
+        val selectedIdx = _practiceListUIState.value.selectedIdx ?: return
+
+        if (!_practiceListUIState.value.practiceItemList[selectedIdx].isNew) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            changeItemToOld(_practiceListUIState.value.selectedItemId!!)
+        }
     }
 
 }
@@ -65,5 +77,8 @@ data class PracticeListUIState(
     val practiceItemList: List<PracticeItem> = emptyList(),
     val showDeleteDialog: Boolean = false,
     val showOpenDialog: Boolean = false,
-    val selectedItemId: ObjectId? = null
-)
+    val selectedIdx: Int? = null
+) {
+    val selectedItemId: ObjectId?
+        get() = selectedIdx?.let { practiceItemList[it].id }
+}

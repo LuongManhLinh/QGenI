@@ -31,6 +31,7 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
         const val Q_ANSWER_INDEX = "answerIndex"
         const val Q_MP3_BYTE_ARRAY = "mp3ByteArray"
         const val IS_NEW = "isNew"
+        const val HIGHEST_SCORE = "highestScore"
     }
 
     override suspend fun getItem(
@@ -44,6 +45,7 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
                 title = document[Names.TITLE] as String,
                 creationDate = document.getDate(Names.CREATION_DATE) as Date,
                 isNew = document.getBoolean(Names.IS_NEW) as Boolean,
+                highestScore = document.getString(Names.HIGHEST_SCORE),
                 questionList = document.getList(Names.QUESTIONS, Document::class.java).mapIndexed{ idx, q ->
                     ListeningQuestion(
                         imageList = q.getList(Names.Q_IMAGE_BYTE_ARRAYS, Binary::class.java).map { img ->
@@ -73,6 +75,35 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
         collection.deleteOne(Document(Names.ID, id))
     }
 
+    override suspend fun changeToOld(id: ObjectId) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        collection.updateOne(
+            Document(Names.ID, id),
+            Document("\$set", Document(Names.IS_NEW, false))
+        )
+    }
+
+    override suspend fun changeHighestScore(id: ObjectId, highestScore: String) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+        val oldHighestScore = collection.find(Document(Names.ID, id))
+            .first()?.getString(Names.HIGHEST_SCORE)
+
+        val doUpdate = if (oldHighestScore == null) {
+            true
+        } else {
+            val old = oldHighestScore.split('/').first().toInt()
+            val new = highestScore.split('/').first().toInt()
+            new > old
+        }
+
+        if (doUpdate) {
+            collection.updateOne(
+                Document(Names.ID, id),
+                Document("\$set", Document(Names.HIGHEST_SCORE, highestScore))
+            )
+        }
+    }
+
 
     override suspend fun getAllPracticeItem(
         userId: ObjectId
@@ -86,14 +117,16 @@ object DefaultListeningRepository : ListeningRepository, PracticeRepository {
                     .append(Names.TITLE, 1)
                     .append(Names.CREATION_DATE, 1)
                     .append(Names.IS_NEW, 1)
+                    .append(Names.HIGHEST_SCORE, 1)
             )
-        Log.e("ListeningRepository", "getAllPracticeItem: ${cursor.toList().size}")
+
         return cursor.toList().map { document ->
             PracticeItem(
                 id = document?.get(Names.ID) as ObjectId,
                 title = document[Names.TITLE] as String,
                 creationDate = document[Names.CREATION_DATE] as Date,
-                isNew = document[Names.IS_NEW] as Boolean
+                isNew = document[Names.IS_NEW] as Boolean,
+                highestScore = document[Names.HIGHEST_SCORE] as String?
             )
         }
     }

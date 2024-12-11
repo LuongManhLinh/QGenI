@@ -17,4 +17,13 @@ interface PracticeRepository {
         id: ObjectId
     )
 
+    suspend fun changeToOld(
+        id: ObjectId
+    )
+
+    suspend fun changeHighestScore(
+        id: ObjectId,
+        highestScore: String
+    )
+
 }

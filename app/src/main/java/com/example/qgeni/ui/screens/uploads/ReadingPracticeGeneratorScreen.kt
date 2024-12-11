@@ -482,7 +482,7 @@ fun PasteTextField(
                 shape = RoundedCornerShape(size = 10.dp),
                 maxLines = Int.MAX_VALUE,
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Default,
+                    imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number // Bàn phím số
                 ),
                 colors = OutlinedTextFieldDefaults

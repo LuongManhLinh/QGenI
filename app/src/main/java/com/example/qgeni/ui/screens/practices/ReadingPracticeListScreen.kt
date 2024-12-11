@@ -128,17 +128,17 @@ fun ReadingPracticeListScreen(
                         .background(color = MaterialTheme.colorScheme.onPrimary),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(items = uiState.practiceItemList, key = { item -> item.id }) { item ->
+                    items(uiState.practiceItemList.size) { idx ->
                         PracticeItemCard(
-                            practiceItem = item,
+                            practiceItem = uiState.practiceItemList[idx],
                             onDeleteClick = {
-                                viewModel.selectItem(item.id)
+                                viewModel.selectItem(idx)
                                 viewModel.toggleDeleteDialog(true)
                             },
                             modifier = Modifier
                                 .clickable(
                                     onClick = {
-                                        viewModel.selectItem(item.id)
+                                        viewModel.selectItem(idx)
                                         viewModel.toggleOpenDialog(true)
                                     }
                                 ).testTag("show Dialog")
@@ -161,6 +161,7 @@ fun ReadingPracticeListScreen(
         OpenConfirmDialog(
             onDismissRequest = {viewModel.toggleOpenDialog(false)},
             onOpenClick = {
+                viewModel.changeItemToOld()
                 viewModel.toggleOpenDialog(false)
                 onItemClick(uiState.selectedItemId!!.toHexString())
             },
