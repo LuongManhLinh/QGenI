@@ -98,6 +98,7 @@ fun CustomSolidButton(
 
 @Composable
 fun CustomOutlinedButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
     color: Color,
@@ -108,7 +109,7 @@ fun CustomOutlinedButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent
         ),
-        modifier = Modifier
+        modifier = modifier
             .border(
                 width = 1.dp,
                 color = color,

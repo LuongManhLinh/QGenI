@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
@@ -66,7 +67,6 @@ fun ReadingPracticeGeneratorScreen(
 
     val rpgUIState by viewModel.readingUIState.collectAsState()
     val context = LocalContext.current
-    val options = listOf("Model A", "Model B", "Model C")
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -172,16 +172,19 @@ fun ReadingPracticeGeneratorScreen(
                         ) {
                             if (rpgUIState.textUri == Uri.EMPTY) {
                                 CustomOutlinedButton(
+                                    modifier = Modifier.height(64.dp),
                                     onClick = {
                                         viewModel.updateReadingUploadFileDialog(
                                             true
                                         )
                                     },
                                     text = "TẢI TỆP",
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.primary,
+
                                 )
                             } else {
                                 DeleteBox(
+                                    modifier = Modifier.height(64.dp),
                                     onDeleteClick = {
                                         viewModel.updateTextUri(context, Uri.EMPTY)
                                     }
@@ -193,6 +196,7 @@ fun ReadingPracticeGeneratorScreen(
                                     )
                                 }
                             }
+                            Spacer(modifier = Modifier.height(16.dp))
                             Row {
                                 Box(
                                     modifier = Modifier
@@ -285,11 +289,18 @@ fun ReadingPracticeGeneratorScreen(
                                     it
                                 )
                             },
+                            onTextCleared = {
+                                viewModel.updateReadingInputParagraph(
+                                    ""
+                                )
+                            },
                             onNumStatementChanged = {
                                 viewModel.updateReadingInputNumStatement(
                                     it
                                 )
-                            }
+                            },
+                            onNumStatementIncreased = viewModel::increaseNumStatement,
+                            onNumStatementDecreased = viewModel::decreaseNumStatement
                         )
                     }
                 }
@@ -412,10 +423,11 @@ fun PasteTextField(
     inputParagraph: String,
     inputNumStatement: String,
     onTextChanged: (String) -> Unit,
+    onTextCleared: () -> Unit,
     onNumStatementChanged: (String) -> Unit,
+    onNumStatementIncreased: () -> Unit,
+    onNumStatementDecreased: () -> Unit
 ) {
-//    var text by remember { mutableStateOf("") }
-
     Column {
         OutlinedTextField(
             value = inputParagraph,
@@ -430,7 +442,8 @@ fun PasteTextField(
                 )
             },
             modifier = modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .height(64.dp),
             singleLine = true,
             shape = RoundedCornerShape(size = 10.dp),
             maxLines = Int.MAX_VALUE,
@@ -442,6 +455,16 @@ fun PasteTextField(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.primary
                 ),
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable(
+                        onClick = onTextCleared
+                    )
+                )
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Box(
@@ -477,7 +500,8 @@ fun PasteTextField(
                     )
                 },
                 modifier = modifier
-                    .weight(1f).testTag("input numQs"),
+                    .weight(1f)
+                    .testTag("input numQs"),
                 singleLine = false,
                 shape = RoundedCornerShape(size = 10.dp),
                 maxLines = Int.MAX_VALUE,
@@ -498,7 +522,7 @@ fun PasteTextField(
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.clickable(
                                 onClick = {
-                                    //
+                                    onNumStatementIncreased()
                                 }
                             )
                         )
@@ -508,7 +532,7 @@ fun PasteTextField(
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.clickable(
                                 onClick = {
-                                    //
+                                    onNumStatementDecreased()
                                 }
                             )
                         )
@@ -528,7 +552,10 @@ fun PasteTextFieldPreview() {
             inputParagraph = "",
             inputNumStatement = "",
             onTextChanged = {},
-            onNumStatementChanged = {}
+            onNumStatementChanged = {},
+            onNumStatementDecreased = {},
+            onNumStatementIncreased = {},
+            onTextCleared = {}
         )
     }
 }

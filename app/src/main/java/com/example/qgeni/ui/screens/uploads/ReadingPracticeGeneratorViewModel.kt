@@ -64,7 +64,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     }
 
 
-   open fun saveReadingPractice() {
+    fun saveReadingPractice() {
         if (itemId == null) {
 
             _readingUIState.update {
@@ -171,14 +171,11 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             )
         }
     }
-    
-    fun decreaseNumStatement() {
-        var numStatement = _readingUIState.value.inputNumStatement.toInt() - 1
-        if (numStatement < 0) {
-            numStatement = 0
-        }
 
-        if(numStatement > 1) {
+    fun decreaseNumStatement() {
+        val numStatement = _readingUIState.value.inputNumStatement.toInt() - 1
+
+        if (numStatement >= 1) {
             _readingUIState.update {
                 it.copy(
                     inputNumStatement = numStatement.toString()
