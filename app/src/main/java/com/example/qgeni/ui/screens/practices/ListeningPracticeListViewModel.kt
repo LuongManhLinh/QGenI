@@ -6,12 +6,6 @@ import com.example.qgeni.data.repository.DefaultListeningRepository
 import org.bson.types.ObjectId
 
 open class ListeningPracticeListViewModel : PracticeListViewModel() {
-//    override suspend fun getPracticeItemList(): List<PracticeItem> {
-//        return DefaultListeningRepository
-//            .getAllPracticeItem(
-//                UserPreferenceManager.getUserId()!!
-//            )
-//    }
     override suspend fun getPracticeItemList(): List<PracticeItem> {
         val userId = UserPreferenceManager.getUserId() ?: return emptyList()
         return DefaultListeningRepository.getAllPracticeItem(userId)

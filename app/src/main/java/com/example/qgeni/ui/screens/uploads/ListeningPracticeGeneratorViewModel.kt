@@ -126,6 +126,14 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             )
         }
     }
+
+    fun removeImageAt(idx: Int) {
+        _uiState.update {
+            it.copy(
+                imageList = it.imageList.toMutableList().apply { removeAt(idx) }
+            )
+        }
+    }
 }
 
 

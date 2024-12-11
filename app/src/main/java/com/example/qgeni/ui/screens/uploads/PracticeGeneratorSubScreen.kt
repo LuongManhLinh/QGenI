@@ -49,7 +49,7 @@ fun LoadingScreen(
     @RawRes
     lottieResourceId: Int = R.raw.fairy,
     message: String,
-    onStopClicked: () -> Unit
+    extraBottomContent: @Composable () -> Unit = {},
 ) {
     Dialog(onDismissRequest = {}) { // Loading không để dismiss
         Box(
@@ -89,31 +89,46 @@ fun LoadingScreen(
                     color = MaterialTheme.colorScheme.onPrimary
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Button(
-                        onClick = onStopClicked,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent
-                        ),
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "HỦY",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
+                extraBottomContent()
             }
         }
     }
+}
+
+
+@Composable
+fun StoppableLoadingScreen(
+    message: String,
+    onStopClicked: () -> Unit,
+) {
+    LoadingScreen(
+        message = message,
+        extraBottomContent = {
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = onStopClicked,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Text(
+                        text = "HỦY",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        }
+    )
+
 }
 
 @Composable
@@ -542,7 +557,6 @@ fun LoadingLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         LoadingScreen(
             message = "Tiên nữ đang đi tìm nguyên liệu",
-            onStopClicked = {}
         )
     }
 }
@@ -551,7 +565,7 @@ fun LoadingLightScreenPreview() {
 @Composable
 fun LoadingDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        LoadingScreen(
+        StoppableLoadingScreen(
             message = "Tiên nữ đang đi tìm nguyên liệu",
             onStopClicked = {}
         )

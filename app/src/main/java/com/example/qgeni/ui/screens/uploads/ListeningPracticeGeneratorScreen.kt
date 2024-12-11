@@ -144,12 +144,15 @@ fun ListeningPracticeGeneratorScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 LazyRow {
-                    items(uiState.imageList) {
+                    items(uiState.imageList.size) {
+                        val image = uiState.imageList[it]
                         DeleteBox(
-                            onDeleteClick = {}
+                            onDeleteClick = {
+                                viewModel.removeImageAt(it)
+                            }
                         ) {
                             Image(
-                                bitmap = it.asImageBitmap(),
+                                bitmap = image.asImageBitmap(),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clip(
@@ -203,9 +206,6 @@ fun ListeningPracticeGeneratorScreen(
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
                 message = "Thần đèn đang đi tìm nguyên liệu",
-                onStopClicked = {
-                    //
-                }
             )
         }
 
@@ -223,9 +223,6 @@ fun ListeningPracticeGeneratorScreen(
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
                 message = "Thần đèn đang lưu đề",
-                onStopClicked = {
-                    //
-                }
             )
         }
 

@@ -164,7 +164,6 @@ fun ListeningPracticeScreen(
     if (uiState.showLoadingDialog) {
         LoadingScreen(
             message = "Đang tải đề...",
-            onStopClicked = {}
         )
     }
 

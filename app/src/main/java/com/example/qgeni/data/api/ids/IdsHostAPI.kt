@@ -9,6 +9,7 @@ import com.example.qgeni.data.api.RequestType
 import com.example.qgeni.data.preferences.UserPreferenceManager
 import org.bson.types.ObjectId
 import java.io.DataOutputStream
+import java.net.InetSocketAddress
 import java.net.Socket
 
 object IdsHostAPI : IFullIdsAPI {
@@ -17,11 +18,12 @@ object IdsHostAPI : IFullIdsAPI {
     private var host = DefaultConnection.HOST
     private var port = DefaultConnection.genPort
 
-    override suspend fun createListeningPracticeItem(
+    override fun createListeningPracticeItem(
         topicImageList: List<Bitmap>
     ): ObjectId? {
         try {
-            val socket = Socket(host, port)
+            val socket = Socket()
+            socket.connect(InetSocketAddress(host, port), 3000)
 
             sendRequest(RequestType.IMG_FIND_SIMILAR_ONLY, socket, topicImageList)
 

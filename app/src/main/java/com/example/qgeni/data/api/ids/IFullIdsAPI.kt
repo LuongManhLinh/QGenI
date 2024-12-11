@@ -13,5 +13,5 @@ interface IFullIdsAPI {
      * @param topicImageList: the list of image to be used as the topic to generate similar images
      * @return: if successfully create the item, return true otherwise return false
      */
-    suspend fun createListeningPracticeItem(topicImageList: List<Bitmap>) : ObjectId?
+    fun createListeningPracticeItem(topicImageList: List<Bitmap>) : ObjectId?
 }

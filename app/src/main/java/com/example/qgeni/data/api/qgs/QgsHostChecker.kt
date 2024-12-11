@@ -5,10 +5,12 @@ import com.example.qgeni.data.DefaultConnection
 import com.example.qgeni.data.api.CommunicationUtils
 import com.example.qgeni.data.api.RequestType
 import com.example.qgeni.data.api.ResponseType
+import com.example.qgeni.data.api.ids.IdsHostAPI
 import com.example.qgeni.data.model.ReadingQuestion
 import com.example.qgeni.data.preferences.UserPreferenceManager
 import org.bson.types.ObjectId
 import java.io.DataOutputStream
+import java.net.InetSocketAddress
 import java.net.Socket
 
 object QgsHostChecker {
@@ -19,7 +21,8 @@ object QgsHostChecker {
 
     fun validate(passage: String, questionList: List<ReadingQuestion>): ObjectId? {
         try {
-            val socket = Socket(host, port)
+            val socket = Socket()
+            socket.connect(InetSocketAddress(host, port), 3000)
 
             sendRequest(RequestType.TFN_CHECK, socket, passage, questionList)
 
