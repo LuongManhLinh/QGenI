@@ -105,7 +105,7 @@ fun QGNavHost(
             }
         ) {
             SignInScreen(
-                onBackClick = { navController.navigateUp() },
+                onBackClick = { navController.navigate(Screen.Welcome.route) },
                 onSignInSuccess = { navController.navigate(Screen.Home.route) },
                 onForgotPasswordClick = { navController.navigate(Screen.ForgotPassword.route) },
                 onSignUpClick = { navController.navigate(Screen.SignUp.route) }

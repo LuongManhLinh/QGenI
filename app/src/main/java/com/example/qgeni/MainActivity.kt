@@ -14,13 +14,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 import com.example.qgeni.data.preferences.ThemeMode
 import com.example.qgeni.data.preferences.ThemePreferenceManager
 import com.example.qgeni.ui.screens.navigation.QGNavHost
 import com.example.qgeni.ui.theme.QGenITheme
-import com.example.qgeni.utils.AudioGenerator
 import com.example.qgeni.utils.ContextConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,8 +38,6 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.valueOf(themeMode.value)
             }
 
-            if (!Python.isStarted()) Python.start(AndroidPlatform(this))
-            AudioGenerator.init(this)
             ContextConstants.init(this)
 
             val isDarkTheme = when (currentTheme) {

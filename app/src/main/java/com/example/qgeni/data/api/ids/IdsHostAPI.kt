@@ -24,6 +24,7 @@ object IdsHostAPI : IFullIdsAPI {
 
     private var ctrlPort = port + 1
     private var transferSocket: Socket? = null
+
     override fun createListeningPracticeItem(
         topicImageList: List<Bitmap>
     ): ObjectId? {
