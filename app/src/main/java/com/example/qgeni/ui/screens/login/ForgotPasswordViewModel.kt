@@ -16,8 +16,29 @@ class ForgotPasswordViewModel: ViewModel() {
             )
         }
     }
+
+    fun reset() {
+        _forgotPasswordUIState.update {
+            it.copy(
+                isEmailError = false
+            )
+        }
+    }
+
+    fun checkEmpty(): Boolean {
+        return !_forgotPasswordUIState.value.isEmailError
+    }
+
+    fun updateConstraint() {
+        _forgotPasswordUIState.update {
+            it.copy(
+                isEmailError = it.email == ""
+            )
+        }
+    }
 }
 
 data class ForgotPasswordUIState(
-    val email: String = ""
+    val email: String = "",
+    val isEmailError: Boolean = true,
 )
