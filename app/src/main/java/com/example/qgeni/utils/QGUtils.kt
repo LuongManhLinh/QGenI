@@ -23,4 +23,7 @@ fun formatDate(date: Date): String {
     return formatter.format(date)
 }
 
-
+sealed class ErrorMessages(val message: String) {
+    data object EmptyField : ErrorMessages("Trường này không được để trống.")
+    data object Failure: ErrorMessages("Sai tài khoản hoặc mật khẩu.")
+}

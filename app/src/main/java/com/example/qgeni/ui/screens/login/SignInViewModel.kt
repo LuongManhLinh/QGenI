@@ -1,6 +1,10 @@
 package com.example.qgeni.ui.screens.login
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.data.preferences.UserPreferenceManager
@@ -39,6 +43,16 @@ class SignInViewModel : ViewModel() {
         }
     }
 
+    fun reset() {
+        _uiState.update {
+            it.copy(
+                isFailure = false,
+                isAccountError = false,
+                isPasswordError = false,
+            )
+        }
+    }
+
     fun signIn(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = DefaultAccountRepository.checkExistence(
@@ -56,10 +70,24 @@ class SignInViewModel : ViewModel() {
             } else {
                 _uiState.update {
                     it.copy(
-                        signInEvent = SignInEvent.FAILURE
+                        signInEvent = SignInEvent.FAILURE,
+                        isFailure = true
                     )
                 }
             }
+        }
+    }
+
+    fun checkEmpty(): Boolean {
+        return !_uiState.value.isAccountError and !_uiState.value.isPasswordError
+    }
+
+    fun updateConstraint() {
+        _uiState.update {
+            it.copy(
+                isAccountError = (it.email == ""),
+                isPasswordError = (it.password == "")
+            )
         }
     }
 }
@@ -68,7 +96,10 @@ data class SignInUIState(
     val email: String = "",
     val password: String = "",
     val passwordVisible: Boolean = false,
-    val signInEvent: SignInEvent = SignInEvent.IDLE
+    val signInEvent: SignInEvent = SignInEvent.IDLE,
+    val isAccountError: Boolean = false,
+    val isPasswordError: Boolean = false,
+    val isFailure: Boolean = false
 )
 
 sealed interface SignInEvent {

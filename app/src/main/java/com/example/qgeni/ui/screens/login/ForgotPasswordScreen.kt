@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.ui.screens.components.NextButton
 import com.example.qgeni.ui.theme.QGenITheme
+import com.example.qgeni.utils.ErrorMessages
 
 @Composable
 fun ForgotPasswordScreen(
@@ -41,7 +43,8 @@ fun ForgotPasswordScreen(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(MaterialTheme.colorScheme.onPrimary)
     ) {
         Row(
@@ -77,13 +80,20 @@ fun ForgotPasswordScreen(
         ForgotPasswordPage(
             email = forgotPasswordUIState.email,
             onEmailChange = { forgotPasswordViewModel.updateEmail(it)},
+            isEmailError = forgotPasswordUIState.isEmailError,
+            onKeyBoardActions = { forgotPasswordViewModel.reset() },
             modifier = Modifier.weight(1f)
         )
         Row {
             Spacer(modifier = Modifier.weight(2f))
             NextButton(
                 onPrimary = false,
-                onClick = onNextButtonClick
+                onClick = {
+                    forgotPasswordViewModel.updateConstraint()
+                    if (forgotPasswordViewModel.checkEmpty()) {
+                        onNextButtonClick()
+                    }
+                }
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
@@ -97,6 +107,8 @@ fun ForgotPasswordScreen(
 fun ForgotPasswordPage(
     email: String,
     onEmailChange: (String) -> Unit,
+    isEmailError: Boolean,
+    onKeyBoardActions: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -123,7 +135,10 @@ fun ForgotPasswordPage(
         Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
             value = email,
-            onValueChange = onEmailChange,
+            onValueChange = {
+                onEmailChange(it)
+                onKeyBoardActions()
+            },
             label = {
                 Text(
                     text = "Địa chỉ email"
@@ -135,6 +150,20 @@ fun ForgotPasswordPage(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
+            },
+            isError = isEmailError,
+            trailingIcon = {
+                if (isEmailError)
+                    Icon(Icons.Outlined.Error,"error", tint = MaterialTheme.colorScheme.error)
+            },
+            supportingText = {
+                if (isEmailError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = ErrorMessages.EmptyField.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             },
             shape = RoundedCornerShape(size = 10.dp),
             colors = OutlinedTextFieldDefaults
@@ -181,7 +210,9 @@ fun ForgotPasswordPagePreview() {
     QGenITheme(dynamicColor = false) {
         ForgotPasswordPage(
             email = "",
-            onEmailChange = {}
+            onEmailChange = {},
+            false,
+            {}
         )
     }
 }

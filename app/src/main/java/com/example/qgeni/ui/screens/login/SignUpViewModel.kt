@@ -88,9 +88,33 @@ class SignUpViewModel : ViewModel() {
                 )
             }
         }
-
     }
 
+    fun reset() {
+        _uiState.update {
+            it.copy(
+                isAccountError = false,
+                isPasswordError = false,
+                isEmailError = false,
+                isPhoneNumberError = false
+            )
+        }
+    }
+
+    fun checkEmpty(): Boolean {
+        return !_uiState.value.isAccountError && !_uiState.value.isPasswordError && !_uiState.value.isEmailError && !_uiState.value.isPhoneNumberError
+    }
+
+    fun updateConstraint() {
+        _uiState.update {
+            it.copy(
+                isAccountError = it.username == "",
+                isPasswordError = it.password == "",
+                isEmailError = it.email == "",
+                isPhoneNumberError = it.phoneNumber == ""
+            )
+        }
+    }
 }
 
 data class SignUpUIState(
@@ -100,5 +124,9 @@ data class SignUpUIState(
     val password: String = "",
     val passwordVisible: Boolean = false,
     val termsAccepted: Boolean = false,
-    val showSuccessDialog: Boolean = false
+    val showSuccessDialog: Boolean = false,
+    val isAccountError: Boolean = true,
+    val isPasswordError: Boolean = true,
+    val isEmailError: Boolean = true,
+    val isPhoneNumberError: Boolean = true
 )
