@@ -203,7 +203,7 @@ fun ListeningPracticeGeneratorScreen(
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
                 message = "Thần đèn đang đi tìm nguyên liệu",
-                onButtonClick = {
+                onStopClicked = {
                     //
                 }
             )
@@ -223,7 +223,7 @@ fun ListeningPracticeGeneratorScreen(
             LoadingScreen(
                 lottieResourceId = R.raw.young_genie,
                 message = "Thần đèn đang lưu đề",
-                onButtonClick = {
+                onStopClicked = {
                     //
                 }
             )

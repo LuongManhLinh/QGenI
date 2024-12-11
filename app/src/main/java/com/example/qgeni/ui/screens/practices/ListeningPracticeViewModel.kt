@@ -122,7 +122,24 @@ class ListeningPracticeViewModel(idHexString: String): ViewModel() {
     }
 
     fun toggleScoreDialog(show: Boolean) {
-        _uiState.update { it.copy(showScoreDialog = show) }
+        if (_uiState.value.isCompleted) {
+            _uiState.update { it.copy(showScoreDialog = show) }
+        } else {
+            val correctAnswerIds = practiceItem.questionList.map { it.answerIndex }
+            val numCorrect = _uiState.value.answeredQuestions.filter {
+                it.value == correctAnswerIds[it.key]
+            }.size
+
+            _uiState.update {
+                it.copy(
+                    isCompleted = true,
+                    showScoreDialog = show,
+                    showSubmitConfirmDialog = false,
+                    numCorrect = numCorrect,
+                    correctAnswerIds = correctAnswerIds
+                )
+            }
+        }
     }
 
     fun play() {
@@ -210,7 +227,9 @@ data class ListeningPracticeUIState(
     val audioDuration: Float = 0f,
     val playbackState: PlaybackState = PlaybackState.PAUSED,
 
-
+    val isCompleted: Boolean = false,
+    val numCorrect: Int = 0,
+    val correctAnswerIds: List<Int> = emptyList()
 )
 
 enum class PlaybackState {

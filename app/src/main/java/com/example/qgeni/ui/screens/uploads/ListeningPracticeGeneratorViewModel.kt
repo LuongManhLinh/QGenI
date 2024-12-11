@@ -1,7 +1,6 @@
 package com.example.qgeni.ui.screens.uploads
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.data.api.ids.IdsHostAPI
@@ -74,10 +73,7 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
                         currentState = GeneratorState.Error
                     )
                 }
-                Log.d("ListeningPracticeGeneratorViewModel", "Failed to create item")
             }
-
-
         }
     }
 

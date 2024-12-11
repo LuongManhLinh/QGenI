@@ -47,6 +47,7 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun ImageQuestionView(
     modifier: Modifier = Modifier,
+    isCompleted : Boolean,
     currentQuestion: Int,
     timeString: String,
     imageList: List<Bitmap>,
@@ -90,7 +91,7 @@ fun ImageQuestionView(
             Spacer(modifier = Modifier.weight(1f))
             CustomSolidButton(
                 onClick = onSubmitClick,
-                text = "NỘP BÀI",
+                text = if (isCompleted) "TIẾP TỤC" else "NỘP BÀI",
             )
         }
 
@@ -298,6 +299,7 @@ fun ImageQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
         ImageQuestionView(
             currentQuestion = 0,
+            isCompleted = false,
             timeString = "00:00",
             imageList = emptyList(),
             imageLabelList = listOf("Pic. A", "Pic. B", "Pic. C"),
@@ -318,6 +320,7 @@ fun ImageQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ImageQuestionView(
             currentQuestion = 0,
+            isCompleted = true,
             timeString = "00:00",
             imageList = emptyList(),
             imageLabelList = listOf("Pic. A", "Pic. B", "Pic. C"),

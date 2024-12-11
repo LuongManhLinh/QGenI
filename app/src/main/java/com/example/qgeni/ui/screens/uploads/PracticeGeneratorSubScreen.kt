@@ -49,7 +49,7 @@ fun LoadingScreen(
     @RawRes
     lottieResourceId: Int = R.raw.fairy,
     message: String,
-    onButtonClick: () -> Unit
+    onStopClicked: () -> Unit
 ) {
     Dialog(onDismissRequest = {}) { // Loading không để dismiss
         Box(
@@ -92,7 +92,7 @@ fun LoadingScreen(
                 Row {
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
-                        onClick = onButtonClick,
+                        onClick = onStopClicked,
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent
@@ -542,7 +542,7 @@ fun LoadingLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         LoadingScreen(
             message = "Tiên nữ đang đi tìm nguyên liệu",
-            onButtonClick = {}
+            onStopClicked = {}
         )
     }
 }
@@ -553,7 +553,7 @@ fun LoadingDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         LoadingScreen(
             message = "Tiên nữ đang đi tìm nguyên liệu",
-            onButtonClick = {}
+            onStopClicked = {}
         )
     }
 }

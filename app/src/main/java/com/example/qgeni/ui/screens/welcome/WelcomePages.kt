@@ -278,7 +278,7 @@ fun PortDialog(
                         onValueChange = onPortImageChange,
                         label = {
                             Text(
-                                text = "Image Generator Port",
+                                text = "Host Generator Port",
                             )
                         },
                         shape = RoundedCornerShape(size = 10.dp),

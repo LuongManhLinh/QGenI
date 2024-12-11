@@ -316,7 +316,7 @@ fun ReadingPracticeGeneratorScreen(
                 LoadingScreen(
                     lottieResourceId = R.raw.fairy,
                     message = "Tiên nữ đang đi tìm nguyên liệu",
-                    onButtonClick = {
+                    onStopClicked = {
                         //
                     }
                 )
@@ -336,7 +336,7 @@ fun ReadingPracticeGeneratorScreen(
             LoadingScreen(
                 lottieResourceId = R.raw.fairy,
                 message = "Tiên nữ đang lưu đề",
-                onButtonClick = {
+                onStopClicked = {
                     //
                 }
             )

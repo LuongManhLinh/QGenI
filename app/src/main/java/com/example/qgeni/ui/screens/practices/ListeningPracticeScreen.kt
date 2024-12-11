@@ -1,6 +1,5 @@
 package com.example.qgeni.ui.screens.practices
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -13,11 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
-import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.ui.screens.uploads.LoadingScreen
 import com.example.qgeni.utils.formatTime
 
@@ -28,6 +25,7 @@ import com.example.qgeni.utils.formatTime
 fun ListeningPracticeScreen(
     idHexString: String,
     onBackClick: () -> Unit,
+    onNavigatingToPracticeRepo: () -> Unit,
     viewModel: ListeningPracticeViewModel =
         viewModel(factory = ListeningPracticeViewModel.factory(idHexString))
 ) {
@@ -72,6 +70,7 @@ fun ListeningPracticeScreen(
         }
 
         ImageQuestionView(
+            isCompleted = uiState.isCompleted,
             currentQuestion = uiState.currentQuestionIndex,
             timeString = formatTime(uiState.time),
             imageList = uiState.imageList,
@@ -83,8 +82,11 @@ fun ListeningPracticeScreen(
                 viewModel.play()
             },
             onSubmitClick = {
-                Log.d("ListeningPracticeScreen", "onSubmitClick: ")
-                viewModel.toggleSubmitConfirmDialog(true)
+                if (uiState.isCompleted) {
+                    onNavigatingToPracticeRepo()
+                } else {
+                    viewModel.toggleSubmitConfirmDialog(true)
+                }
             },
             playbackState = uiState.playbackState,
             sliderPosition = uiState.audioSliderPos,
@@ -116,9 +118,16 @@ fun ListeningPracticeScreen(
                         end = 16.dp,
                         bottom = 16.dp
                     ),
-                questions = uiState.questionList,
+                questionContent = uiState.questionList[uiState.currentQuestionIndex].question,
+                answerList = uiState.questionList[uiState.currentQuestionIndex].answerList,
+                numQuestion = uiState.questionList.size,
                 currentQuestionIdx = uiState.currentQuestionIndex,
                 answeredQuestions = uiState.answeredQuestions,
+                correctAnswerIdx = if (uiState.correctAnswerIds.isEmpty()) {
+                    null
+                } else {
+                    uiState.correctAnswerIds[uiState.currentQuestionIndex]
+                },
                 onQuestionChange = { index ->
                     viewModel.updateCurrentQuestionIndex(index)
                 },
@@ -143,10 +152,8 @@ fun ListeningPracticeScreen(
 
     if (uiState.showScoreDialog) {
         DisplayScore(
-            message = "???", //Score
-            onNextButtonClick = {
-                //
-            },
+            message = "${uiState.numCorrect}/${uiState.questionList.size}",
+            onNextButtonClick = onNavigatingToPracticeRepo,
             onDismissRequest = {
                 viewModel.toggleScoreDialog(false)
             },
@@ -157,7 +164,7 @@ fun ListeningPracticeScreen(
     if (uiState.showLoadingDialog) {
         LoadingScreen(
             message = "Đang tải đề...",
-            onButtonClick = {}
+            onStopClicked = {}
         )
     }
 

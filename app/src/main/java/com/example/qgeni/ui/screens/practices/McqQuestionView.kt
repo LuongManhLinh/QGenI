@@ -3,6 +3,7 @@ package com.example.qgeni.ui.screens.practices
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -25,8 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.qgeni.R
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -37,12 +44,36 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun McqQuestionView(
     modifier: Modifier = Modifier,
-    questions: List<McqQuestion>,
     currentQuestionIdx: Int,
+    numQuestion: Int,
+    questionContent: String,
+    answerList: List<String>,
     answeredQuestions: Map<Int, Int?>,
+    correctAnswerIdx: Int?,
     onQuestionChange: (Int) -> Unit,
     onAnswerSelected: (Int) -> Unit,
 ) {
+    val selectedAnswerIdx = answeredQuestions[currentQuestionIdx]
+
+    val correct = selectedAnswerIdx == correctAnswerIdx
+
+    val completedColor: Color? = if (correctAnswerIdx != null) {
+        if (correct) {
+            if (isSystemInDarkTheme()) {
+                colorResource(R.color.correct)
+            } else {
+                colorResource(R.color.correct_intense)
+            }
+        } else {
+            if (isSystemInDarkTheme()) {
+                colorResource(R.color.incorrect)
+            } else {
+                colorResource(R.color.incorrect_intense)
+            }
+        }
+    } else {
+        null
+    }
 
     Column(
         modifier = modifier
@@ -83,12 +114,33 @@ fun McqQuestionView(
                 .clip(RoundedCornerShape(10.dp))
 
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = questionContent,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (correctAnswerIdx != null) {
+                        completedColor!!
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                    }
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                if (correctAnswerIdx != null) {
+                    Icon(
+                        imageVector = if (correct) {
+                            Icons.Default.Done
+                        } else {
+                            Icons.Default.Close
+                        },
+                        contentDescription = null,
+                        tint = completedColor!!,
+                    )
+                }
+            }
 
-            Text(
-                text = questions[currentQuestionIdx].question,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -99,7 +151,8 @@ fun McqQuestionView(
             ) {
                 item {
                     // Hiển thị các lựa chọn
-                    questions[currentQuestionIdx].answerList.forEachIndexed { answerIdx,  option ->
+                    answerList.forEachIndexed { answerIdx,  option ->
+                        val selected = answerIdx == selectedAnswerIdx
                         Row(
                             modifier = Modifier
                                 .clickable {
@@ -108,23 +161,35 @@ fun McqQuestionView(
                                 .height(30.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+
                             RadioButton(
-                                selected = answerIdx == answeredQuestions[currentQuestionIdx],
+                                selected = selected,
+                                enabled = correctAnswerIdx == null,
                                 onClick = {
                                     onAnswerSelected(answerIdx)
                                 },
                                 colors = RadioButtonDefaults.colors(
                                     unselectedColor = MaterialTheme.colorScheme.tertiary,
                                     selectedColor = MaterialTheme.colorScheme.primary,
-                                    disabledSelectedColor = MaterialTheme.colorScheme.primary,
-                                    disabledUnselectedColor = MaterialTheme.colorScheme.tertiary
+                                    disabledSelectedColor = if (correctAnswerIdx != null && selected) {
+                                        completedColor!!
+                                    } else {
+                                        MaterialTheme.colorScheme.primary
+                                    },
+                                    disabledUnselectedColor = MaterialTheme.colorScheme.tertiary,
                                 )
                             )
+
                             Text(
                                 text = option,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground
+                                color = if (correctAnswerIdx != null && selected) {
+                                    completedColor!!
+                                } else {
+                                    MaterialTheme.colorScheme.onBackground
+                                },
                             )
+
                             Spacer(modifier = Modifier.width(16.dp))
                         }
                     }
@@ -146,7 +211,7 @@ fun McqQuestionView(
                 .padding(16.dp)
                 .clip(RoundedCornerShape(10.dp)),
         ) {
-            itemsIndexed(questions) { index, _ ->
+            items(numQuestion) { index ->
                 Box(
                     modifier = Modifier
                         .size(40.dp)
@@ -188,23 +253,17 @@ fun McqQuestionView(
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun MsqQuestionLightViewPreview() {
+private fun MsqQuestionLightViewPreview() {
     QGenITheme(dynamicColor = false) {
         McqQuestionView(
-            questions = listOf(
-                McqQuestion(
-                    question = "What is the capital of France?",
-                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
-                ),
-                McqQuestion(
-                    question = "What is the capital of Germany?",
-                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
-                ),
-            ),
+            questionContent = "What is the capital of France?",
+            answerList = listOf("Paris", "London", "Berlin", "Madrid"),
+            numQuestion = 2,
             currentQuestionIdx = 0,
             onQuestionChange = {},
             onAnswerSelected = {},
-            answeredQuestions = emptyMap()
+            answeredQuestions = mapOf(0 to 1),
+            correctAnswerIdx = 1
         )
     }
 }
@@ -212,24 +271,18 @@ fun MsqQuestionLightViewPreview() {
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun MsqQuestionDarkViewPreview() {
+private fun MsqQuestionDarkViewPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
 
         McqQuestionView(
-            questions = listOf(
-                McqQuestion(
-                    question = "What is the capital of France?",
-                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
-                ),
-                McqQuestion(
-                    question = "What is the capital of Germany?",
-                    answerList = listOf("Paris", "London", "Berlin", "Madrid"),
-                ),
-            ),
+            questionContent = "What is the capital of France?",
+            answerList = listOf("Paris", "London", "Berlin", "Madrid"),
+            numQuestion = 3,
             currentQuestionIdx = 0,
             onQuestionChange = {},
             onAnswerSelected = {},
-            answeredQuestions = emptyMap()
+            answeredQuestions = mapOf(0 to 0),
+            correctAnswerIdx = null
         )
     }
 }
