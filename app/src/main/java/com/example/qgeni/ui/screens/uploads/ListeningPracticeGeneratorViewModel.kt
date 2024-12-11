@@ -18,6 +18,8 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
 
     private var itemId: ObjectId? = null
 
+    private var stopped = false
+
     fun updateUploadFileDialogVisibility(showUploadFileDialog: Boolean) {
         _uiState.update {
             it.copy(
@@ -49,6 +51,8 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             return
         }
 
+        stopped = false
+
         _uiState.update {
             it.copy(
                 currentState = GeneratorState.Loading
@@ -70,7 +74,11 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             } else {
                 _uiState.update {
                     it.copy(
-                        currentState = GeneratorState.Error
+                        currentState = if (stopped) {
+                            GeneratorState.Idle
+                        } else {
+                            GeneratorState.Error
+                        }
                     )
                 }
             }
@@ -132,6 +140,21 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
             it.copy(
                 imageList = it.imageList.toMutableList().apply { removeAt(idx) }
             )
+        }
+    }
+
+    fun stop() {
+        if (_uiState.value.currentState == GeneratorState.Loading) {
+            stopped = true
+            viewModelScope.launch {
+                IdsHostAPI.stop()
+            }
+
+            _uiState.update {
+                it.copy(
+                    currentState = GeneratorState.Idle
+                )
+            }
         }
     }
 }

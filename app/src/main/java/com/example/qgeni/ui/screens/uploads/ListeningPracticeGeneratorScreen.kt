@@ -203,9 +203,10 @@ fun ListeningPracticeGeneratorScreen(
 
     when (uiState.currentState) {
         is GeneratorState.Loading -> {
-            LoadingScreen(
+            StoppableLoadingScreen (
                 lottieResourceId = R.raw.young_genie,
                 message = "Thần đèn đang đi tìm nguyên liệu",
+                onStopClicked = viewModel::stop
             )
         }
 

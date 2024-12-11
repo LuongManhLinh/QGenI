@@ -352,9 +352,10 @@ fun ReadingPracticeGeneratorScreen(
                 )
 
             } else {
-                LoadingScreen(
+                StoppableLoadingScreen (
                     lottieResourceId = R.raw.fairy,
                     message = "Tiên nữ đang đi tìm nguyên liệu",
+                    onStopClicked = viewModel::stop
                 )
             }
 

@@ -7,10 +7,14 @@ import com.example.qgeni.data.api.ResponseType
 import com.example.qgeni.data.DefaultConnection
 import com.example.qgeni.data.api.RequestType
 import com.example.qgeni.data.preferences.UserPreferenceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.bson.types.ObjectId
 import java.io.DataOutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
+
 
 object IdsHostAPI : IFullIdsAPI {
     private const val LOG_TAG = "IdsHostAPI"
@@ -18,17 +22,29 @@ object IdsHostAPI : IFullIdsAPI {
     private var host = DefaultConnection.HOST
     private var port = DefaultConnection.genPort
 
+    private var ctrlPort = port + 1
+    private var transferSocket: Socket? = null
     override fun createListeningPracticeItem(
         topicImageList: List<Bitmap>
     ): ObjectId? {
         try {
-            val socket = Socket()
-            socket.connect(InetSocketAddress(host, port), 3000)
+            transferSocket = Socket()
+            transferSocket!!.connect(InetSocketAddress(host, port), 3000)
 
-            sendRequest(RequestType.IMG_FIND_SIMILAR_ONLY, socket, topicImageList)
+            val inputStream = transferSocket!!.getInputStream()
+            val bArr = CommunicationUtils.readNBytes(inputStream, 4)
+            val initResponse = CommunicationUtils.bigEndianBytesToInt(bArr)
+            if (initResponse == ResponseType.SERVER_ERROR) {
+                Log.e(LOG_TAG, "Server error")
+                return null
+            } else {
+                ctrlPort = initResponse
+            }
 
-            val response = getResponseForCreatingItem(socket)
-            socket.close()
+            sendRequest(RequestType.IMG_FIND_SIMILAR_ONLY, transferSocket!!, topicImageList)
+
+            val response = getResponseForCreatingItem(transferSocket!!)
+            transferSocket!!.close()
 
             return response
 
@@ -37,7 +53,6 @@ object IdsHostAPI : IFullIdsAPI {
             return null
         }
     }
-
 
     private fun sendRequest(
         requestType: Int,
@@ -79,5 +94,17 @@ object IdsHostAPI : IFullIdsAPI {
         val itemId = inputStream.bufferedReader().readText().trim()
 
         return ObjectId(itemId)
+    }
+
+    fun stop() {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (transferSocket != null) {
+                val controlSocket = Socket(host, ctrlPort)
+                val outputStream = controlSocket.getOutputStream()
+                outputStream.write(CommunicationUtils.intToBigEndianBytes(ResponseType.CLIENT_ERROR))
+                transferSocket!!.close()
+                transferSocket = null
+            }
+        }
     }
 }

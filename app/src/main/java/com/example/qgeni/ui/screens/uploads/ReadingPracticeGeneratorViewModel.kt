@@ -6,6 +6,8 @@ import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.application.QgsApplication
+import com.example.qgeni.data.api.ids.IdsHostAPI
+import com.example.qgeni.data.api.qgs.QgsHostChecker
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.repository.DefaultReadingRepository
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,8 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     open val readingUIState = _readingUIState.asStateFlow()
 
     private var itemId: ObjectId? = null
+
+    private var stopped = false
 
     fun updateReadingUploadFileDialog(show: Boolean) {
         _readingUIState.update { it.copy(showUploadFileDialog = show) }
@@ -66,7 +70,6 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
 
     fun saveReadingPractice() {
         if (itemId == null) {
-
             _readingUIState.update {
                 it.copy(
                     currentState = GeneratorState.Error
@@ -101,6 +104,8 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             )
         }
 
+        stopped = false
+
         viewModelScope.launch(Dispatchers.IO) {
             val id = QgsApplication.getReadingPracticeItem(
                 _readingUIState.value.inputParagraph,
@@ -108,7 +113,6 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             )
 
             if (id != null) {
-
                 _readingUIState.update {
                     it.copy(
                         currentState = GeneratorState.Titling,
@@ -116,11 +120,14 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
                 }
 
                 itemId = id
-
             } else {
                 _readingUIState.update {
                     it.copy(
-                        currentState = GeneratorState.Error
+                        currentState = if (stopped) {
+                            GeneratorState.Idle
+                        } else {
+                            GeneratorState.Error
+                        }
                     )
                 }
             }
@@ -179,6 +186,21 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
             _readingUIState.update {
                 it.copy(
                     inputNumStatement = numStatement.toString()
+                )
+            }
+        }
+    }
+
+    fun stop() {
+        if (_readingUIState.value.currentState == GeneratorState.Loading) {
+            stopped = true
+            viewModelScope.launch {
+                QgsHostChecker.stop()
+            }
+
+            _readingUIState.update {
+                it.copy(
+                    currentState = GeneratorState.Idle
                 )
             }
         }

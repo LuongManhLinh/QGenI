@@ -98,10 +98,13 @@ fun LoadingScreen(
 
 @Composable
 fun StoppableLoadingScreen(
+    @RawRes
+    lottieResourceId: Int = R.raw.fairy,
     message: String,
     onStopClicked: () -> Unit,
 ) {
     LoadingScreen(
+        lottieResourceId = lottieResourceId,
         message = message,
         extraBottomContent = {
             Row {

@@ -5,9 +5,11 @@ import com.example.qgeni.data.DefaultConnection
 import com.example.qgeni.data.api.CommunicationUtils
 import com.example.qgeni.data.api.RequestType
 import com.example.qgeni.data.api.ResponseType
-import com.example.qgeni.data.api.ids.IdsHostAPI
 import com.example.qgeni.data.model.ReadingQuestion
 import com.example.qgeni.data.preferences.UserPreferenceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.bson.types.ObjectId
 import java.io.DataOutputStream
 import java.net.InetSocketAddress
@@ -19,15 +21,29 @@ object QgsHostChecker {
     private var host = DefaultConnection.HOST
     private var port = DefaultConnection.genPort
 
+    private var ctrlPort = port + 1
+    private var transferSocket: Socket? = null
+
     fun validate(passage: String, questionList: List<ReadingQuestion>): ObjectId? {
         try {
-            val socket = Socket()
-            socket.connect(InetSocketAddress(host, port), 3000)
+            transferSocket = Socket()
+            transferSocket!!.connect(InetSocketAddress(host, port), 3000)
 
-            sendRequest(RequestType.TFN_CHECK, socket, passage, questionList)
+            val inputStream = transferSocket!!.getInputStream()
+            val bArr = CommunicationUtils.readNBytes(inputStream, 4)
+            val initResponse = CommunicationUtils.bigEndianBytesToInt(bArr)
+            if (initResponse == ResponseType.SERVER_ERROR) {
+                Log.e(LOG_TAG, "Server error")
+                return null
+            } else {
+                ctrlPort = initResponse
+            }
 
-            val response = getResponseForCreatingItem(socket)
-            socket.close()
+            sendRequest(RequestType.TFN_CHECK, transferSocket!!, passage, questionList)
+
+            val response = getResponseForCreatingItem(transferSocket!!)
+            transferSocket!!.close()
+            transferSocket = null
 
             Log.d(LOG_TAG, "Response: $response")
 
@@ -38,7 +54,6 @@ object QgsHostChecker {
             return null
         }
     }
-
 
 
     private fun sendRequest(
@@ -94,5 +109,17 @@ object QgsHostChecker {
         val stringSizeByteArray = CommunicationUtils.intToBigEndianBytes(stringByteArray.size)
         outputStream.write(stringSizeByteArray)
         outputStream.write(stringByteArray)
+    }
+
+    fun stop() {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (transferSocket != null) {
+                val controlSocket = Socket(host, ctrlPort)
+                val outputStream = controlSocket.getOutputStream()
+                outputStream.write(CommunicationUtils.intToBigEndianBytes(ResponseType.CLIENT_ERROR))
+                transferSocket!!.close()
+                transferSocket = null
+            }
+        }
     }
 }
