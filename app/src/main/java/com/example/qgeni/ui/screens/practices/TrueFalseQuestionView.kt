@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -30,8 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.qgeni.R
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.ui.theme.QGenITheme
 
@@ -44,12 +51,30 @@ fun TrueFalseQuestionView(
     questions: List<McqQuestion>,
 //    answeredQuestions: MutableMap<Int, String>,
     modifier: Modifier = Modifier,
-    viewModel: ReadingPracticeViewModel
+    viewModel: ReadingPracticeViewModel,
 ) {
 //    var selectedAnswer by remember { mutableStateOf<String?>(null) }
 //    var currentQuestionIndex by remember { mutableIntStateOf(0) }
 
     val tfqUIState by viewModel.uiState.collectAsState()
+    var color: Color = Color.Black
+    if(tfqUIState.isComplete) {
+        color = if (tfqUIState.correctAnswerQgs[tfqUIState.currentQuestionIndex]) {
+            if (isSystemInDarkTheme()) {
+                colorResource(R.color.correct)
+            } else {
+                colorResource(R.color.correct_intense)
+            }
+        } else {
+            if (isSystemInDarkTheme()) {
+                colorResource(R.color.incorrect)
+            } else {
+                colorResource(R.color.incorrect_intense)
+            }
+        }
+    }
+
+
     Column(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.onPrimary)
@@ -68,19 +93,18 @@ fun TrueFalseQuestionView(
             contentAlignment = Alignment.Center
         ) {
             Text(
-//                text = "Question ${currentQuestionIndex + 1}",
                 text = "Question ${tfqUIState.currentQuestionIndex + 1}",
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        // LazyColumn hiển thị câu hỏi hiện tại
-        LazyColumn(
+
+        Column(
             modifier = Modifier
                 .background(color = Color.Transparent)
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(0.7f)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.primary,
@@ -90,54 +114,87 @@ fun TrueFalseQuestionView(
                 .clip(RoundedCornerShape(10.dp))
 
         ) {
-            item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-//                    text = questions[currentQuestionIndex].question,
                     text = questions[tfqUIState.currentQuestionIndex].question,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = if (!tfqUIState.isComplete) MaterialTheme.colorScheme.onBackground else color
+
                 )
+                Spacer(modifier = Modifier.weight(1f))
+                if(tfqUIState.isComplete) {
+                    Icon(
+                        imageVector = if (tfqUIState.correctAnswerQgs[tfqUIState.currentQuestionIndex]) {
+                            Icons.Default.Done
+                        } else {
+                            Icons.Default.Close
+                        },
+                        contentDescription = null,
+                        tint = color,
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+            }
 
-                // Hiển thị các lựa chọn True/False/Not Given
-//                questions[currentQuestionIndex].answerList.forEach { option ->
-                questions[tfqUIState.currentQuestionIndex].answerList.forEach { option ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // LazyColumn hiển thị câu hỏi hiện tại
+            LazyColumn(
+                modifier = Modifier
+                    .background(color = Color.Transparent)
+                    .fillMaxWidth()
+            ) {
+                item {
+
+                    // Hiển thị các lựa chọn True/False/Not Given
+                    questions[tfqUIState.currentQuestionIndex].answerList.forEach { option ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
 //                                selectedAnswer = option
 //                                answeredQuestions[currentQuestionIndex] = option
-                                viewModel.updateSelectAnswer(option)
-                                viewModel.updateAnsweredQuestions(tfqUIState.currentQuestionIndex, option)
-                            }
-                            .height(30.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            enabled = !tfqUIState.isComplete,
-                            selected = tfqUIState.selectAnswer == option,
-                            onClick = {
-                                val newSelected = if (tfqUIState.selectAnswer == option) null else option
-                                viewModel.updateSelectAnswer(newSelected)
-                                viewModel.updateAnsweredQuestions(tfqUIState.currentQuestionIndex, newSelected)
-                            },
-                            colors = RadioButtonDefaults.colors(
-                                unselectedColor = MaterialTheme.colorScheme.tertiary,
-                                selectedColor = MaterialTheme.colorScheme.primary,
-                                disabledSelectedColor = MaterialTheme.colorScheme.primary,
-                                disabledUnselectedColor = if(tfqUIState.isComplete &&
-                                    tfqUIState.readingPracticeItem?.questionList?.get(tfqUIState.currentQuestionIndex)?.answer.toString() == option)
-                                    Color.Red else MaterialTheme.colorScheme.tertiary,
+                                    viewModel.updateSelectAnswer(option)
+                                    viewModel.updateAnsweredQuestions(
+                                        tfqUIState.currentQuestionIndex,
+                                        option
+                                    )
+                                }
+                                .height(30.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                enabled = !tfqUIState.isComplete,
+                                selected = tfqUIState.selectAnswer == option,
+                                onClick = {
+                                    val newSelected =
+                                        if (tfqUIState.selectAnswer == option) null else option
+                                    viewModel.updateSelectAnswer(newSelected)
+                                    viewModel.updateAnsweredQuestions(
+                                        tfqUIState.currentQuestionIndex,
+                                        newSelected
+                                    )
+                                },
+                                colors = RadioButtonDefaults.colors(
+                                    unselectedColor = MaterialTheme.colorScheme.tertiary,
+                                    selectedColor = MaterialTheme.colorScheme.primary,
+                                    disabledSelectedColor = MaterialTheme.colorScheme.primary,
+                                    disabledUnselectedColor = if (tfqUIState.isComplete &&
+                                        tfqUIState.readingPracticeItem?.questionList?.get(tfqUIState.currentQuestionIndex)?.answer.toString() == option
+                                    )
+                                        Color.Red else MaterialTheme.colorScheme.tertiary,
+                                )
                             )
-                        )
-                        Text(
-                            text = option,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(start = 8.dp),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
+                            Text(
+                                text = option,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(start = 8.dp),
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 }
             }

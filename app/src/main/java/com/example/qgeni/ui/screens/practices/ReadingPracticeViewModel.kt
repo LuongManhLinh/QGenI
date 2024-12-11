@@ -1,5 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
+import android.util.Log
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.qgeni.data.model.ReadingPracticeItem
+import com.example.qgeni.data.repository.DefaultListeningRepository
 import com.example.qgeni.data.repository.DefaultReadingRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +21,10 @@ open class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
     private val _uiState = MutableStateFlow(ReadingPracticeUIState())
     open val uiState = _uiState.asStateFlow()
 
+    private lateinit var readingPracticeItem: ReadingPracticeItem
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val readingPracticeItem = DefaultReadingRepository.getItem(ObjectId(idHexString))
+            readingPracticeItem = DefaultReadingRepository.getItem(ObjectId(idHexString))
             _uiState.update {
                 it.copy(
                     readingPracticeItem = readingPracticeItem
@@ -123,15 +126,28 @@ open class ReadingPracticeViewModel(idHexString: String) : ViewModel() {
         }
     }
 
-    open fun checkScore(): Int {
+    open fun checkScore(): String {
         var score = 0
+        val correctAnswerFlags: MutableList<Boolean> = mutableListOf()
         for ((index, answer) in _uiState.value.readingPracticeItem?.questionList?.withIndex()!!) {
             val correctAnswer = answer.answer.toString()
             val userAnswer = _uiState.value.answeredQuestions[index]
-            if(correctAnswer == userAnswer)
+            correctAnswerFlags.add(correctAnswer == userAnswer)
+            if(correctAnswer == userAnswer) {
                 score++
+            }
         }
-        return score
+        _uiState.update {
+            it.copy(
+                correctAnswerQgs = correctAnswerFlags
+            )
+        }
+        val scores = "$score/${readingPracticeItem.questionList.size}"
+        viewModelScope.launch(Dispatchers.IO) {
+            DefaultReadingRepository.changeHighestScore(readingPracticeItem.id, scores)
+            Log.e("ReadingPracticeViewModel", "Score changed to $scores")
+        }
+        return scores
     }
 
     companion object {
@@ -158,5 +174,7 @@ data class ReadingPracticeUIState(
     val showScoreDialog: Boolean = false,
     val selectAnswer: String? = null,
     val answeredQuestions: MutableMap<Int, String> = mutableMapOf(),
-    val isComplete: Boolean = false
+    val isComplete: Boolean = false,
+    val correctAnswerQgs: List<Boolean> = emptyList()
+
 )

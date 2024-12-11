@@ -143,8 +143,7 @@ fun ReadingPracticeScreen(
     }
     if (readingPracticeUIState.showScoreDialog) {
         DisplayScore(
-            message =
-            "${readingPracticeViewModel.checkScore()}/${readingPracticeUIState.readingPracticeItem?.questionList?.size}",
+            message = readingPracticeViewModel.checkScore(),
             onNextButtonClick = {
                 readingPracticeViewModel.toggleScoreDialog(false)
                 onNextButtonClick()
