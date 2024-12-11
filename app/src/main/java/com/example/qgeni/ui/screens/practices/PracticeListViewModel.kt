@@ -14,7 +14,7 @@ import org.bson.types.ObjectId
 
 abstract class PracticeListViewModel : ViewModel() {
     private val _practiceListUIState = MutableStateFlow(PracticeListUIState())
-    val practiceListUIState = _practiceListUIState.asStateFlow()
+    open val practiceListUIState = _practiceListUIState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

@@ -29,6 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -127,7 +128,6 @@ fun SignInPage(
     onForgotPasswordClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-//    var passwordVisible by remember { mutableStateOf(false)}
 
     Column(
         modifier = modifier
@@ -247,17 +247,17 @@ fun SignInPage(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Chưa có tài khoản?",
+                text = "Chưa có tài khoản? ",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.tertiary
             )
             Text(
-                text = " Đăng ký",
+                text = "Đăng ký",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable(
                     onClick = onSignUpClick
-                )
+                ).testTag("signup")
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
