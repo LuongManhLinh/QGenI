@@ -16,7 +16,7 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 
-object IdsHostAPI : IFullIdsAPI {
+object IdsHostAPI : IIdsAPI {
     private const val LOG_TAG = "IdsHostAPI"
 
     private var host = DefaultConnection.HOST
