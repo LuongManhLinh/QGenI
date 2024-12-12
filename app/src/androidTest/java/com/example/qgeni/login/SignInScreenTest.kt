@@ -28,11 +28,11 @@ class SignInScreenTest {
         // Kiểm tra các thành phần chính của giao diện có hiển thị không
         composeTestRule.onNodeWithText("Đăng nhập").assertIsDisplayed()
         composeTestRule.onNodeWithText("Chào mừng bạn quay trở lại").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Địa chỉ email").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Tên tài khoản").assertIsDisplayed()
         composeTestRule.onNodeWithText("Mật khẩu").assertIsDisplayed()
         composeTestRule.onNodeWithText("Quên mật khẩu?").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Chưa có tài khoản?").assertIsDisplayed()
-        composeTestRule.onNodeWithText(" Đăng ký").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Chưa có tài khoản? ").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Đăng ký").assertIsDisplayed()
     }
 
     @Test
@@ -47,7 +47,7 @@ class SignInScreenTest {
         }
 
         // Nhập dữ liệu
-        composeTestRule.onNodeWithText("Địa chỉ email").performTextInput("test@example.com")
+        composeTestRule.onNodeWithText("Tên tài khoản").performTextInput("test@example.com")
         composeTestRule.onNodeWithText("Mật khẩu").performTextInput("passwordtest")
 
         composeTestRule.onNodeWithText("test@example.com").assertExists()
@@ -73,26 +73,6 @@ class SignInScreenTest {
         toggleIcon.assertExists()
     }
 
-//    @Test
-//    fun testSignInButtonClick() {
-//        var signInSuccessTriggered = false
-//        composeTestRule.setContent {
-//            SignInScreen(
-//                onBackClick = {},
-//                onSignInSuccess = { signInSuccessTriggered = true },
-//                onSignUpClick = {},
-//                onForgotPasswordClick = {}
-//            )
-//        }
-//
-//        // Nhấn nút "NextButton"
-//        composeTestRule.onNodeWithTag("next_button").performClick()
-//        // Kiểm tra hành động sau khi nhấn
-//        composeTestRule.waitForIdle()
-//        Log.i("signin", signInSuccessTriggered.toString())
-//        assert(signInSuccessTriggered)
-//    }
-
     @Test
     fun testSignUpClick() {
         var signUpClicked = false
@@ -106,7 +86,7 @@ class SignInScreenTest {
         }
 
         // Nhấn nút "Đăng ký"
-        composeTestRule.onNodeWithText(" Đăng ký").performClick()
+        composeTestRule.onNodeWithText("Đăng ký").performClick()
 
         // Kiểm tra trạng thái
         assert(signUpClicked)

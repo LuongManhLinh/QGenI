@@ -170,7 +170,7 @@ fun ReadingPracticeGeneratorScreen(
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            if (rpgUIState.textUri == Uri.EMPTY) {
+                            if (rpgUIState.textUri == Uri.EMPTY || rpgUIState.textUri == Uri.parse("")) {
                                 CustomOutlinedButton(
                                     modifier = Modifier.height(64.dp),
                                     onClick = {

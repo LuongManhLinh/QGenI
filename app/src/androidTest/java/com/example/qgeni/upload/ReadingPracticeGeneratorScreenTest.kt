@@ -95,7 +95,10 @@ class ReadingPracticeGeneratorScreenTest {
                 inputParagraph = "",
                 inputNumStatement = "",
                 onTextChanged = {},
-                onNumStatementChanged = {}
+                onTextCleared = {},
+                onNumStatementChanged = {},
+                onNumStatementDecreased = {},
+                onNumStatementIncreased = {}
             )
         }
 

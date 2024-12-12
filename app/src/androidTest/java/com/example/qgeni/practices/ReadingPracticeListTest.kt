@@ -32,7 +32,7 @@ class ReadingPracticeListTest {
                 practiceItemList = mockData,
                 showDeleteDialog = false,
                 showOpenDialog = false,
-                selectedItemId = null
+                selectedIdx = null
             )
         )
         override suspend fun getPracticeItemList(): List<PracticeItem> {
@@ -69,7 +69,8 @@ fun generateReading(): List<PracticeItem> {
             id = ObjectId(),
             title = "Bài đọc 1",
             creationDate = Date(),
-            isNew = true
+            isNew = true,
+            highestScore = ""
         )
     )
 }

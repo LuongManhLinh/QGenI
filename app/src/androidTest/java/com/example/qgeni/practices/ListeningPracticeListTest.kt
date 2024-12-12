@@ -31,7 +31,7 @@ class ListeningPracticeList {
                 practiceItemList = mockData,
                 showDeleteDialog = false,
                 showOpenDialog = false,
-                selectedItemId = null
+                selectedIdx = null
             )
         )
         override suspend fun getPracticeItemList(): List<PracticeItem> {
@@ -52,12 +52,11 @@ class ListeningPracticeList {
         }
         composeTestRule.onNodeWithContentDescription("BackIcon").assertIsDisplayed()
         composeTestRule.onNodeWithText("Ngăn đề nghe").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("backpack1").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("backpack2").assertIsDisplayed()
 
         composeTestRule.onNodeWithText("Bài nghe 1").assertIsDisplayed()
 
         composeTestRule.onNodeWithTag("open dialog").performClick()
-
 
     }
 }
@@ -69,7 +68,8 @@ fun generateMockPracticeItems(): List<PracticeItem> {
             id = ObjectId(),
             title = "Bài nghe 1",
             creationDate = Date(),
-            isNew = true
+            isNew = true,
+            highestScore = ""
         )
     )
 }
