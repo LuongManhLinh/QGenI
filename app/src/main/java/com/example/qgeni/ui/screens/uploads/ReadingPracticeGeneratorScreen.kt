@@ -192,7 +192,8 @@ fun ReadingPracticeGeneratorScreen(
                                     CustomOutlinedButton(
                                         onClick = {},
                                         text = rpgUIState.fileName,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.height(80.dp)
                                     )
                                 }
                             }
