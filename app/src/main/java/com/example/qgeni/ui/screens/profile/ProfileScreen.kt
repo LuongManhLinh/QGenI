@@ -193,38 +193,34 @@ fun HeaderSection(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape)
-                        .clickable(
-                            onClick = { /* Change Image */ }
-                        )
                         .border(
                             width = 2.dp,
                             color = MaterialTheme.colorScheme.tertiary,
                             shape = CircleShape
                         )
                 )
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape
-                        )
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.tertiary,
-                            shape = CircleShape
-                        )
-                        .padding(8.dp)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    Icon(
-                        painter = painterResource(id = android.R.drawable.ic_menu_edit),
-                        contentDescription = "Edit Icon",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
-
+//                IconButton(
+//                    onClick = {},
+//                    modifier = Modifier
+//                        .size(36.dp)
+//                        .background(
+//                            color = MaterialTheme.colorScheme.primary,
+//                            shape = CircleShape
+//                        )
+//                        .border(
+//                            width = 2.dp,
+//                            color = MaterialTheme.colorScheme.tertiary,
+//                            shape = CircleShape
+//                        )
+//                        .padding(8.dp)
+//                        .align(Alignment.BottomEnd)
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = android.R.drawable.ic_menu_edit),
+//                        contentDescription = "Edit Icon",
+//                        tint = MaterialTheme.colorScheme.onPrimary,
+//                    )
+//                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
