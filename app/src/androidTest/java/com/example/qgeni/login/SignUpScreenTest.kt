@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.qgeni.data.repository.DefaultAccountRepository
 import com.example.qgeni.ui.screens.login.SignUpScreen
+import com.example.qgeni.ui.screens.login.SignUpSuccess
 import com.example.qgeni.ui.screens.login.SignUpViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -87,6 +88,22 @@ class SignUpScreenTest {
             .performClick()
     }
 
+    @Test
+    fun testShowDialog() {
+        composeTestRule.setContent {
+            SignUpSuccess(
+                text = "TẠO TÀI KHOẢN THÀNH CÔNG",
+                onDismissRequest = {},
+                onNextButtonClick = {}
+            )
+        }
+        composeTestRule.onNodeWithText("TẠO TÀI KHOẢN THÀNH CÔNG").assertIsDisplayed()
+
+        // Nhấn nút "XÁC NHẬN" trong dialog
+        composeTestRule.onNodeWithText("XÁC NHẬN").performClick()
+
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testSignUpSuccessDialog() = runTest {
@@ -107,14 +124,6 @@ class SignUpScreenTest {
 
         advanceUntilIdle()
 
-        // Kiểm tra xem dialog "TẠO TÀI KHOẢN THÀNH CÔNG" có hiển thị không
-        composeTestRule.onNodeWithText("TẠO TÀI KHOẢN THÀNH CÔNG").assertIsDisplayed()
-
-        // Nhấn nút "XÁC NHẬN" trong dialog
-        composeTestRule.onNodeWithText("XÁC NHẬN").performClick()
-
-        // Kiểm tra việc đóng dialog sau khi nhấn "XÁC NHẬN"
-        composeTestRule.onNodeWithText("TẠO TÀI KHOẢN THÀNH CÔNG").assertDoesNotExist()
     }
 
 

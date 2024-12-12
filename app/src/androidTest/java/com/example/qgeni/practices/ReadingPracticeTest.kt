@@ -31,6 +31,7 @@ class ReadingPracticeTest {
                 passage = "This is a sample passage for the test.",
                 creationDate = Date(),
                 isNew = true,
+                highestScore = "",
                 questionList = listOf(
                     ReadingQuestion(statement = "Is this a sample question?", answer = ReadingAnswer.TRUE),
                     ReadingQuestion(statement = "Is this another question?", answer = ReadingAnswer.FALSE)
@@ -50,7 +51,7 @@ class ReadingPracticeTest {
 
         val mockViewModel = object : ReadingPracticeViewModel("647f1b4f3c4e88a6a95b9e48") {
             override val uiState = MutableStateFlow(mockUIState)
-            override fun checkScore(): Int = 1
+            override fun checkScore(): String = ""
         }
 
         composeTestRule.setContent {
@@ -71,9 +72,9 @@ class ReadingPracticeTest {
         composeTestRule.onNodeWithText("Eraser").assertIsDisplayed()
         composeTestRule.onNodeWithTag("highlight mode").performClick()
 
-        composeTestRule.onNodeWithText("Highlight").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("highlight").performClick()
+        composeTestRule.onNodeWithTag("test highlight").performClick()
 
+        composeTestRule.onNodeWithText("NỘP BÀI").assertIsDisplayed()
 
     }
 }

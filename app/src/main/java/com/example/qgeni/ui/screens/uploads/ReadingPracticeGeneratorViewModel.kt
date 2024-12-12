@@ -67,6 +67,13 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
+    fun updateFileContent(content: String) {
+        _readingUIState.update {
+            it.copy(
+                fileContent = content
+            )
+        }
+    }
 
     fun saveReadingPractice() {
         if (itemId == null) {
@@ -138,7 +145,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
     fun updateTextUri(context: Context, uri: Uri) {
         val fileName: String
         val fileContent: String
-        if(uri != Uri.EMPTY) {
+        if(uri != Uri.parse("") || uri != Uri.EMPTY) {
             fileName = getFileName(context, uri)
             fileContent = readFileContent(context, uri)
         }
@@ -238,7 +245,7 @@ data class ReadingPracticeGeneratorUIState(
     val inputNumStatement: String = "1",
     val listReadingQuestion: List<McqQuestion> = emptyList(),
     val isGenerateSuccess: Boolean = false,
-    val textUri: Uri = Uri.EMPTY,
+    val textUri: Uri = Uri.parse(""),
     val fileName: String = "",
     val fileContent: String = ""
 )
