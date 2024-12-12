@@ -259,9 +259,7 @@ fun ReadingPracticeGeneratorScreen(
                                                 contentDescription = null,
                                                 tint = MaterialTheme.colorScheme.primary,
                                                 modifier = Modifier.clickable(
-                                                    onClick = {
-                                                        //
-                                                    }
+                                                    onClick = viewModel::increaseNumStatement
                                                 )
                                             )
                                             Icon(
@@ -269,9 +267,7 @@ fun ReadingPracticeGeneratorScreen(
                                                 contentDescription = null,
                                                 tint = MaterialTheme.colorScheme.primary,
                                                 modifier = Modifier.clickable(
-                                                    onClick = {
-                                                        //
-                                                    }
+                                                    onClick = viewModel::decreaseNumStatement
                                                 )
                                             )
                                         }
