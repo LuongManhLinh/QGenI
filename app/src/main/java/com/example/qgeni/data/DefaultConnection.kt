@@ -7,4 +7,5 @@ object DefaultConnection {
 //    const val HOST = "192.168.1.173"
     var dbPort = 27017
     var genPort = 20000
+    var ctrlPort = 20001
 }

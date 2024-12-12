@@ -24,8 +24,9 @@ trong đoạn âm thanh đó.
 ## Chạy ứng dụng
 1. Clone project và chạy trên Android Studio
 2. Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút `Next` sẽ có một Dialog hiện ra, hãy nhập giá trị cho các trường `Database Port` và `Image Generator Port` như sau:
-    - Database Port: `13112`
-    - Host Generator Port: `15195`
+    - Database Port: `11316`
+    - Host Generator Port: `19303`
+    - Host Control Port: `16632`
 
     Lí do là vì í do vì nhóm em chạy Server ở __Local__. Để các máy ngoài LAN có thể truy cập, nhóm sử dụng __Ngrok__ để tạo tunnels nhưng các tunnels không có port cố định nên cần phải config. Hơn nữa, vì chạy Server ở Local nên khi tắt máy tính, các chức năng chính của ứng dụng sẽ không hoạt động.
     

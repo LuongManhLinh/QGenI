@@ -58,8 +58,10 @@ fun WelcomeScreen(
         PortDialog(
             portDB = uiState.dbPort,
             portImage = uiState.genPort,
+            portCtrl = uiState.ctrlPort,
             onPortDBChange = { viewModel.updateDBPort(it) },
             onPortImageChange = { viewModel.updateGenPort(it) },
+            onPortCtrlChange = { viewModel.updateCtrlPort(it) },
             onNextButtonClick = {
                 viewModel.writePort(context = context)
                 viewModel.showDialog(false)

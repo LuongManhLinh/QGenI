@@ -21,9 +21,11 @@ object IdsHostAPI : IFullIdsAPI {
 
     private var host = DefaultConnection.HOST
     private var port = DefaultConnection.genPort
+    private var ctrlPort = DefaultConnection.ctrlPort
 
-    private var ctrlPort = port + 1
     private var transferSocket: Socket? = null
+
+    private var threadId = 20000
 
     override fun createListeningPracticeItem(
         topicImageList: List<Bitmap>
@@ -32,14 +34,8 @@ object IdsHostAPI : IFullIdsAPI {
             transferSocket = Socket()
             transferSocket!!.connect(InetSocketAddress(host, port), 3000)
 
-            val inputStream = transferSocket!!.getInputStream()
-            val bArr = CommunicationUtils.readNBytes(inputStream, 4)
-            val initResponse = CommunicationUtils.bigEndianBytesToInt(bArr)
-            if (initResponse == ResponseType.SERVER_ERROR) {
-                Log.e(LOG_TAG, "Server error")
+            if (!initControl()) {
                 return null
-            } else {
-                ctrlPort = initResponse
             }
 
             sendRequest(RequestType.IMG_FIND_SIMILAR_ONLY, transferSocket!!, topicImageList)
@@ -52,6 +48,23 @@ object IdsHostAPI : IFullIdsAPI {
         } catch (e: Exception) {
             Log.e(LOG_TAG, Log.getStackTraceString(e))
             return null
+        }
+    }
+
+    private fun initControl(): Boolean {
+        val inputStream = transferSocket!!.getInputStream()
+        val bArr = CommunicationUtils.readNBytes(inputStream, 4)
+
+        val initResponse = CommunicationUtils.bigEndianBytesToInt(bArr)
+        if (initResponse == ResponseType.SERVER_ERROR) {
+            Log.e(LOG_TAG, "Server error")
+            return false
+        } else if (initResponse == ResponseType.SERVER_BUSY) {
+            Log.e(LOG_TAG, "Server busy")
+            return false
+        } else {
+            threadId = initResponse
+            return true
         }
     }
 
@@ -100,11 +113,18 @@ object IdsHostAPI : IFullIdsAPI {
     fun stop() {
         CoroutineScope(Dispatchers.IO).launch {
             if (transferSocket != null) {
-                val controlSocket = Socket(host, ctrlPort)
-                val outputStream = controlSocket.getOutputStream()
-                outputStream.write(CommunicationUtils.intToBigEndianBytes(ResponseType.CLIENT_ERROR))
-                transferSocket!!.close()
-                transferSocket = null
+                try {
+                    val controlSocket = Socket(host, ctrlPort)
+                    val outputStream = controlSocket.getOutputStream()
+                    outputStream.write(
+                        CommunicationUtils.intToBigEndianBytes(threadId)
+                    )
+
+                    transferSocket!!.close()
+                    transferSocket = null
+                } catch (e: Exception) {
+                    Log.e(LOG_TAG, Log.getStackTraceString(e))
+                }
             }
         }
     }

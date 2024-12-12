@@ -123,9 +123,9 @@ fun PageScreen(
 
 @Composable
 fun PageChanger(
+    modifier: Modifier = Modifier,
     tabItems: List<Item> = Items.getTabList(),
     time: Long,
-    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -200,6 +200,8 @@ fun PortDialog(
     onPortDBChange: (String) -> Unit,
     portImage: String,
     onPortImageChange: (String) -> Unit,
+    portCtrl: String,
+    onPortCtrlChange: (String) -> Unit,
     @DrawableRes
     imageResourceId: Int = R.drawable.avatar_1,
 ) {
@@ -231,12 +233,7 @@ fun PortDialog(
                 )
 
                 Text(
-                    text = """
-                        NHẬP PORT TRONG FILE README.md
-                        
-                        Lí do vì nhóm em chạy server ở Local. 
-                        Để các máy ngoài LAN có thể truy cập, nhóm sử dụng Ngrok để tạo tunnels nhưng các tunnels không có port cố định nên cần config tại đây
-                    """.trimIndent(),
+                    text = "NHẬP PORT TRONG FILE README.md",
                     modifier = Modifier.padding(
                         top = 16.dp,
                         start = 16.dp,
@@ -307,6 +304,32 @@ fun PortDialog(
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = portCtrl,
+                        onValueChange = onPortCtrlChange,
+                        label = {
+                            Text(
+                                text = "Host Control Port",
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 10.dp),
+                        colors = OutlinedTextFieldDefaults
+                            .colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     Row {
 
@@ -347,6 +370,8 @@ fun PortDialogLightPreview() {
             onPortDBChange = {},
             portImage = "",
             onPortImageChange = {},
+            portCtrl = "123",
+            onPortCtrlChange = {},
             onNextButtonClick = {}
         )
     }
@@ -361,6 +386,8 @@ fun PortDialogDarkPreview() {
             onPortDBChange = {},
             portImage = "",
             onPortImageChange = {},
+            portCtrl = "123",
+            onPortCtrlChange = {},
             onNextButtonClick = {}
         )
     }
@@ -373,7 +400,7 @@ fun PageChangerPreview() {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
-            PageChanger(Items.getTabList(), 3000L)
+            PageChanger(Modifier, Items.getTabList(), 3000L)
         }
     }
 }

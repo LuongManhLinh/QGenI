@@ -29,6 +29,14 @@ class WelcomeViewModel : ViewModel() {
         }
     }
 
+    fun updateCtrlPort(port: String) {
+        _uiState.update {
+            it.copy(
+                ctrlPort = port
+            )
+        }
+    }
+
     fun showDialog(show: Boolean) {
         _uiState.update {
             it.copy(
@@ -40,10 +48,12 @@ class WelcomeViewModel : ViewModel() {
     fun getPort(context: Context) {
         val dbPort = PortPreferenceManager.loadDbPort(context)
         val genPort = PortPreferenceManager.loadGenPort(context)
+        val ctrlPort = PortPreferenceManager.loadCtrlPort(context)
         _uiState.update {
             it.copy(
                 dbPort = dbPort.toString(),
                 genPort = genPort.toString(),
+                ctrlPort = ctrlPort.toString(),
                 firstInit = false
             )
         }
@@ -52,11 +62,14 @@ class WelcomeViewModel : ViewModel() {
     fun writePort(context: Context) {
         val dbPort = _uiState.value.dbPort.toInt()
         val genPort = _uiState.value.genPort.toInt()
+        val ctrlPort = _uiState.value.ctrlPort.toInt()
         PortPreferenceManager.saveDbPort(context, dbPort)
         PortPreferenceManager.saveGenPort(context, genPort)
+        PortPreferenceManager.saveCtrlPort(context, ctrlPort)
 
         DefaultConnection.dbPort = dbPort
         DefaultConnection.genPort = genPort
+        DefaultConnection.ctrlPort =  ctrlPort
     }
 
 }
@@ -65,5 +78,6 @@ data class PortState(
     var showDialog: Boolean = false,
     val dbPort: String = "",
     val genPort: String = "",
+    val ctrlPort : String = "",
     var firstInit: Boolean = true
 )

@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 object PortPreferenceManager {
     private const val DB_PORT_KEY = "db_port"
     private const val GEN_PORT_KEY = "gen_port"
+    private const val CTRL_PORT_KEY = "ctrl_port"
     private const val PREFERENCE_NAME = "port_preferences"
 
     fun loadDbPort(context: Context): Int {
@@ -30,5 +31,17 @@ object PortPreferenceManager {
         val sharedPreferences: SharedPreferences =
             context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
         sharedPreferences.edit().putInt(GEN_PORT_KEY, port).apply()
+    }
+
+    fun loadCtrlPort(context: Context): Int {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences.getInt(CTRL_PORT_KEY, -1)
+    }
+
+    fun saveCtrlPort(context: Context, port: Int) {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putInt(CTRL_PORT_KEY, port).apply()
     }
 }
