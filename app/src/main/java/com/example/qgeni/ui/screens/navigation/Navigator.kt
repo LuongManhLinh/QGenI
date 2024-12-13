@@ -16,6 +16,7 @@ import com.example.qgeni.data.preferences.ThemeMode
 import com.example.qgeni.data.preferences.UserPreferenceManager
 import com.example.qgeni.ui.screens.HomeScreen
 import com.example.qgeni.ui.screens.login.ForgotPasswordScreen
+import com.example.qgeni.ui.screens.login.ResetPasswordScreen
 import com.example.qgeni.ui.screens.login.SignInScreen
 import com.example.qgeni.ui.screens.login.SignUpScreen
 import com.example.qgeni.ui.screens.login.VerificationScreen
@@ -35,6 +36,7 @@ sealed class Screen(val route: String) {
     data object SignIn : Screen("sign_in")
     data object SignUp : Screen("sign_up")
     data object Verification : Screen("verification")
+    data object ResetPassword: Screen("reset_password")
     data object ListeningPractice : Screen("listening_practice/{idHexString}")
     data object ListeningPracticeList: Screen("listening_practice_list")
     data object ListeningPracticeGenerator : Screen("listening_practice_generator")
@@ -132,9 +134,15 @@ fun QGNavHost(
 
         composable(Screen.Verification.route) {
             VerificationScreen(
-                otpValue = "",
                 onBackClick = { navController.navigateUp() },
-                onNextButtonClick = { navController.navigate(Screen.SignIn.route) }
+                onNextButtonClick = { navController.navigate(Screen.ResetPassword.route) }
+            )
+        }
+
+        composable(Screen.ResetPassword.route) {
+            ResetPasswordScreen(
+                onBackClick = { navController.navigateUp() },
+                onPasswordChangeDone = { navController.navigate(Screen.SignIn.route) }
             )
         }
 

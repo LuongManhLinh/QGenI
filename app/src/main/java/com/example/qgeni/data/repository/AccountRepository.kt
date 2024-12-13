@@ -1,5 +1,6 @@
 package com.example.qgeni.data.repository
 
+import com.example.qgeni.utils.ContextConstants
 import org.bson.Document
 import org.bson.types.ObjectId
 
@@ -25,6 +26,14 @@ interface AccountRepository {
         phoneNumber: String? = null,
         email: String? = null
     ): Boolean
+
+    suspend fun checkEmail(
+        email: String
+    ): Boolean
+
+    suspend fun resetPassword(
+        newPassword: String
+    )
 }
 
 
@@ -116,4 +125,27 @@ object DefaultAccountRepository : AccountRepository {
 
         return result.modifiedCount > 0
     }
+
+    override suspend fun checkEmail(email: String) : Boolean {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+
+        val query = Document(Names.EMAIL, email)
+        val result = collection.find(query)
+
+        return result.firstOrNull() != null
+    }
+
+    override suspend fun resetPassword(newPassword: String) {
+        val collection = DefaultMongoDBService.getCollection(Names.COLLECTION_NAME)
+
+        val email = ContextConstants.getEmailForReset()
+        val query = Document(Names.EMAIL, email)
+        val updateDoc = Document("\$set", Document(Names.PASSWORD, newPassword))
+
+        collection.updateOne(
+            query,
+            updateDoc
+        )
+    }
+
 }

@@ -112,9 +112,7 @@ fun SignInScreen(
                 onClick = {
                     signInViewModel.updateConstraint()
                     if (signInViewModel.checkEmpty()) {
-                        signInViewModel.signIn(
-                            context
-                        )
+                        signInViewModel.signIn(context)
                         signInViewModel.updateConstraint()
                     }
                 }
@@ -124,9 +122,12 @@ fun SignInScreen(
         Spacer(modifier = Modifier.height(56.dp))
     }
 
-    if (signInUIState.signInEvent == SignInEvent.SUCCESS) {
-        onSignInSuccess()
+    LaunchedEffect(signInUIState.signInEvent) {
+        if (signInUIState.signInEvent == SignInEvent.SUCCESS) {
+            onSignInSuccess()
+        }
     }
+
 }
 
 @Composable

@@ -1,7 +1,6 @@
 package com.example.qgeni.ui.screens.practices
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,24 +14,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.qgeni.R
 import com.example.qgeni.ui.theme.QGenITheme
@@ -113,7 +111,7 @@ fun ReadingPracticeListScreen(
                 )
             }
 
-            if (uiState.practiceItemList.isEmpty()) {
+            if (uiState.loading) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .weight(1f)
@@ -128,21 +126,34 @@ fun ReadingPracticeListScreen(
                         .background(color = MaterialTheme.colorScheme.onPrimary),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(uiState.practiceItemList.size) { idx ->
-                        PracticeItemCard(
-                            practiceItem = uiState.practiceItemList[idx],
-                            onDeleteClick = {
-                                viewModel.selectItem(idx)
-                                viewModel.toggleDeleteDialog(true)
-                            },
-                            modifier = Modifier
-                                .clickable(
-                                    onClick = {
-                                        viewModel.selectItem(idx)
-                                        viewModel.toggleOpenDialog(true)
-                                    }
-                                ).testTag("show Dialog")
-                        )
+                    if (uiState.practiceItemList.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Chưa có đề đọc nào!",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp)
+                            )
+                        }
+                    } else {
+                        items(uiState.practiceItemList.size) { idx ->
+                            PracticeItemCard(
+                                practiceItem = uiState.practiceItemList[idx],
+                                onDeleteClick = {
+                                    viewModel.selectItem(idx)
+                                    viewModel.toggleDeleteDialog(true)
+                                },
+                                modifier = Modifier
+                                    .clickable(
+                                        onClick = {
+                                            viewModel.selectItem(idx)
+                                            viewModel.toggleOpenDialog(true)
+                                        }
+                                    ).testTag("show Dialog")
+                            )
+                        }
                     }
                 }
             }

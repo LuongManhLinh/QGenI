@@ -112,7 +112,7 @@ fun ListeningPracticeListScreen(
                 )
             }
 
-            if (uiState.practiceItemList.isEmpty()) {
+            if (uiState.loading) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .weight(1f)
@@ -127,21 +127,34 @@ fun ListeningPracticeListScreen(
                         .background(color = MaterialTheme.colorScheme.onPrimary),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(uiState.practiceItemList.size) { idx ->
-                        PracticeItemCard(
-                            practiceItem = uiState.practiceItemList[idx],
-                            onDeleteClick = {
-                                viewModel.selectItem(idx)
-                                viewModel.toggleDeleteDialog(true)
-                            },
-                            modifier = Modifier
-                                .clickable(
-                                    onClick = {
-                                        viewModel.selectItem(idx)
-                                        viewModel.toggleOpenDialog(true)
-                                    }
-                                ).testTag("open dialog")
-                        )
+                    if (uiState.practiceItemList.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Chưa có đề nghe nào!",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp)
+                            )
+                        }
+                    } else {
+                        items(uiState.practiceItemList.size) { idx ->
+                            PracticeItemCard(
+                                practiceItem = uiState.practiceItemList[idx],
+                                onDeleteClick = {
+                                    viewModel.selectItem(idx)
+                                    viewModel.toggleDeleteDialog(true)
+                                },
+                                modifier = Modifier
+                                    .clickable(
+                                        onClick = {
+                                            viewModel.selectItem(idx)
+                                            viewModel.toggleOpenDialog(true)
+                                        }
+                                    ).testTag("open dialog")
+                            )
+                        }
                     }
                 }
             }

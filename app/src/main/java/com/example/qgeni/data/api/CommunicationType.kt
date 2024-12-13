@@ -3,6 +3,7 @@ package com.example.qgeni.data.api
 object RequestType {
     const val TFN_CHECK = 1
     const val IMG_FIND_SIMILAR_ONLY = 3
+    const val VERIFICATION = 5
 }
 
 object ResponseType {

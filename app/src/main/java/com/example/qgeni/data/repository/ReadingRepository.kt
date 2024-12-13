@@ -129,7 +129,7 @@ object DefaultReadingRepository : ReadingRepository, PracticeRepository {
                 isNew = document[Names.IS_NEW] as Boolean,
                 highestScore = document[Names.HIGHEST_SCORE] as String?
             )
-        }
+        }.reversed()
     }
 }
 

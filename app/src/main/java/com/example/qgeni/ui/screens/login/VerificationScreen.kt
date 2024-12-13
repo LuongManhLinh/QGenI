@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -44,8 +45,6 @@ import com.example.qgeni.ui.theme.QGenITheme
 
 @Composable
 fun VerificationScreen(
-    otpValue: String,
-    //otp chuẩn
     onBackClick: () -> Unit,
     onNextButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,7 +56,7 @@ fun VerificationScreen(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.onPrimary)
     ) {
         Row(
@@ -92,9 +91,9 @@ fun VerificationScreen(
         }
         VerificationPage(
             otp = verificationUIState.otp,
+            isError = verificationUIState.isOtpError,
             onOtpTextChange = {
                     value, otpInputFilled ->
-//                    otp = value
                 verificationViewModel.updateOtp(value)
             },
             modifier = Modifier.weight(1f)
@@ -103,7 +102,11 @@ fun VerificationScreen(
             Spacer(modifier = Modifier.weight(2f))
             NextButton(
                 onPrimary = false,
-                onClick = onNextButtonClick
+                onClick = {
+                    if (verificationViewModel.verifyOtp()) {
+                        onNextButtonClick()
+                    }
+                }
             )
             Spacer(modifier = Modifier.weight(0.25f))
         }
@@ -115,6 +118,7 @@ fun VerificationScreen(
 @Composable
 fun VerificationPage(
     otp: String,
+    isError: Boolean,
     onOtpTextChange: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -149,6 +153,7 @@ fun VerificationPage(
             OtpTextField(
                 otpText = otp,
                 otpCount = 4,
+                isError = isError,
                 onOtpTextChange = onOtpTextChange
             )
         }
@@ -164,6 +169,7 @@ fun OtpTextField(
     modifier: Modifier = Modifier,
     otpText: String,
     otpCount: Int = 6,
+    isError: Boolean,
     onOtpTextChange: (String, Boolean) -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -180,13 +186,17 @@ fun OtpTextField(
                 onOtpTextChange.invoke(it.text, it.text.length == otpCount)
             }
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.NumberPassword,
+            imeAction = ImeAction.Done
+        ),
         decorationBox = {
             Row(horizontalArrangement = Arrangement.Center) {
                 repeat(otpCount) { index ->
                     CharView(
                         index = index,
-                        text = otpText
+                        text = otpText,
+                        isError = isError
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
@@ -198,7 +208,8 @@ fun OtpTextField(
 @Composable
 private fun CharView(
     index: Int,
-    text: String
+    text: String,
+    isError: Boolean
 ) {
     val isFocused = text.length == index
     val char = when {
@@ -213,6 +224,7 @@ private fun CharView(
             .border(
                 1.dp, when {
                     isFocused -> MaterialTheme.colorScheme.primary
+                    isError -> MaterialTheme.colorScheme.error
                     else -> MaterialTheme.colorScheme.tertiary
                 }, RoundedCornerShape(8.dp)
             )
@@ -238,9 +250,7 @@ private fun CharView(
 @Composable
 fun VerificationLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
-        val otp = "1234"
         VerificationScreen(
-            otpValue = otp,
             onBackClick = {},
             onNextButtonClick = {}
         )
@@ -251,9 +261,7 @@ fun VerificationLightScreenPreview() {
 @Composable
 fun VerificationDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
-        val otp = "1234"
         VerificationScreen(
-            otpValue = otp,
             onBackClick = {},
             onNextButtonClick = {}
         )
@@ -269,6 +277,7 @@ fun VerificationPagePreview() {
         }
         VerificationPage(
             otp = otp,
+            isError = false,
             onOtpTextChange = {
                     value, _ ->
                 otp = value
@@ -286,6 +295,7 @@ fun OtpInputPreview() {
         }
         OtpTextField(
             otpText = otpValue,
+            isError = true,
             onOtpTextChange = { value, otpInputFilled ->
                 otpValue = value
             }

@@ -18,7 +18,12 @@ abstract class PracticeListViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _practiceListUIState.update { it.copy(practiceItemList = getPracticeItemList()) }
+            _practiceListUIState.update {
+                it.copy(
+                    practiceItemList = getPracticeItemList(),
+                    loading = false
+                )
+            }
         }
     }
 
@@ -77,7 +82,8 @@ data class PracticeListUIState(
     val practiceItemList: List<PracticeItem> = emptyList(),
     val showDeleteDialog: Boolean = false,
     val showOpenDialog: Boolean = false,
-    val selectedIdx: Int? = null
+    val selectedIdx: Int? = null,
+    val loading: Boolean = true
 ) {
     val selectedItemId: ObjectId?
         get() = selectedIdx?.let { practiceItemList[it].id }

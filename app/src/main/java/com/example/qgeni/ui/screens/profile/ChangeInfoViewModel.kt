@@ -51,19 +51,23 @@ class ChangeInfoViewModel : ViewModel() {
             )
         }
     }
+
     fun updatePhoneNumber(phoneNumber: String) {
         _uiState.update {
             it.copy(
                 username = phoneNumber
             )
         }
-    }fun updateEmail(email: String) {
+    }
+
+    fun updateEmail(email: String) {
         _uiState.update {
             it.copy(
                 username = email
             )
         }
     }
+
     fun updateGender(gender: String) {
         _uiState.update {
             it.copy(

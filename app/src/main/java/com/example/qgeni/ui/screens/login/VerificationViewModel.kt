@@ -1,6 +1,8 @@
 package com.example.qgeni.ui.screens.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.qgeni.data.api.verification.VerificationAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,8 +18,22 @@ class VerificationViewModel: ViewModel() {
             )
         }
     }
+
+    fun verifyOtp(): Boolean {
+        val enteredOtp = _verificationUIState.value.otp
+        val otp = enteredOtp.map { chr -> chr.toString().toInt() }
+        Log.e("VerificationViewModel", "OTP: $otp")
+        val isCorrect = enteredOtp.length != 4 || VerificationAPI.verify(otp)
+        _verificationUIState.update {
+            it.copy(
+                isOtpError = !isCorrect
+            )
+        }
+        return isCorrect
+    }
 }
 
 data class VerificationUIState(
-    val otp: String = ""
+    val otp: String = "",
+    val isOtpError: Boolean = false,
 )
