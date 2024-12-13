@@ -441,7 +441,7 @@ fun PasteTextField(
             },
             modifier = modifier
                 .fillMaxWidth()
-                .height(64.dp),
+                .height(54.dp),
             singleLine = true,
             shape = RoundedCornerShape(size = 10.dp),
             maxLines = Int.MAX_VALUE,

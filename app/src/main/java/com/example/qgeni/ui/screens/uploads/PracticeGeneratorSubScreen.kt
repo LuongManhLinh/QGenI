@@ -310,8 +310,6 @@ fun SaveScreen(
     imageResourceId: Int = R.drawable.fairy3,
 ) {
 
-//    var text by remember { mutableStateOf("") }
-
     Dialog(onDismissRequest = {}) {
         Box(
             modifier = Modifier
@@ -360,8 +358,7 @@ fun SaveScreen(
                         shape = RoundedCornerShape(size = 10.dp),
                         maxLines = Int.MAX_VALUE,
                         keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Default,
-                            keyboardType = KeyboardType.Number // Bàn phím số
+                            imeAction = ImeAction.Done
                         ),
                         colors = OutlinedTextFieldDefaults
                             .colors(
