@@ -27,7 +27,7 @@ trong đoạn âm thanh đó.
 2. Build và chạy 
                    
 ##  Trên thiết bị Android
-1. Tải file APK tại [đây](release)
+1. Tải file APK tại [đây](https://github.com/LuongManhLinh/QGenI/releases/tag/QGenI)
 2. Cài đặt file APK vừa tải về
 
 ## Lưu ý khi chạy
