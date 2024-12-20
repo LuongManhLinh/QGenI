@@ -18,7 +18,7 @@ import java.net.Socket
 object QgsHostChecker {
     private const val LOG_TAG = "QgsHostChecker"
 
-    private var host = DefaultConnection.HOST
+    private var host = DefaultConnection.host
     private var port = DefaultConnection.genPort
     private var ctrlPort = DefaultConnection.ctrlPort
 

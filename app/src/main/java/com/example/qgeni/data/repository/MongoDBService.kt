@@ -24,7 +24,7 @@ object DefaultMongoDBService : MongoDBService {
 
     private suspend fun getDefaultDatabaseConnection() : MongoDatabase {
         return getDatabaseConnection(
-            DefaultConnection.HOST, DefaultConnection.dbPort, DefaultConnection.DB_NAME
+            DefaultConnection.host, DefaultConnection.dbPort, DefaultConnection.DB_NAME
         )
     }
 

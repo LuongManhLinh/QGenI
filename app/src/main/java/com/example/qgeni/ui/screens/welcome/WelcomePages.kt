@@ -1,7 +1,6 @@
 package com.example.qgeni.ui.screens.welcome
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,13 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -40,9 +35,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -52,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.qgeni.R
-import com.example.qgeni.data.repository.MongoDBService
 import com.example.qgeni.ui.theme.QGenITheme
 
 
@@ -196,6 +190,8 @@ fun PageChanger(
 @Composable
 fun PortDialog(
     onNextButtonClick: () -> Unit,
+    host: String,
+    onHostChange: (String) -> Unit,
     portDB: String,
     onPortDBChange: (String) -> Unit,
     portImage: String,
@@ -229,11 +225,13 @@ fun PortDialog(
                     painter = painterResource(imageResourceId),
                     contentDescription = "fairy",
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
+                        .height(300.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+                    contentScale = ContentScale.Crop
                 )
 
                 Text(
-                    text = "NHẬP PORT TRONG FILE README.md",
+                    text = "NHẬP HOST VÀ CÁC PORT MÀ SERVER ĐƯỢC CÀI ĐẶT",
                     modifier = Modifier.padding(
                         top = 16.dp,
                         start = 16.dp,
@@ -252,6 +250,31 @@ fun PortDialog(
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    OutlinedTextField(
+                        value = host,
+                        onValueChange = onHostChange,
+                        label = {
+                            Text(
+                                text = "Host",
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 10.dp),
+                        colors = OutlinedTextFieldDefaults
+                            .colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = portDB,
@@ -366,6 +389,8 @@ fun PortDialog(
 fun PortDialogLightPreview() {
     QGenITheme(dynamicColor = false) {
         PortDialog(
+            host = "",
+            onHostChange = {},
             portDB = "",
             onPortDBChange = {},
             portImage = "",
@@ -382,6 +407,8 @@ fun PortDialogLightPreview() {
 fun PortDialogDarkPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         PortDialog(
+            host = "",
+            onHostChange = {},
             portDB = "",
             onPortDBChange = {},
             portImage = "",

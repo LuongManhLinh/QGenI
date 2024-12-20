@@ -15,23 +15,22 @@ trong đoạn âm thanh đó.
 
 ---
 
-# 🚀 Cách chạy trên Android Studio
+# 🚀 Hướng dẫn cài đặt
 ## Yêu cầu
     - minSdk: 24 (Android 7.0 Nougat)
     - targetSdk: 34 (Tối ưu hóa cho Android 14)
     - JDK: 8 trở lên
     - Kotlin: 1.8 
-## Chạy ứng dụng
+## Trên Android Studio
+
 1. Clone project và chạy trên Android Studio
-2. Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút `Next` sẽ có một Dialog hiện ra, hãy nhập giá trị cho các trường `Database Port` và `Image Generator Port` như sau:
-    - Database Port: `10755`
-    - Host Generator Port: `13059`
-    - Host Control Port: `12904`
-
-    Lí do là vì í do vì nhóm em chạy Server ở __Local__. Để các máy ngoài LAN có thể truy cập, nhóm sử dụng __Ngrok__ để tạo tunnels nhưng các tunnels không có port cố định nên cần phải config. Hơn nữa, vì chạy Server ở Local nên khi tắt máy tính, các chức năng chính của ứng dụng sẽ không hoạt động.
-    
-
-    Nhóm sẽ cố gắng __cập nhật__ Database Port và Image Generator Port trong file README.md mỗi khi có thay đổi.
-
-3. Trải nghiệm ứng dụng
+2. Build và chạy 
                    
+##  Trên thiết bị Android
+1. Tải file APK tại [đây](release/QGenI_v1.apk)
+2. Cài đặt file APK vừa tải về
+
+## Lưu ý khi chạy
+Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút `Next` sẽ có một Dialog hiện ra, hãy nhập giá trị 
+cho các trường `Host`, `Database Port`, `Image Generator Port` và `Host Control Port` dựa trên thông số mà 
+Server đã được cài đặt. Đây là thông số cần thiết để ứng dụng có thể kết nối với Server.

@@ -203,7 +203,7 @@ fun ResetPasswordPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            isError = isPasswordSame,
+            isError = !isPasswordSame,
             supportingText = {
                 if (!isPasswordSame) {
                     Text(

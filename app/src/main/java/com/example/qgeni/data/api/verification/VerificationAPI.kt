@@ -10,7 +10,7 @@ import java.net.Socket
 object VerificationAPI {
     private const val LOG_TAG = "VerificationAPI"
 
-    private var host = DefaultConnection.HOST
+    private var host = DefaultConnection.host
     private var port = DefaultConnection.genPort
 
     fun sendVerification(email: String) {

@@ -19,7 +19,7 @@ import java.net.Socket
 object IdsHostAPI : IIdsAPI {
     private const val LOG_TAG = "IdsHostAPI"
 
-    private var host = DefaultConnection.HOST
+    private var host = DefaultConnection.host
     private var port = DefaultConnection.genPort
     private var ctrlPort = DefaultConnection.ctrlPort
 
