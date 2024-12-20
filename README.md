@@ -13,6 +13,8 @@ Hệ thống sẽ dựa trên các hình ảnh chủ đề để tìm kiếm cá
 Mỗi câu hỏi sẽ gồm 4 hình ảnh và 1 đoạn âm thanh, nhiệm vụ của người dùng là chọn hình ảnh đúng nhất với mô tả 
 trong đoạn âm thanh đó.
 
+## Video demo
+Truy cập link sau để xem video demo ứng dụng: [QGenI](https://www.youtube.com/watch?v=fwUJMB63fGw)
 ---
 
 # 🚀 Hướng dẫn cài đặt
