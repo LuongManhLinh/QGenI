@@ -1,6 +1,5 @@
 package com.example.qgeni.data.repository
 
-import android.util.Log
 import com.example.qgeni.data.api.CommunicationUtils
 import com.example.qgeni.data.model.ListeningPracticeItem
 import com.example.qgeni.data.model.ListeningQuestion
@@ -12,13 +11,13 @@ import java.util.Date
 
 
 
-interface ListeningRepository {
+interface ListeningRepository : PracticeRepository {
     suspend fun getItem(
         id: ObjectId
     ): ListeningPracticeItem
 }
 
-object DefaultListeningRepository : ListeningRepository, PracticeRepository {
+object DefaultListeningRepository : ListeningRepository {
     object Names {
         const val COLLECTION_NAME = "listening"
         const val ID = "_id"

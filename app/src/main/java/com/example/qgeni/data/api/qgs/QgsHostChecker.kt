@@ -26,7 +26,7 @@ object QgsHostChecker {
 
     private var threadId = 20000
 
-    fun validate(passage: String, questionList: List<ReadingQuestion>): ObjectId? {
+    fun validateAndCreate(passage: String, questionList: List<ReadingQuestion>): ObjectId? {
         try {
             transferSocket = Socket()
             transferSocket!!.connect(InetSocketAddress(host, port), 3000)

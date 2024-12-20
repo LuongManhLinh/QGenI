@@ -9,14 +9,14 @@ import org.bson.types.ObjectId
 import java.util.Date
 
 
-interface ReadingRepository {
+interface ReadingRepository : PracticeRepository {
     suspend fun getItem(
         id: ObjectId
     ): ReadingPracticeItem
 }
 
 
-object DefaultReadingRepository : ReadingRepository, PracticeRepository {
+object DefaultReadingRepository : ReadingRepository {
     object Names {
         const val COLLECTION_NAME = "reading"
         const val ID = "_id"

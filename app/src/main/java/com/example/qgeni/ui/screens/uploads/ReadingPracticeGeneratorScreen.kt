@@ -362,7 +362,7 @@ fun ReadingPracticeGeneratorScreen(
             SaveScreen(
                 title = rpgUIState.title,
                 onTitleChange = { viewModel.updateTitle(it) },
-                onNextButtonClick = viewModel::saveReadingPractice
+                onNextButtonClick = viewModel::changeTitle
             )
         }
 

@@ -127,7 +127,7 @@ fun QGNavHost(
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClick = { navController.navigateUp() },
-                onNextButtonClick = {navController.navigate(Screen.Verification.route)}
+                onEmailVerified = {navController.navigate(Screen.Verification.route)}
             )
         }
 
@@ -135,7 +135,7 @@ fun QGNavHost(
         composable(Screen.Verification.route) {
             VerificationScreen(
                 onBackClick = { navController.navigateUp() },
-                onNextButtonClick = { navController.navigate(Screen.ResetPassword.route) }
+                onOTPVerified = { navController.navigate(Screen.ResetPassword.route) }
             )
         }
 

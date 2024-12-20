@@ -18,7 +18,7 @@ object QgsApplication {
             if (stopped) {
                 return null
             }
-            return QgsHostChecker.validate(paragraph, questionList)
+            return QgsHostChecker.validateAndCreate(paragraph, questionList)
         }
         catch (e: Exception) {
             Log.e("IdsApplication", Log.getStackTraceString(e))

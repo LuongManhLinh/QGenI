@@ -39,7 +39,7 @@ import com.example.qgeni.utils.ErrorMessages
 @Composable
 fun ForgotPasswordScreen(
     onBackClick: () -> Unit,
-    onNextButtonClick: () -> Unit,
+    onEmailVerified: () -> Unit,
     modifier: Modifier = Modifier,
     forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
 ) {
@@ -112,7 +112,7 @@ fun ForgotPasswordScreen(
 
     LaunchedEffect(forgotPasswordUIState.emailStatus) {
         if (forgotPasswordUIState.emailStatus == EmailStatus.VALID) {
-            onNextButtonClick()
+            onEmailVerified()
         }
     }
 }
@@ -208,7 +208,7 @@ fun ForgotPasswordLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         ForgotPasswordScreen(
             onBackClick = {},
-            onNextButtonClick = {}
+            onEmailVerified = {}
         )
     }
 }
@@ -219,7 +219,7 @@ fun ForgotPasswordDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         ForgotPasswordScreen(
             onBackClick = {},
-            onNextButtonClick = {}
+            onEmailVerified = {}
         )
     }
 }

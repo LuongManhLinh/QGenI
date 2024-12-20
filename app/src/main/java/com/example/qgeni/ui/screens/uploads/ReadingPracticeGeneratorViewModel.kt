@@ -6,7 +6,6 @@ import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.qgeni.application.QgsApplication
-import com.example.qgeni.data.api.ids.IdsHostAPI
 import com.example.qgeni.data.api.qgs.QgsHostChecker
 import com.example.qgeni.data.model.McqQuestion
 import com.example.qgeni.data.repository.DefaultReadingRepository
@@ -75,7 +74,7 @@ open class ReadingPracticeGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun saveReadingPractice() {
+    fun changeTitle() {
         if (itemId == null) {
             _readingUIState.update {
                 it.copy(

@@ -3,7 +3,6 @@ package com.example.qgeni.upload
 import android.content.Context
 import android.net.Uri
 import com.example.qgeni.application.QgsApplication
-import com.example.qgeni.data.model.ReadingPracticeItem
 import com.example.qgeni.data.repository.DefaultReadingRepository
 import com.example.qgeni.ui.screens.uploads.GeneratorState
 import com.example.qgeni.ui.screens.uploads.ReadingPracticeGeneratorViewModel
@@ -11,7 +10,6 @@ import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -21,7 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.bson.types.ObjectId
 import org.junit.Before
 import org.junit.Test
-import java.io.ByteArrayInputStream
+
 class ReadingPracticeGeneratorViewModelTest {
     private lateinit var viewModel: ReadingPracticeGeneratorViewModel
     private lateinit var mockContext: Context
@@ -78,7 +76,7 @@ class ReadingPracticeGeneratorViewModelTest {
                 state -> println("Intermediate State: $state")
             }
         }
-        viewModel.saveReadingPractice()
+        viewModel.changeTitle()
 
         advanceUntilIdle()
 

@@ -46,7 +46,7 @@ import com.example.qgeni.ui.theme.QGenITheme
 @Composable
 fun VerificationScreen(
     onBackClick: () -> Unit,
-    onNextButtonClick: () -> Unit,
+    onOTPVerified: () -> Unit,
     modifier: Modifier = Modifier,
     verificationViewModel: VerificationViewModel = viewModel()
 ) {
@@ -104,7 +104,7 @@ fun VerificationScreen(
                 onPrimary = false,
                 onClick = {
                     if (verificationViewModel.verifyOtp()) {
-                        onNextButtonClick()
+                        onOTPVerified()
                     }
                 }
             )
@@ -252,7 +252,7 @@ fun VerificationLightScreenPreview() {
     QGenITheme(dynamicColor = false) {
         VerificationScreen(
             onBackClick = {},
-            onNextButtonClick = {}
+            onOTPVerified = {}
         )
     }
 }
@@ -263,7 +263,7 @@ fun VerificationDarkScreenPreview() {
     QGenITheme(dynamicColor = false, darkTheme = true) {
         VerificationScreen(
             onBackClick = {},
-            onNextButtonClick = {}
+            onOTPVerified = {}
         )
     }
 }

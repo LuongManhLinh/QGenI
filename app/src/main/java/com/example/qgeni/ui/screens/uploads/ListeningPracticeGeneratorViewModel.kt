@@ -95,7 +95,7 @@ class ListeningPracticeGeneratorViewModel : ViewModel() {
     }
 
 
-    fun saveListeningPracticeTitle() {
+    fun changeTitle() {
         if (itemId == null) {
             _uiState.update {
                 it.copy(
