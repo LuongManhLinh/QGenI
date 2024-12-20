@@ -27,10 +27,11 @@ trong đoạn âm thanh đó.
 2. Build và chạy 
                    
 ##  Trên thiết bị Android
-1. Tải file APK tại [đây](release/QGenI_v1.apk)
+1. Tải file APK tại [đây](release)
 2. Cài đặt file APK vừa tải về
 
 ## Lưu ý khi chạy
 Khi chạy ứng dụng, ở màn hình đầu tiên, khi nhấn nút `Next` sẽ có một Dialog hiện ra, hãy nhập giá trị 
 cho các trường `Host`, `Database Port`, `Image Generator Port` và `Host Control Port` dựa trên thông số mà 
 Server đã được cài đặt. Đây là thông số cần thiết để ứng dụng có thể kết nối với Server.
+Truy cập trang github cho QGenI Server tại [đây](https://github.com/LuongManhLinh/QGenI_Server)
